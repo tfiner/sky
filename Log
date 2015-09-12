@@ -1,0 +1,42 @@
+Log
+
+First two weeks:
+Research papers 12 hours x 2 weekends
+
+Week 3
+Spent 4 hours trying to get Example 16 to run
+Jpeg lib
+Crappy c++ code
+Failing because of wglCreatePbufferARB returning null and GetLastError is 0x0d, which isn't any of the error codes given by the documentation for that function!
+Man, is this irritating.
+
+Going to tentatively port parts of this over to portable GLFW.  Back to OS X and get the heck out of windows!
+
+I think I should be able to render to an FBO instead (see comment on http://stackoverflow.com/q/21821254/196682).
+
+Next step:  
+Render to an FBO.
+
+Port Chap 16.  I want those Nishita functions!
+
+Idea:
+Maybe an ambient occlusion might help cloud shading.  Inspired by article on bitsquid:
+http://bitsquid.blogspot.com/2015/09/temporal-reprojection-and-sao.html
+
+9/12/2015
+Writing a minimal OpenGL framework that loads shaders, helps with OpenGL interaction (loading buffers, binding things, etc.).  Looked at a few but they all seem to suffer from a variety of immature thinking: putting iostreams directly in the header, using C, very little error checking (if any), "kitchen sink" classes that depend on Qt, Boost or GLM.  Not using RAII!
+
+What I want is:
+Overall goals:
+1. Class design that follows OpenGL: if an OpenGL function requires an identifying argument, then that identifier belongs in the class in question.  Ex: A Program class should contain the GLuint passed to ::glUseProgram(program).
+
+2. Error checking with helpful messages.  I'm biased towards exceptions and already have a GLException class and some logging code.
+
+3. A Shader class that compiles, and displays errors.
+
+4. The Program class will contain at least a vertex and a fragment shaders.
+
+5. Buffer management classes.  I'd like to simplify and understand all the buffer types.
+
+6. Use type safety, RAII and C++11/14 awesomeness.
+
