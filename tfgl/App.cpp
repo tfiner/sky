@@ -45,6 +45,10 @@ App::App() :
     settings_(new bpo::variables_map) {}
 
 
+// Needed for pimpl.
+App::~App() {}
+
+
 void App::Run(int argc, char** argv) {
     if (!Init(argc, argv))
         return;

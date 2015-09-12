@@ -28,7 +28,9 @@ namespace tfgl {
 
         App(const App&) = delete;
         App& operator=(const App&) = delete;
-        ~App() = default;
+
+        // Needed for unique_ptr pimpl.
+        ~App();
 
         // This is the top level call that drives the application.
         // This function calls InitImpl and loops on DrawImpl:

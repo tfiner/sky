@@ -1,4 +1,4 @@
-#include "gl_helpers.h"
+#include "App.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,7 +11,7 @@
 
 using namespace tfgl;
 
-
+/*
 GLuint vertexBufferObject;
 GLuint vertexArrayObject;
 
@@ -124,11 +124,12 @@ void RunTutorial(int argc, char** argv) {
 
     Loop(window, drawFunc);
 }
-
+*/
 
 int main(int argc, char** argv) {
     try {
-        RunTutorial(argc, argv);
+        App app;
+        app.Run(argc, argv);
     } catch(std::exception& e) {
         std::cerr << e.what() << "\n";
     }
