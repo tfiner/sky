@@ -11,21 +11,27 @@
 
 #include "Types.h"
 
-
 #include <string>
 
+
 namespace tfgl {
-    // TODO: If these end up being used everywhere, move these into a common header.
-    using GLuint = unsigned int;
 
     // Responsible for loading, parsing, hanging on to the OpenGL 
-    // opaque handle to a shader.
+    // opaque handle to a shader.  Resource ownership of the shader
+    // is performed by reference counting.
     class Shader {
     public:
+        Shader(GLenum type, const std::string& filename);
+        GLuint GetId() const;
+
     private:
-        // The source file name.
+        GLenum      type_;
         std::string filename_;
-        GLuint      id_;
+
+        // This owns the shader, when it is deleted, the shader is
+        // deleted from the current GL context.
+        struct ShaderOwner;
+        std::shared_ptr<ShaderOwner> owner_;
     };
 
 }

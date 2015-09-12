@@ -10,9 +10,9 @@ message( STATUS "Build type - ${CMAKE_BUILD_TYPE}")
 find_package(OpenGL)
 find_package(GLEW)
 find_package(GLFW)
-FIND_PACKAGE(Boost 1.55 COMPONENTS program_options REQUIRED)
+FIND_PACKAGE(Boost 1.55 COMPONENTS program_options filesystem system REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -25,8 +25,10 @@ include_directories(
 
 set(SRCS 
 #    main.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/App.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Exception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Shader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Program.cpp
 )
 
 add_executable(testbed ${SRCS} )

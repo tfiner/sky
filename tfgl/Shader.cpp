@@ -1,3 +1,11 @@
+// Shader class, part of a minimal OpenGL library.
+//
+// Author:  Tim Finer 
+// Email:   tfiner@csu.fullerton.edu
+// 
+// CPSC-597 Fall 2015 Master's Project
+//
+
 #include "Shader.h"
 #include "Exception.h"
 
@@ -122,42 +130,34 @@ namespace {
 
 } // namespace
 
-#if 0
-    if (vm.count("vshader")) {
-        auto filename = vm["vshader"].as<std::string>();
-        std::cout << "Vertex shader: " << filename << ".\n";
-        auto shaderVal = std::make_pair(filename, LoadFile(filename));
 
-        std::cout << shaderVal.first << " begin\n";
-        DumpStringLineByLine(shaderVal.second);
-        std::cout << shaderVal.first << " end\n";
+// Private implementation structure that is wrapped in a shared_ptr to 
+// handle reference counting.
+struct Shader::ShaderOwner {
+    ShaderOwner(GLuint id) : id_(id) {}
 
-        shaders_.insert(std::make_pair(GL_VERTEX_SHADER, shaderVal));
-
-    } else {
-        std::cerr << "Vertex shader was not set.\n";
-        exit(-1);
+    ~ShaderOwner() { 
+        // Note: no throwing in destructors.
+        if (id_)
+            ::glDeleteShader(id_);
     }
+    GLuint      id_;
+};
 
 
-    if (vm.count("fshader")) {
-        auto filename = vm["fshader"].as<std::string>();        
-        std::cout << "Fragment shader: " << filename << ".\n";
-        auto shaderVal = std::make_pair(filename, LoadFile(filename));
+Shader::Shader(GLenum type, const std::string& filename) : 
+    type_(type),
+    filename_(filename){
 
-        std::cout << shaderVal.first << " begin\n";
-        DumpStringLineByLine(shaderVal.second);
-        std::cout << shaderVal.first << " end\n";
-
-
-        shaders_.insert(std::make_pair(GL_FRAGMENT_SHADER, shaderVal));
-
-    } else {
-        std::cerr << "Fragment shader was not set.\n";
-        exit(-1);
-    }    
+    owner_ = std::make_shared<ShaderOwner>(LoadShaderFile( type_, filename, LoadFile(filename)));
 }
 
+GLuint Shader::GetId() const { 
+    return owner_ ? owner_->id_ : 0; 
+}
+
+
+#if 0
 
 
 GLFWwindow* tfgl::InitGL() {

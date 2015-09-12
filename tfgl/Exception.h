@@ -40,7 +40,7 @@ namespace tfgl {
         std::string file_;
         std::string what_;
         int line_;
-    };    
+    };
 
     void ThrowOnGlError(std::string file, int line);
     void LogGlErrors(std::string file, int line);
