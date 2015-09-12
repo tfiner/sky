@@ -13,6 +13,7 @@
 
 
 using namespace tfgl;
+namespace fs = boost::filesystem;
 
 
 namespace {
@@ -42,9 +43,58 @@ namespace {
         return shader;
     }
 
+    // PragmaInclude and LoadFile have a circular dependency:
+    std::string LoadFile(const std::string& filename);
+
+
+    // So that I can include shader files in one another!
+    void PragmaInclude(
+        std::ostream& os, 
+        const fs::path& path, 
+        const std::string& filename,
+        const std::string& pragmaLine, 
+        int lineNum) {
+
+        std::cout << "Found pragma include on line " << lineNum << "...\n";
+
+        std::stringstream incParms;
+        incParms << pragmaLine;
+
+        auto ignore         = std::string();
+        auto incFilename    = std::string();
+        if (incParms >> ignore >> ignore >> incFilename) {
+            std::cout << "include file: " << incFilename << "\n";
+
+            auto incPath = fs::path(incFilename);
+            if (!fs::exists(incPath)) {
+                auto oldPath = path;
+                auto newPath = oldPath;
+                newPath.remove_filename();
+                newPath += "/";
+                newPath += incPath;
+                incFilename = newPath.string();
+                std::cout << "trying file: " << incFilename << "\n";
+            }
+
+            auto included = LoadFile(incFilename);
+            if (included.empty()) {
+                std::cerr << "Empty include file " << incFilename << "!\n";
+                throw GlException(filename, lineNum, 0);                        
+            }
+
+            // Included with a nice comment for OpengLG debuggers.
+            os  << "// included file begin: " << incFilename << "\n"
+                << included << "\n"
+                << "// included file end " << incFilename << "\n";
+
+        } else {
+            std::cerr << "Failed to parse pragma include!\n";
+            throw GlException(filename, lineNum, 0);
+        }
+    }
+
 
     std::string LoadFile(const std::string& filename) {
-        namespace fs = boost::filesystem;
         const auto path = fs::path(filename);
 
         std::cout << "Loading: " << filename << "\n";
@@ -57,42 +107,7 @@ namespace {
         while(std::getline(ifs, line)) {
             // std::cout << line << "\n";
             if (line.find("#pragma include") != std::string::npos) {
-                std::cout << "Found pragma include on line " << lineNum << "...\n";
-
-                std::stringstream incParms;
-                incParms << line;
-
-                auto ignore = std::string();
-                auto incFilename = std::string();
-                if (incParms >> ignore >> ignore >> incFilename) {
-                    std::cout << "include file: " << incFilename << "\n";
-
-                    auto incPath = fs::path(incFilename);
-                    if (!fs::exists(incPath)) {
-                        auto oldPath = path;
-                        auto newPath = oldPath;
-                        newPath.remove_filename();
-                        newPath += "/";
-                        newPath += incPath;
-                        incFilename = newPath.string();
-                        std::cout << "trying file: " << incFilename << "\n";
-                    }
-
-                    auto included = LoadFile(incFilename);
-                    if (included.empty()) {
-                        std::cerr << "Empty include file " << incFilename << "!\n";
-                        throw GlException(filename, lineNum, 0);                        
-                    }
-
-                    ss  << "// included file begin: " << incFilename << "\n"
-                        << included << "\n"
-                        << "// included file end " << incFilename << "\n";
-
-                } else {
-                    std::cerr << "Failed to parse pragma include!\n";
-                    throw GlException(filename, lineNum, 0);
-                }
-
+                PragmaInclude(ss, path, filename, line, lineNum);
             } else {
                 ss << line << "\n";
             }
