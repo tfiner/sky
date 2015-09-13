@@ -23,6 +23,7 @@ namespace bpo = boost::program_options;
 
 namespace {
 
+
     void OnKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             ::glfwSetWindowShouldClose(window, GL_TRUE);
@@ -39,11 +40,7 @@ namespace {
 
 
 App::App() : 
-    screenWidth_(0), 
-    screenHeight_(0),
-    window_(nullptr),
     settings_(new bpo::variables_map) {}
-
 
 // Needed for pimpl.
 App::~App() {}
@@ -68,8 +65,6 @@ bool App::Init(int argc, char** argv) {
     desc.add_options()
         ("help,h",                                  "You are reading it now.")
         ("version,v",                               "Version of this.")
-        ("vshader,V",   bpo::value<std::string>(),  "vertex shader")
-        ("fshader,F",   bpo::value<std::string>(),  "fragment shader")
         ("width,W",     bpo::value<int>(),          "screen width")
         ("height,H",    bpo::value<int>(),          "screen height")
     ;

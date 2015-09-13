@@ -1,8 +1,20 @@
-#include "App.h"
+// Testbed driver.
+//
+// Author:  Tim Finer 
+// Email:   tfiner@csu.fullerton.edu
+// 
+// CPSC-597 Fall 2015 Master's Project
+//
+
+#include "Testbed.h"
+#include "Buffer.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <GL/glew.h>
+
 
 #include <array>
 #include <iostream>
@@ -10,21 +22,28 @@
 
 
 using namespace tfgl;
+using namespace tft;
+
+namespace {
+
+    using Real = float;
+    const std::array<Real,18> vertexData{
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        0.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0
+    };
+
+}
+
 
 /*
 GLuint vertexBufferObject;
 GLuint vertexArrayObject;
 
-
-const float vertexData[] = {
-    0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 1.0, 0.0,
-
-    0.0, 0.0, 0.0,
-    1.0, 1.0, 0.0,
-    0.0, 1.0, 0.0
-};
 
 void InitTutorial() {
     glGenBuffers(1, &vertexBufferObject);
@@ -126,9 +145,33 @@ void RunTutorial(int argc, char** argv) {
 }
 */
 
+
+Testbed::~Testbed() {}
+
+
+bool Testbed::InitImpl() {
+    vbo_ = tfgl::MakeVBO(
+        vertexData.data(), 
+        vertexData.size() * sizeof(Real) );
+
+    ::glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+    THROW_ON_GL_ERROR();
+
+    return true;
+}
+
+
+bool Testbed::DrawImpl() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    THROW_ON_GL_ERROR();
+
+    return true;
+}
+
+
 int main(int argc, char** argv) {
     try {
-        App app;
+        tft::Testbed app;
         app.Run(argc, argv);
     } catch(std::exception& e) {
         std::cerr << e.what() << "\n";

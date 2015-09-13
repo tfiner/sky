@@ -43,8 +43,10 @@ namespace tfgl {
         }
 
     private:
-        int screenWidth_, screenHeight_;
-        GLFWwindow* window_;
+        int screenWidth_    = 800;
+        int screenHeight_   = 600;
+        GLFWwindow* window_ = nullptr;
+        
         std::unique_ptr<boost::program_options::variables_map> settings_;
 
         // Top level initialize that ends up calling InitImpl.

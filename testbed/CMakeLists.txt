@@ -24,8 +24,9 @@ include_directories(
 )
 
 set(SRCS 
-#    main.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Testbed.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/App.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Buffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Exception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Shader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Program.cpp
