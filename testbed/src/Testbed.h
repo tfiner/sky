@@ -32,8 +32,12 @@ namespace tft {
 
     private:
         std::unique_ptr<tfgl::Program>              program_;
-        std::unique_ptr<tfgl::Buffer>               buf_;
         std::unique_ptr<tfgl::VertexArrayObject>    vao_;
+
+        // It might not be strictly necessary to hold this buffer.  I like
+        // the analog that this object represents some state that when this
+        // object is destroyed, so is the object in the video card.
+        std::unique_ptr<tfgl::Buffer>               buf_;
 
         virtual std::string GetVersion() const override { return "Testbed 1.0"; }
 

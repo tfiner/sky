@@ -55,16 +55,12 @@ bool Testbed::InitImpl() {
     program_->Attach(fs);
     program_->Link();
 
-
     vao_.reset(new VertexArrayObject);
 
     // The VAO binds all the changes from here on. 
     ScopedBinder<VertexArrayObject> bindVao(*vao_);
 
     // The nature of VAO's is that the data is held by the VAO state.
-    // The Buffer object can safely be unbound and deleted (because it
-    // is reference counted on the OpenGL side).  As long as the VAO
-    // has not been deleted, the associated buffer stays alive.
     buf_.reset(new Buffer(GL_ARRAY_BUFFER));
     ScopedBinder<Buffer> bindBuf(*buf_);
 
