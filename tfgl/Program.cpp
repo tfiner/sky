@@ -57,6 +57,19 @@ void Program::Link() const {
 }
 
 
+void Program::Bind() const {
+    assert(id_);
+    glUseProgram(id_);
+    THROW_ON_GL_ERROR();
+}
+
+
+void Program::Unbind() const {
+    glUseProgram(0);
+    THROW_ON_GL_ERROR();
+}
+
+
 void Program::SetUniform(const std::string& name, float f) const {
     ::glUniform1f(GetUniform(name), f);
     THROW_ON_GL_ERROR();

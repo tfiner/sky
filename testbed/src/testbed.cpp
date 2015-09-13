@@ -8,6 +8,10 @@
 
 #include "Testbed.h"
 #include "Buffer.h"
+#include "Program.h"
+#include "ScopedBinder.h"
+#include "Shader.h"
+#include "VertexArrayObject.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -26,8 +30,7 @@ using namespace tft;
 
 namespace {
 
-    using Real = float;
-    const std::array<Real,18> vertexData{
+    const std::array<float,18> vertexData{
         0.0, 0.0, 0.0,
         1.0, 0.0, 0.0,
         1.0, 1.0, 0.0,
@@ -40,121 +43,42 @@ namespace {
 }
 
 
-/*
-GLuint vertexBufferObject;
-GLuint vertexArrayObject;
-
-
-void InitTutorial() {
-    glGenBuffers(1, &vertexBufferObject);
-    THROW_ON_GL_ERROR()
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    THROW_ON_GL_ERROR()
-    
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-    THROW_ON_GL_ERROR()
-
-    glGenVertexArrays(1, &vertexArrayObject);
-    THROW_ON_GL_ERROR()
-
-    // Needed for VertexAttribArray 
-    glBindVertexArray(vertexArrayObject);
-    THROW_ON_GL_ERROR()
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    THROW_ON_GL_ERROR()
-
-    // glEnable(GL_CULL_FACE);
-    // THROW_ON_GL_ERROR()
-
-    // glCullFace(GL_BACK);
-    // THROW_ON_GL_ERROR()
-
-    // glFrontFace(GL_CW);    
-    // THROW_ON_GL_ERROR()
-}
-
-
-void RunTutorial(int argc, char** argv) {
-    ProcessArgs(argc, argv);
-    auto window = InitGL();
-
-    InitTutorial();
-    auto program = InitShaders();
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    THROW_ON_GL_ERROR()
-
-    auto winWidth = 0, winHeight = 0;
-    glfwGetWindowSize(window, &winWidth, &winHeight);
-
-    const auto matProjObj   = glGetUniformLocation( program, "matProj" );
-    THROW_ON_GL_ERROR()
-
-    const auto matViewObj   = glGetUniformLocation( program, "matView" );
-    THROW_ON_GL_ERROR()
-
-    const auto matModelObj  = glGetUniformLocation( program, "matModel" );
-    THROW_ON_GL_ERROR()
-
-    const auto matProj      = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-    for (auto j = 0u; j < 4; ++j)
-        for (auto i = 0u; i < 4; ++i)
-            std::cout << j << ":" << i << " " << matProj[j][i] << "\n";
-
-    const auto matView      = glm::mat4();
-    const auto matModel     = glm::mat4();
-
-    auto drawFunc = [program, matProjObj, &matProj, matViewObj, &matView, matModelObj, &matModel]() -> void {
-        glClear(GL_COLOR_BUFFER_BIT);
-        THROW_ON_GL_ERROR()
-
-        glUseProgram(program);
-        THROW_ON_GL_ERROR()
-
-        glUniformMatrix4fv(matProjObj, 1, GL_FALSE, glm::value_ptr(matProj));
-        THROW_ON_GL_ERROR()
-
-        glUniformMatrix4fv(matViewObj, 1, GL_FALSE, glm::value_ptr(matView));
-        THROW_ON_GL_ERROR()
-
-        glUniformMatrix4fv(matModelObj, 1, GL_FALSE, glm::value_ptr(matModel));
-        THROW_ON_GL_ERROR()
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-        THROW_ON_GL_ERROR()
-
-        glEnableVertexAttribArray(0);
-        THROW_ON_GL_ERROR()
-
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
-        THROW_ON_GL_ERROR()
-
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertexData) / sizeof(vertexData[0]));
-        THROW_ON_GL_ERROR()
-
-        glDisableVertexAttribArray(0);
-        THROW_ON_GL_ERROR()
-
-        glUseProgram(0);
-        THROW_ON_GL_ERROR()
-    };
-
-    Loop(window, drawFunc);
-}
-*/
-
-
 Testbed::~Testbed() {}
 
 
 bool Testbed::InitImpl() {
-    vbo_ = tfgl::MakeVBO(
-        vertexData.data(), 
-        vertexData.size() * sizeof(Real) );
+    program_.reset(new Program);
+    auto vs = Shader(GL_VERTEX_SHADER,      "gl.vert");
+    auto fs = Shader(GL_FRAGMENT_SHADER,    "gl.frag");
 
-    ::glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+    program_->Attach(vs);
+    program_->Attach(fs);
+    program_->Link();
+
+
+    vao_.reset(new VertexArrayObject);
+
+    // The VAO binds all the changes from here on. 
+    ScopedBinder<VertexArrayObject> bindVao(*vao_);
+
+    // The nature of VAO's is that the data is held by the VAO state.
+    // The Buffer object can safely be unbound and deleted (because it
+    // is reference counted on the OpenGL side).  As long as the VAO
+    // has not been deleted, the associated buffer stays alive.
+    buf_.reset(new Buffer(GL_ARRAY_BUFFER));
+    ScopedBinder<Buffer> bindBuf(*buf_);
+
+    buf_->SetStaticData(vertexData.data(), 
+        vertexData.size() * sizeof(float));
+
+    ::glEnableVertexAttribArray(0);
+    THROW_ON_GL_ERROR();
+    
+    // Tell the VAO about the format of vertexData:
+    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    THROW_ON_GL_ERROR();
+    
+    ::glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
     THROW_ON_GL_ERROR();
 
     return true;
@@ -163,6 +87,20 @@ bool Testbed::InitImpl() {
 
 bool Testbed::DrawImpl() {
     glClear(GL_COLOR_BUFFER_BIT);
+    THROW_ON_GL_ERROR();
+
+    const auto matProj  = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+    const auto matView  = glm::mat4();
+    const auto matModel = glm::mat4();
+
+    ScopedBinder<Program> prog(*program_);
+    program_->SetUniformMat4("matProj", glm::value_ptr(matProj));
+    program_->SetUniformMat4("matView", glm::value_ptr(matView));
+    program_->SetUniformMat4("matModel", glm::value_ptr(matModel));
+
+    ScopedBinder<VertexArrayObject> vao(*vao_);
+
+    ::glDrawArrays(GL_TRIANGLES, 0, 6);
     THROW_ON_GL_ERROR();
 
     return true;

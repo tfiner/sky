@@ -51,6 +51,10 @@ void Buffer::Bind() const {
     THROW_ON_GL_ERROR();
 }
 
+void Buffer::Unbind() const {
+    ::glBindBuffer(type_, 0);
+}
+
 
 GLuint Buffer::GetId() const {
     assert(owner_);

@@ -30,6 +30,7 @@ set(SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Exception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Shader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/Program.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../tfgl/VertexArrayObject.cpp
 )
 
 add_executable(testbed ${SRCS} )

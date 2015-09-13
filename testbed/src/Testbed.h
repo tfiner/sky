@@ -15,6 +15,8 @@
 
 namespace tfgl {
     class Buffer;
+    class Program;
+    class VertexArrayObject;    
 }
 
 
@@ -22,13 +24,16 @@ namespace tft {
 
     class Testbed : public tfgl::App {
     public:
+        // Can't create any OpenGL objects until OpenGL has been initialized.
         Testbed() = default;
 
         // for pimpl.
         ~Testbed();
 
     private:
-        std::unique_ptr<tfgl::Buffer> vbo_;
+        std::unique_ptr<tfgl::Program>              program_;
+        std::unique_ptr<tfgl::Buffer>               buf_;
+        std::unique_ptr<tfgl::VertexArrayObject>    vao_;
 
         virtual std::string GetVersion() const override { return "Testbed 1.0"; }
 

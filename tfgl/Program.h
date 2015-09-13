@@ -6,6 +6,8 @@
 // CPSC-597 Fall 2015 Master's Project
 //
 
+#pragma once
+
 #include "Types.h"
 
 #include <memory>
@@ -29,6 +31,12 @@ namespace tfgl {
 
         // After adding all the Shaders, Link, throws on error.
         void Link() const;
+
+        // I know this is weird, but it is consistent vs. "use".
+        // TODO: Better terminology?
+        void Bind() const;
+        void Unbind() const;
+
 
         GLuint GetId() const { return id_; }
 

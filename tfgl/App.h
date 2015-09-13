@@ -6,6 +6,8 @@
 // CPSC-597 Fall 2015 Master's Project
 //
 
+#pragma once
+
 #include <memory>
 #include <string>
 
