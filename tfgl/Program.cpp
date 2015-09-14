@@ -76,6 +76,12 @@ void Program::SetUniform(const std::string& name, float f) const {
 }
 
 
+void Program::SetUniform(const std::string& name, float f1, float f2, float f3) const {
+    ::glUniform3f(GetUniform(name), f1, f2, f3);
+    THROW_ON_GL_ERROR();
+}
+
+
 void Program::SetUniformMat4(const std::string& name, const float* f) const {
     ::glUniformMatrix4fv(GetUniform(name), 1, GL_FALSE, f);
     THROW_ON_GL_ERROR();

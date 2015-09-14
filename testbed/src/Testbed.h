@@ -25,7 +25,7 @@ namespace tft {
     class Testbed : public tfgl::App {
     public:
         // Can't create any OpenGL objects until OpenGL has been initialized.
-        Testbed() = default;
+        Testbed();
 
         // for pimpl.
         ~Testbed();
@@ -43,6 +43,11 @@ namespace tft {
 
         virtual bool InitImpl() override;
         virtual bool DrawImpl() override;
+
+        void InitVAO();
+
+        struct Sphere;
+        std::unique_ptr<Sphere> earth_;
     };
 
 }

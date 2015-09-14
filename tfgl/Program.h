@@ -41,6 +41,8 @@ namespace tfgl {
         GLuint GetId() const { return id_; }
 
         void SetUniform(const std::string& name, float f) const;
+        void SetUniform(const std::string& name, float f1, float f2, float f3) const;
+
         void SetUniformMat4(const std::string& name, const float* f) const;
 
     private:
