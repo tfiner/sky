@@ -59,13 +59,37 @@ namespace {
         faces.emplace_back(v0, v1, v2);
     }
 
-}
+
+    std::vector<Face> SubdivideSphere( const std::vector<Face>& src ) {
+        auto subdiv = std::vector<Face>();
+        subdiv.reserve(src.size() * 4);
+
+        /*
+                v2
+
+              m2   m1
+                
+            v0  m0  v1
+
+        */
+        for(const auto & f : src) {
+            const auto m0 = (f.v0_ + f.v1_) / 2.0f;
+            const auto m1 = (f.v1_ + f.v2_) / 2.0f;
+            const auto m2 = (f.v2_ + f.v0_) / 2.0f;
+
+            subdiv.emplace_back(f.v0_,    m0,    m1);
+            subdiv.emplace_back(   m0, f.v1_,    m1);
+            subdiv.emplace_back(   m2,    m1, f.v2_);
+            subdiv.emplace_back(   m0,    m1,    m2);
+        }
+
+        return subdiv;
+    }
 
 
-struct Testbed::Sphere {
     // Generates an Icosphere, see:
     // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
-    Sphere() {
+    std::vector<Face> GenIcoSphere() {
         auto v = std::vector<glm::vec3>();
         v.reserve(12 * 3);
 
@@ -86,38 +110,50 @@ struct Testbed::Sphere {
         AddVertex(v,    -t,  0.0f, -1.0f);
         AddVertex(v,    -t,  0.0f,  1.0f);
 
-        // Instead of using indexing, like the original 
-        // author, I'm just going to make a new vector
-        // of faces I'm going to fill.
-        faces_.reserve(20);
+        // It would be more efficient to use indices from here
+        // on, but I'm more interested in getting a sphere
+        // rendered more than I am concerned with saving a few
+        // K bytes.
+        auto faces = std::vector<Face>();
+        faces.reserve(20);
 
         // 5 faces around point 0
-        AddFace(faces_, v[ 0], v[11], v[ 5]);
-        AddFace(faces_, v[ 0], v[ 5], v[ 1]);
-        AddFace(faces_, v[ 0], v[ 1], v[ 7]);
-        AddFace(faces_, v[ 0], v[ 7], v[10]);
-        AddFace(faces_, v[ 0], v[10], v[11]);
+        AddFace(faces, v[ 0], v[11], v[ 5]);
+        AddFace(faces, v[ 0], v[ 5], v[ 1]);
+        AddFace(faces, v[ 0], v[ 1], v[ 7]);
+        AddFace(faces, v[ 0], v[ 7], v[10]);
+        AddFace(faces, v[ 0], v[10], v[11]);
 
         // 5 adjacent faces
-        AddFace(faces_, v[ 1], v[ 5], v[ 9]);
-        AddFace(faces_, v[ 5], v[11], v[ 4]);
-        AddFace(faces_, v[11], v[10], v[ 2]);
-        AddFace(faces_, v[10], v[ 7], v[ 6]);
-        AddFace(faces_, v[ 7], v[ 1], v[ 8]);
+        AddFace(faces, v[ 1], v[ 5], v[ 9]);
+        AddFace(faces, v[ 5], v[11], v[ 4]);
+        AddFace(faces, v[11], v[10], v[ 2]);
+        AddFace(faces, v[10], v[ 7], v[ 6]);
+        AddFace(faces, v[ 7], v[ 1], v[ 8]);
 
         // 5 faces around point 3
-        AddFace(faces_, v[ 3], v[ 9], v[ 4]);
-        AddFace(faces_, v[ 3], v[ 4], v[ 2]);
-        AddFace(faces_, v[ 3], v[ 2], v[ 6]);
-        AddFace(faces_, v[ 3], v[ 6], v[ 8]);
-        AddFace(faces_, v[ 3], v[ 8], v[ 9]);
+        AddFace(faces, v[ 3], v[ 9], v[ 4]);
+        AddFace(faces, v[ 3], v[ 4], v[ 2]);
+        AddFace(faces, v[ 3], v[ 2], v[ 6]);
+        AddFace(faces, v[ 3], v[ 6], v[ 8]);
+        AddFace(faces, v[ 3], v[ 8], v[ 9]);
 
         // 5 adjacent faces
-        AddFace(faces_, v[ 4], v[ 9], v[ 5]);
-        AddFace(faces_, v[ 2], v[ 4], v[11]);
-        AddFace(faces_, v[ 6], v[ 2], v[10]);
-        AddFace(faces_, v[ 8], v[ 6], v[ 7]);
-        AddFace(faces_, v[ 9], v[ 8], v[ 1]);
+        AddFace(faces, v[ 4], v[ 9], v[ 5]);
+        AddFace(faces, v[ 2], v[ 4], v[11]);
+        AddFace(faces, v[ 6], v[ 2], v[10]);
+        AddFace(faces, v[ 8], v[ 6], v[ 7]);
+        AddFace(faces, v[ 9], v[ 8], v[ 1]);  
+        return faces;      
+    }
+
+
+} // namespace {
+
+
+struct Testbed::Sphere {
+    Sphere() : faces_(GenIcoSphere()) {
+        faces_ = SubdivideSphere(faces_);
     }
 
     std::vector<Face> faces_;
@@ -185,7 +221,8 @@ bool Testbed::DrawImpl() {
 
     ScopedBinder<VertexArrayObject> vao(*vao_);
 
-    ::glDrawArrays(GL_TRIANGLES, 0, earth_->faces_.size() * 3);
+    // ::glDrawArrays(GL_TRIANGLES, 0, earth_->faces_.size() * 3);
+    ::glDrawArrays(GL_LINES, 0, earth_->faces_.size() * 3);
 
     return true;
 }
