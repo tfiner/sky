@@ -44,18 +44,19 @@ namespace {
         v.emplace_back(v0, v1, v2);
     }
 
-    inline void AddFace(std::vector<float>& faces, const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2 ) {
-        faces.emplace_back(v0[0]);
-        faces.emplace_back(v0[1]);
-        faces.emplace_back(v0[2]);
+    struct Face {
+        Face(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2) : v0_(v0), v1_(v1), v2_(v2) {}
 
-        faces.emplace_back(v1[0]);
-        faces.emplace_back(v1[1]);
-        faces.emplace_back(v1[2]);
+        glm::vec3 v0_;
+        glm::vec3 v1_;
+        glm::vec3 v2_;
+    };
 
-        faces.emplace_back(v2[0]);
-        faces.emplace_back(v2[1]);
-        faces.emplace_back(v2[2]);
+    static_assert(sizeof(Face) == sizeof(GLfloat) * 9, 
+        "Platform doesn't support this directly.");
+
+    inline void AddFace(std::vector<Face>& faces, const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2 ) {
+        faces.emplace_back(v0, v1, v2);
     }
 
 }
@@ -88,38 +89,38 @@ struct Testbed::Sphere {
         // Instead of using indexing, like the original 
         // author, I'm just going to make a new vector
         // of faces I'm going to fill.
-        verts_.reserve(60);
+        faces_.reserve(20);
 
         // 5 faces around point 0
-        AddFace(verts_, v[ 0], v[11], v[ 5]);
-        AddFace(verts_, v[ 0], v[ 5], v[ 1]);
-        AddFace(verts_, v[ 0], v[ 1], v[ 7]);
-        AddFace(verts_, v[ 0], v[ 7], v[10]);
-        AddFace(verts_, v[ 0], v[10], v[11]);
+        AddFace(faces_, v[ 0], v[11], v[ 5]);
+        AddFace(faces_, v[ 0], v[ 5], v[ 1]);
+        AddFace(faces_, v[ 0], v[ 1], v[ 7]);
+        AddFace(faces_, v[ 0], v[ 7], v[10]);
+        AddFace(faces_, v[ 0], v[10], v[11]);
 
         // 5 adjacent faces
-        AddFace(verts_, v[ 1], v[ 5], v[ 9]);
-        AddFace(verts_, v[ 5], v[11], v[ 4]);
-        AddFace(verts_, v[11], v[10], v[ 2]);
-        AddFace(verts_, v[10], v[ 7], v[ 6]);
-        AddFace(verts_, v[ 7], v[ 1], v[ 8]);
+        AddFace(faces_, v[ 1], v[ 5], v[ 9]);
+        AddFace(faces_, v[ 5], v[11], v[ 4]);
+        AddFace(faces_, v[11], v[10], v[ 2]);
+        AddFace(faces_, v[10], v[ 7], v[ 6]);
+        AddFace(faces_, v[ 7], v[ 1], v[ 8]);
 
         // 5 faces around point 3
-        AddFace(verts_, v[ 3], v[ 9], v[ 4]);
-        AddFace(verts_, v[ 3], v[ 4], v[ 2]);
-        AddFace(verts_, v[ 3], v[ 2], v[ 6]);
-        AddFace(verts_, v[ 3], v[ 6], v[ 8]);
-        AddFace(verts_, v[ 3], v[ 8], v[ 9]);
+        AddFace(faces_, v[ 3], v[ 9], v[ 4]);
+        AddFace(faces_, v[ 3], v[ 4], v[ 2]);
+        AddFace(faces_, v[ 3], v[ 2], v[ 6]);
+        AddFace(faces_, v[ 3], v[ 6], v[ 8]);
+        AddFace(faces_, v[ 3], v[ 8], v[ 9]);
 
         // 5 adjacent faces
-        AddFace(verts_, v[ 4], v[ 9], v[ 5]);
-        AddFace(verts_, v[ 2], v[ 4], v[11]);
-        AddFace(verts_, v[ 6], v[ 2], v[10]);
-        AddFace(verts_, v[ 8], v[ 6], v[ 7]);
-        AddFace(verts_, v[ 9], v[ 8], v[ 1]);
+        AddFace(faces_, v[ 4], v[ 9], v[ 5]);
+        AddFace(faces_, v[ 2], v[ 4], v[11]);
+        AddFace(faces_, v[ 6], v[ 2], v[10]);
+        AddFace(faces_, v[ 8], v[ 6], v[ 7]);
+        AddFace(faces_, v[ 9], v[ 8], v[ 1]);
     }
 
-    std::vector<float> verts_;
+    std::vector<Face> faces_;
 };
 
 
@@ -139,8 +140,8 @@ void Testbed::InitVAO() {
     buf_.reset(new Buffer(GL_ARRAY_BUFFER));
     ScopedBinder<Buffer> bindBuf(*buf_);
 
-    buf_->SetStaticData(earth_->verts_.data(), 
-        earth_->verts_.size() * sizeof(float));
+    buf_->SetStaticData(earth_->faces_.data(), 
+        earth_->faces_.size() * sizeof(Face));
 
     ::glEnableVertexAttribArray(0);
     THROW_ON_GL_ERROR();
@@ -184,7 +185,7 @@ bool Testbed::DrawImpl() {
 
     ScopedBinder<VertexArrayObject> vao(*vao_);
 
-    ::glDrawArrays(GL_TRIANGLES, 0, earth_->verts_.size()/3);
+    ::glDrawArrays(GL_TRIANGLES, 0, earth_->faces_.size() * 3);
 
     return true;
 }
