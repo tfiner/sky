@@ -82,6 +82,7 @@ namespace {
             subdiv.emplace_back(   m2,    m1, f.v2_);
             subdiv.emplace_back(   m0,    m1,    m2);
         }
+        
 
         return subdiv;
     }
