@@ -66,7 +66,7 @@
       <PrecompiledHeaderFile>Master.h</PrecompiledHeaderFile>
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(SolutionDir)jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glfw\glfw-3.1.1\include;$(SolutionDir)jpeg;$(SolutionDir)glew-1.13.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -88,8 +88,9 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Release\AtmosphereTest.exe</OutputFile>
-      <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;libjpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;opengl32.lib;glu32.lib;libjpeg.lib;glfw3dll.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);$(SolutionDir)glew-1.13.0\lib\$(Configuration)\$(Platform);$(SolutionDir)glfw\glfw-3.1.1\Build\src\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -110,7 +111,7 @@
       <ObjectFileName>.\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(SolutionDir)jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glfw\glfw-3.1.1\include;$(SolutionDir)jpeg;$(SolutionDir)glew-1.13.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -132,22 +133,25 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Debug\AtmosphereTest.exe</OutputFile>
-      <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;libjpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;opengl32.lib;glu32.lib;libjpeg.lib;glfw3dll.lib;glew32d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);$(SolutionDir)glew-1.13.0\lib\$(Configuration)\$(Platform);$(SolutionDir)glfw\glfw-3.1.1\Build\src\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="AtmosphereTest.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\tfgl\App.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\tfgl\Exception.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="GameEngine.cpp" />
-    <ClCompile Include="glprocs.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="GLUtil.cpp" />
     <ClCompile Include="Master.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -162,6 +166,8 @@
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\tfgl\App.h" />
+    <ClInclude Include="..\tfgl\Exception.h" />
     <ClInclude Include="DateTime.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameApp.h" />

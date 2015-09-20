@@ -11,13 +11,8 @@
 #include <memory>
 #include <string>
 
-namespace boost{
-    namespace program_options {
-        class variables_map;
-    }
-}
 
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace tfgl {
 
@@ -26,13 +21,10 @@ namespace tfgl {
     // starts up a window, etc.  Inherit and override.
     class App {
     public:
-        App();
-
+       App() = default;
         App(const App&) = delete;
         App& operator=(const App&) = delete;
-
-        // Needed for unique_ptr pimpl.
-        ~App();
+        ~App() = default;
 
         // This is the top level call that drives the application.
         // This function calls InitImpl and loops on DrawImpl:
@@ -40,17 +32,12 @@ namespace tfgl {
         //      while(DrawImpl()) {}
         void Run(int argc, char** argv);
 
-        const boost::program_options::variables_map& GetSettings() const {
-            return *settings_;
-        }
 
     private:
         int screenWidth_    = 800;
         int screenHeight_   = 600;
         GLFWwindow* window_ = nullptr;
         
-        std::unique_ptr<boost::program_options::variables_map> settings_;
-
         // Top level initialize that ends up calling InitImpl.
         bool Init(int argc, char** argv);
         void InitGL();
@@ -62,6 +49,8 @@ namespace tfgl {
 
         virtual bool InitImpl() { return true; }
         virtual bool DrawImpl() { return true; } 
+
+        virtual void OnKeyImpl() {}
     };
 
 

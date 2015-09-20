@@ -24,7 +24,7 @@ using namespace tfgl;
 namespace {
 
 
-    std::string GlErrorToString(GLenum errNum) {
+    std::string GlErrorToString(tfgl::GLenum errNum) {
         std::string msg;
 
         switch(errNum) {
@@ -68,7 +68,7 @@ namespace {
     }
 
 
-    std::string GetGlErrors(std::string file, int line, GLenum error) {
+    std::string GetGlErrors(std::string file, int line, tfgl::GLenum error) {
         std::ostringstream os;
 
         os  << file.c_str() << "(" << line << "):" << " OpenGL error: ";
@@ -135,7 +135,7 @@ namespace {
 } // namespace
 
 
-GlShaderException::GlShaderException(GLenum type, GLuint shader, std::string filename) {
+GlShaderException::GlShaderException(tfgl::GLenum type, tfgl::GLuint shader, std::string filename) {
     GLint infoLogLength;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
@@ -166,7 +166,7 @@ GlShaderException::GlShaderException(GLenum type, GLuint shader, std::string fil
 }
 
 
-GlProgramException::GlProgramException(GLuint program) {
+GlProgramException::GlProgramException(tfgl::GLuint program) {
     GLint infoLogLength;
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
 
@@ -183,7 +183,7 @@ GlProgramException::GlProgramException(GLuint program) {
 }
 
 
-GlException::GlException(std::string file, int line, GLenum error) : file_(file), line_(line) {
+GlException::GlException(std::string file, int line, tfgl::GLenum error) : file_(file), line_(line) {
     what_ = GetGlErrors(file, line, error);
 }
 

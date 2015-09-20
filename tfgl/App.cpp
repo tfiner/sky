@@ -12,13 +12,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <boost/program_options.hpp>
-
 #include <iostream>
+#include <sstream>
 
 
 using namespace tfgl;
-namespace bpo = boost::program_options;
 
 
 namespace {
@@ -39,13 +37,6 @@ namespace {
 }
 
 
-App::App() : 
-    settings_(new bpo::variables_map) {}
-
-// Needed for pimpl.
-App::~App() {}
-
-
 void App::Run(int argc, char** argv) {
     if (!Init(argc, argv))
         return;
@@ -60,38 +51,6 @@ void App::Run(int argc, char** argv) {
 }
 
 bool App::Init(int argc, char** argv) {
-    bpo::options_description desc("Options");
-
-    desc.add_options()
-        ("help,h",                                  "You are reading it now.")
-        ("version,v",                               "Version of this.")
-        ("width,W",     bpo::value<int>(),          "screen width")
-        ("height,H",    bpo::value<int>(),          "screen height")
-    ;
-
-    bpo::store(bpo::parse_command_line(argc, argv, desc), *settings_);
-    bpo::notify(*settings_);
-
-    if (settings_->count("help")) {
-        std::cout << desc << "\n";
-        return false;
-    }
-
-    if (settings_->count("version")) {
-        std::cout << GetVersion() << "\n";
-        return false;
-    }
-
-    if (settings_->count("width")) {
-        screenWidth_ = (*settings_)["width"].as<int>();
-        std::cout << "Width: " << screenWidth_ << ".\n";
-    }
-
-    if (settings_->count("height")) {
-        screenHeight_ = (*settings_)["height"].as<int>();
-        std::cout << "Height: " << screenHeight_ << ".\n";
-    }
-
     InitGL();
     return InitImpl();
 }
