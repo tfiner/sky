@@ -336,9 +336,11 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glColor3d(1.0, 1.0, 1.0);
 	m_fFont.SetPosition(0, 0);
 	m_fFont.Print(szFrameCount);
+
 	m_fFont.SetPosition(0, 15);
 	sprintf(szBuffer, "Samples (+/-): %d", m_nSamples);
 	m_fFont.Print(szBuffer);
+
 	m_fFont.SetPosition(0, 30);
 	sprintf(szBuffer, "Kr (1/Sh+1): %-4.4f", m_Kr);
 	m_fFont.Print(szBuffer);
@@ -363,6 +365,15 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	m_fFont.SetPosition(0, 135);
 	sprintf(szBuffer, "Exposure (8/Sh+8): %-2.2f", m_fExposure);
 	m_fFont.Print(szBuffer);
+
+
+   m_fFont.SetPosition(0, 150);
+   sprintf(szBuffer, "Camera : %3.2f  %3.2f  %3.2f", 
+      m_3DCamera.GetPosition().x, 
+      m_3DCamera.GetPosition().y, 
+      m_3DCamera.GetPosition().z);
+   m_fFont.Print(szBuffer);
+
 	m_fFont.End();
 	glFlush();
 }
@@ -519,7 +530,7 @@ void CGameEngine::HandleInput(float fSeconds)
 		float fMagnitude = vPos.Magnitude();
 		if(fMagnitude < m_fInnerRadius)
 		{
-			vPos *= (m_fInnerRadius * (1 + DELTA)) / fMagnitude;
+ 			vPos *= (m_fInnerRadius * (1 + DELTA)) / fMagnitude;
 			m_3DCamera.SetPosition(CDoubleVector(vPos.x, vPos.y, vPos.z));
 			m_3DCamera.SetVelocity(-m_3DCamera.GetVelocity());
 		}

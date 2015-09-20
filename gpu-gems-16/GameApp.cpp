@@ -47,12 +47,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLin
 	return app.ExitInstance();
 }
 
-bool CGameApp::InitInstance()
-{
-	// Register the window class and create the window
-	WNDCLASS wc = {CS_OWNDC | CS_VREDRAW | CS_HREDRAW, (WNDPROC)WindowProc, 0, 0, m_hInstance, LoadIcon(m_hInstance, MAKEINTRESOURCE(IDR_APPLICATION)), LoadCursor((HINSTANCE)NULL, IDC_ARROW), (HBRUSH)GetStockObject(BLACK_BRUSH), MAKEINTRESOURCE(IDR_APPLICATION), m_szAppName};
-	if(!RegisterClass(&wc))
-	{
+bool CGameApp::InitInstance() {
+	const WNDCLASS wc = {
+      CS_OWNDC | CS_VREDRAW | CS_HREDRAW, 
+      (WNDPROC)WindowProc, 
+      0, 0, 
+      m_hInstance, 
+      LoadIcon(m_hInstance, MAKEINTRESOURCE(IDR_APPLICATION)), 
+      LoadCursor((HINSTANCE)NULL, IDC_ARROW), 
+      (HBRUSH)GetStockObject(BLACK_BRUSH), 
+      MAKEINTRESOURCE(IDR_APPLICATION), 
+      m_szAppName
+   };
+
+	if(!RegisterClass(&wc))	{
 		MessageBox("Unable to register window class, aborting.");
 		return false;
 	}
