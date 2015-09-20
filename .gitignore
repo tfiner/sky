@@ -1,1 +1,8 @@
 testbed/Debug
+gpu-gems-16/Debug/
+gpu-gems-16/jpeg/Debug/
+*.sdf
+gpu-gems-16/.vs/AtmosphereTest/v14/
+gpu-gems-16/UpgradeLog.htm
+gpu-gems-16/ipch/
+gpu-gems-16/jpeg/Backup/

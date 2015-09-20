@@ -291,7 +291,11 @@ public:
 	CQuaternion Conjugate() const			{ return CQuaternion(-x, -y, -z, w); }
 	CQuaternion Inverse() const				{ return Conjugate() / MagnitudeSquared(); }
 	CQuaternion UnitInverse() const			{ return Conjugate(); }
-	CVector RotateVector(const CVector &v) const	{ return (*this * CQuaternion(v) * UnitInverse()); }
+
+	CVector RotateVector(const CVector &v) const	{ 
+      CVector rv(CQuaternion(*this) * CQuaternion(v) * UnitInverse());
+      return rv;
+   }
 
 	void SetAxisAngle(const CVector &vAxis, const float fAngle)
 	{

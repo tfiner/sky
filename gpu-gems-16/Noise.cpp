@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Master.h"
 #include "Noise.h"
 
+#include <algorithm>
+
 void CNoise::Init(int nDimensions, unsigned int nSeed)
 {
 	m_nDimensions = MIN(nDimensions, MAX_DIMENSIONS);
@@ -181,21 +183,23 @@ float CFractal::fBm(float *f, float fOctaves)
 	// Initialize locals
 	float fValue = 0;
 	float fTemp[MAX_DIMENSIONS];
-	for(int i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=0; i<fOctaves; i++)
+	for(auto i=0; i<fOctaves; i++)
 	{
 		fValue += Noise(fTemp) * m_fExponent[i];
 		for(int j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 	}
 
+   const auto last = (std::min)(static_cast<int>(fOctaves), MAX_OCTAVES);
+
 	// Take care of remainder in fOctaves
 	fOctaves -= (int)fOctaves;
 	if(fOctaves > DELTA)
-		fValue += fOctaves * Noise(fTemp) * m_fExponent[i];
+		fValue += fOctaves * Noise(fTemp) * m_fExponent[last];
 	return CLAMP(-0.99999f, 0.99999f, fValue);
 }
 
@@ -203,19 +207,18 @@ float CFractal::fBmTest(float *f, int nStart, int nEnd, float fInitial)
 {
 	float fTemp[MAX_DIMENSIONS];
 	float fValue = 0, fExp = 2;
-	int i;
 
 	// Initialize locals
-	for(i=0; i<nStart; i++)
+	for(auto i=0; i<nStart; i++)
 		fExp *= m_fLacunarity;
-	for(i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i] * fExp;
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=nStart; i<nEnd; i++)
+   for(auto i = nStart; i < nEnd; i++)
 	{
 		fValue += Noise(fTemp) * m_fExponent[i];
-		for(int j=0; j<m_nDimensions; j++)
+		for(auto j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 	}
 
@@ -232,24 +235,25 @@ float CFractal::fBmTest(float *f, float fOctaves)
 {
 	float fTemp[MAX_DIMENSIONS];
 	float fValue = 0;
-	int i;
 
 	// Initialize locals
-	for(i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i] * 2;
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=0; i<fOctaves; i++)
+	for(auto i=0; i<fOctaves; i++)
 	{
 		fValue += Noise(fTemp) * m_fExponent[i];
-		for(int j=0; j<m_nDimensions; j++)
+		for(auto j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 	}
+
+   const auto last = (std::min)(static_cast<int>(fOctaves), MAX_OCTAVES);
 
 	// Take care of remainder in fOctaves
 	fOctaves -= (int)fOctaves;
 	if(fOctaves > DELTA)
-		fValue += fOctaves * Noise(fTemp) * m_fExponent[i];
+		fValue += fOctaves * Noise(fTemp) * m_fExponent[last];
 
 	if(fValue <= 0.0f)
 		fValue = (float)-pow(-fValue, 0.7f);
@@ -263,11 +267,11 @@ float CFractal::Turbulence(float *f, float fOctaves)
 	// Initialize locals
 	float fValue = 0;
 	float fTemp[MAX_DIMENSIONS];
-	for(int i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=0; i<fOctaves; i++)
+	for(auto i=0; i<fOctaves; i++)
 	{
 		fValue += Abs(Noise(fTemp)) * m_fExponent[i];
 		for(int j=0; j<m_nDimensions; j++)
@@ -275,9 +279,10 @@ float CFractal::Turbulence(float *f, float fOctaves)
 	}
 
 	// Take care of remainder in fOctaves
+   const auto last = (std::min)(static_cast<int>(fOctaves), MAX_OCTAVES);
 	fOctaves -= (int)fOctaves;
 	if(fOctaves > DELTA)
-		fValue += fOctaves * Abs(Noise(fTemp) * m_fExponent[i]);
+		fValue += fOctaves * Abs(Noise(fTemp) * m_fExponent[last]);
 	return CLAMP(-0.99999f, 0.99999f, fValue);
 }
 
@@ -286,21 +291,22 @@ float CFractal::Multifractal(float *f, float fOctaves, float fOffset)
 	// Initialize locals
 	float fValue = 1;
 	float fTemp[MAX_DIMENSIONS];
-	for(int i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=0; i<fOctaves; i++)
+	for(auto i=0; i<fOctaves; i++)
 	{
 		fValue *= Noise(fTemp) * m_fExponent[i] + fOffset;
-		for(int j=0; j<m_nDimensions; j++)
+		for(auto j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 	}
 
 	// Take care of remainder in fOctaves (shouldn't that be a multiply?)
+   const auto last = (std::min)(static_cast<int>(fOctaves), MAX_OCTAVES);
 	fOctaves -= (int)fOctaves;
 	if(fOctaves > DELTA)
-		fValue *= fOctaves * (Noise(fTemp) * m_fExponent[i] + fOffset);
+		fValue *= fOctaves * (Noise(fTemp) * m_fExponent[last] + fOffset);
 	return CLAMP(-0.99999f, 0.99999f, fValue);
 }
 
@@ -309,21 +315,22 @@ float CFractal::Heterofractal(float *f, float fOctaves, float fOffset)
 	// Initialize locals
 	float fValue = Noise(f) + fOffset;
 	float fTemp[MAX_DIMENSIONS];
-	for(int i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i] * m_fLacunarity;
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=1; i<fOctaves; i++)
+	for(auto i=1; i<fOctaves; i++)
 	{
 		fValue += (Noise(fTemp) + fOffset) * m_fExponent[i] * fValue;
-		for(int j=0; j<m_nDimensions; j++)
+		for(auto j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 	}
 
 	// Take care of remainder in fOctaves
+   const auto last = (std::min)(static_cast<int>(fOctaves), MAX_OCTAVES);
 	fOctaves -= (int)fOctaves;
 	if(fOctaves > DELTA)
-		fValue += fOctaves * (Noise(fTemp) + fOffset) * m_fExponent[i] * fValue;
+		fValue += fOctaves * (Noise(fTemp) + fOffset) * m_fExponent[last] * fValue;
 	return CLAMP(-0.99999f, 0.99999f, fValue);
 }
 
@@ -333,28 +340,29 @@ float CFractal::HybridMultifractal(float *f, float fOctaves, float fOffset, floa
 	float fValue = (Noise(f) + fOffset) * m_fExponent[0];
 	float fWeight = fValue;
 	float fTemp[MAX_DIMENSIONS];
-	for(int i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i] * m_fLacunarity;
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=1; i<fOctaves; i++)
+	for(auto i=1; i<fOctaves; i++)
 	{
 		if(fWeight > 1)
 			fWeight = 1;
 		float fSignal = (Noise(fTemp) + fOffset) * m_fExponent[i];
 		fValue += fWeight * fSignal;
 		fWeight *= fGain * fSignal;
-		for(int j=0; j<m_nDimensions; j++)
+		for(auto j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 	}
 
 	// Take care of remainder in fOctaves
+   const auto last = (std::min)(static_cast<int>(fOctaves), MAX_OCTAVES);
 	fOctaves -= (int)fOctaves;
 	if(fOctaves > DELTA)
 	{
 		if(fWeight > 1)
 			fWeight = 1;
-		float fSignal = (Noise(fTemp) + fOffset) * m_fExponent[i];
+		float fSignal = (Noise(fTemp) + fOffset) * m_fExponent[last];
 		fValue += fOctaves * fWeight * fSignal;
 	}
 	return CLAMP(-0.99999f, 0.99999f, fValue);
@@ -367,13 +375,13 @@ float CFractal::RidgedMultifractal(float *f, float fOctaves, float fOffset, floa
 	fSignal *= fSignal;
 	float fValue = fSignal;
 	float fTemp[MAX_DIMENSIONS];
-	for(int i=0; i<m_nDimensions; i++)
+	for(auto i=0; i<m_nDimensions; i++)
 		fTemp[i] = f[i];
 
 	// Inner loop of spectral construction, where the fractal is built
-	for(i=1; i<fOctaves; i++)
+	for(auto i=1; i<fOctaves; i++)
 	{
-		for(int j=0; j<m_nDimensions; j++)
+		for(auto j=0; j<m_nDimensions; j++)
 			fTemp[j] *= m_fLacunarity;
 		float fWeight = Clamp(0, 1, fSignal * fGain);
 		fSignal = fOffset - Abs(Noise(fTemp));

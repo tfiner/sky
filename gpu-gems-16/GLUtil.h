@@ -67,7 +67,6 @@ inline CGLUtil *GLUtil()			{ return CGLUtil::m_pMain; }
 #ifndef __ShaderObject_h__
 #define __ShaderObject_h__
 
-#define USE_CG
 #ifdef USE_CG
 #include <Cg\cg.h>
 #include <Cg\cgGL.h>
@@ -302,13 +301,13 @@ public:
 	bool Load(const char *pszPath, const char *pszPath2=NULL)
 	{
 		char szPath[_MAX_PATH], *psz;
-		int nBytes, bSuccess;
+		int bSuccess;
 
 		sprintf(szPath, "%s.vert", pszPath);
 		LogInfo("Compiling GLSL shader %s", szPath);
 		std::ifstream ifVertexShader(szPath, std::ios::binary);
 		ifVertexShader.seekg(0, std::ios::end);
-		nBytes = ifVertexShader.tellg();
+		auto nBytes = static_cast<int>(ifVertexShader.tellg());
 		ifVertexShader.seekg(0, std::ios::beg);
 		psz = new char[nBytes+1];
 		ifVertexShader.read(psz, nBytes);
@@ -330,7 +329,7 @@ public:
 		LogInfo("Compiling GLSL shader %s", szPath);
 		std::ifstream ifFragmentShader(szPath, std::ios::binary);
 		ifFragmentShader.seekg(0, std::ios::end);
-		nBytes = ifFragmentShader.tellg();
+		nBytes = static_cast<int>(ifFragmentShader.tellg());
 		ifFragmentShader.seekg(0, std::ios::beg);
 		psz = new char[nBytes];
 		ifFragmentShader.read(psz, nBytes);

@@ -121,10 +121,10 @@ inline float Mod(float a, float b)
 inline void Normalize(float *f, int n)
 {
 	float fMagnitude = 0;
-	for(int i=0; i<n; i++)
+	for(auto  i=0; i<n; i++)
 		fMagnitude += f[i]*f[i];
 	fMagnitude = 1 / sqrtf(fMagnitude);
-	for(i=0; i<n; i++)
+	for(auto i=0; i<n; i++)
 		f[i] *= fMagnitude;
 }
 
@@ -181,10 +181,10 @@ protected:
 		int n[4] = {ix, iy, iz, iw};
 		float f[4] = {fx, fy, fz, fw};
 		int nIndex = 0;
-		for(int i=0; i<m_nDimensions; i++)
+		for(auto i=0; i<m_nDimensions; i++)
 			nIndex = m_nMap[(nIndex + n[i]) & 0xFF];
 		float fValue = 0;
-		for(i=0; i<m_nDimensions; i++)
+		for(auto i=0; i<m_nDimensions; i++)
 			fValue += m_nBuffer[nIndex][i] * f[i];
 		return fValue;
 	}

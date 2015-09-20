@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2d0f28ec-9e20-41a6-9c10-3b105343f958}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{02099f75-9203-4f70-9204-af4dca1b13b8}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{02dc4e5d-53ae-4f8b-9a67-1ebe8f695095}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="GLSL Shader Files">
+      <UniqueIdentifier>{56681414-0e3a-45bc-882e-516ae6b72de9}</UniqueIdentifier>
+      <Extensions>vert;frag</Extensions>
+    </Filter>
+    <Filter Include="Cg Shader Files">
+      <UniqueIdentifier>{db9f97a4-e59d-4332-8cda-8d852afb7a02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AtmosphereTest.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glprocs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Master.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Noise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DateTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glprocs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ListTemplates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Master.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Noise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WndClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="GroundFromAtmosphere.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromAtmosphere.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromSpace.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromSpace.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDR.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRRect.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRSquare.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromAtmosphere.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromAtmosphere.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromSpace.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromSpace.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromAtmosphere.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromAtmosphere.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromSpace.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromSpace.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Common.cg">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromAtmosphereCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromAtmosphereCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromSpaceCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroundFromSpaceCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRRectCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRSquareCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromAtmosphereCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromAtmosphereCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromSpaceCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyFromSpaceCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromAtmosphereCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromAtmosphereCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromSpaceCg.frag">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpaceFromSpaceCg.vert">
+      <Filter>Cg Shader Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

@@ -15713,7 +15713,7 @@ static const WINAPI InitGetExtensionsStringARB (HDC hdc)
 
 	wglGetExtensionsStringARB = extproc;
 
-	return wglGetExtensionsStringARB(hdc);
+	return (int)wglGetExtensionsStringARB(hdc);
 }
 
 static BOOL WINAPI InitGetPixelFormatAttribivARB (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues)
@@ -16001,7 +16001,7 @@ static const WINAPI InitGetExtensionsStringEXT (void)
 
 	wglGetExtensionsStringEXT = extproc;
 
-	return wglGetExtensionsStringEXT();
+	return (int)wglGetExtensionsStringEXT();
 }
 
 static BOOL WINAPI InitMakeContextCurrentEXT (HDC hDrawDC, HDC hReadDC, HGLRC hglrc)

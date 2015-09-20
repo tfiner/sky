@@ -47,6 +47,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // Windows headers
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
+#define NO_MINMAX
 #include <windows.h>
 #include <mmsystem.h>
 
