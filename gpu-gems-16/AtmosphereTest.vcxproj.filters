@@ -20,6 +20,9 @@
     <Filter Include="Cg Shader Files">
       <UniqueIdentifier>{db9f97a4-e59d-4332-8cda-8d852afb7a02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tfgl">
+      <UniqueIdentifier>{08e8c9b5-5a02-4a85-a95f-daae3ac9ee33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AtmosphereTest.rc">
@@ -27,9 +30,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,11 +54,20 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\tfgl\App.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="tfgl\App.cpp">
+      <Filter>tfgl</Filter>
     </ClCompile>
-    <ClCompile Include="..\tfgl\Exception.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Testbed.cpp">
+      <Filter>tfgl</Filter>
+    </ClCompile>
+    <ClCompile Include="tfgl\Program.cpp">
+      <Filter>tfgl</Filter>
+    </ClCompile>
+    <ClCompile Include="tfgl\Shader.cpp">
+      <Filter>tfgl</Filter>
+    </ClCompile>
+    <ClCompile Include="tfgl\Exception.cpp">
+      <Filter>tfgl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,13 +77,7 @@
     <ClInclude Include="Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="glprocs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GLUtil.h">
@@ -110,11 +113,23 @@
     <ClInclude Include="WndClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\tfgl\App.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="tfgl\App.h">
+      <Filter>tfgl</Filter>
     </ClInclude>
-    <ClInclude Include="..\tfgl\Exception.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Testbed.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="tfgl\Exception.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="tfgl\Program.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="tfgl\Shader.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="tfgl\Types.h">
+      <Filter>tfgl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

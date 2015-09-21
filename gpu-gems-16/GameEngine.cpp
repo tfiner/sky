@@ -29,7 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Master.h"
-#include "GameApp.h"
+
 #include "GameEngine.h"
 #include "GLUtil.h"
 
@@ -40,7 +40,6 @@ CGameEngine::CGameEngine()
 
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
-	m_fFont.Init(GetGameApp()->GetHDC());
 	m_nPolygonMode = GL_FILL;
 
 	m_pBuffer.Init(1024, 1024, 0);
@@ -303,7 +302,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	//tTest.InitCopy(0, 0, 1024, 1024);
 
 	GLUtil()->MakeCurrent();
-	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
+	glViewport(0, 0, 800, 600);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glDisable(GL_LIGHTING);
@@ -330,51 +329,6 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 
-	// Draw info in the top-left corner
-	char szBuffer[256];
-	m_fFont.Begin();
-	glColor3d(1.0, 1.0, 1.0);
-	m_fFont.SetPosition(0, 0);
-	m_fFont.Print(szFrameCount);
-
-	m_fFont.SetPosition(0, 15);
-	sprintf(szBuffer, "Samples (+/-): %d", m_nSamples);
-	m_fFont.Print(szBuffer);
-
-	m_fFont.SetPosition(0, 30);
-	sprintf(szBuffer, "Kr (1/Sh+1): %-4.4f", m_Kr);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 45);
-	sprintf(szBuffer, "Km (2/Sh+2): %-4.4f", m_Km);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 60);
-	sprintf(szBuffer, "g (3/Sh+3): %-3.3f", m_g);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 75);
-	sprintf(szBuffer, "ESun (4/Sh+4): %-1.1f", m_ESun);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 90);
-	sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_fWavelength[0]);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 105);
-	sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_fWavelength[1]);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 120);
-	sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_fWavelength[2]);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 135);
-	sprintf(szBuffer, "Exposure (8/Sh+8): %-2.2f", m_fExposure);
-	m_fFont.Print(szBuffer);
-
-
-   m_fFont.SetPosition(0, 150);
-   sprintf(szBuffer, "Camera : %3.2f  %3.2f  %3.2f", 
-      m_3DCamera.GetPosition().x, 
-      m_3DCamera.GetPosition().y, 
-      m_3DCamera.GetPosition().z);
-   m_fFont.Print(szBuffer);
-
-	m_fFont.End();
 	glFlush();
 }
 

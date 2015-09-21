@@ -86,7 +86,7 @@ public:
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glLoadIdentity();
-		glOrtho(0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight(), 0, -1, 1);
+		glOrtho(0, 800, 600, 0, -1, 1);
 	}
 	void Print(const char *pszMessage)
 	{

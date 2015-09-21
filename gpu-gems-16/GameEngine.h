@@ -33,7 +33,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "GLUtil.h"
 #include "PBuffer.h"
-#include "GameApp.h"
 #include "Font.h"
 
 
@@ -43,7 +42,6 @@ class CGameEngine
 protected:
 	float m_fFPS;
 	int m_nTime;
-	CFont m_fFont;
 
 	C3DObject m_3DCamera;
 	CVector m_vLight;
