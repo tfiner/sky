@@ -1,0 +1,102 @@
+glCreateProgramObjectARB() [Context 2 - program 1] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 2: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 3: source code is not available] 
+glCreateProgramObjectARB() [Context 2 - program 4] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 5: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 6: source code is not available] 
+glCreateProgramObjectARB() [Context 2 - program 7] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 8: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 9: source code is not available] 
+glCreateProgramObjectARB() [Context 2 - program 10] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 11: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 12: source code is not available] 
+glCreateProgramObjectARB() [Context 2 - program 13] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 14: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 15: source code is not available] 
+glCreateProgramObjectARB() [Context 2 - program 16] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 17: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 18: source code is not available] 
+glCreateProgramObjectARB() [Context 2 - program 19] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 20: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 21: source code is not available] 
+wglGetCurrentDC() 
+wglGetCurrentContext() 
+glGetString(GL_VENDOR) 
+wglMakeCurrent(0x1F010B1F, 0x020000) 
+glEnable(GL_DEPTH_TEST) 
+glDepthFunc(GL_LEQUAL) 
+glEnable(GL_CULL_FACE) 
+glEnable(GL_LIGHTING) 
+glEnable(GL_LIGHT0) 
+glLightModelfv(GL_LIGHT_MODEL_AMBIENT, {0}) 
+wglMakeCurrent(0x1F010B1F, 0x020000) 
+glGenTextures(1, {3452816845}) 
+glBindTexture(GL_TEXTURE_RECTANGLE, 1) [Context 2 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR) [Context 2 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR) [Context 2 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) [Context 2 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) [Context 2 - Texture 1: No preview available] 
+wglGetCurrentDC() 
+wglGetCurrentContext() 
+wglChoosePixelFormatARB(0x1F010B1F, 0x3DF8E4, 0x000000, 1, 0x3DF7C0, 0x3DF7B4) 
+wglCreatePbufferARB(0x1F010B1F, 725, 1024, 1024, 0x3DF7DC) 
+wglSetPixelFormat(0x59012014, 1, 0x3DF600) 
+wglGetPbufferDCARB(0xAFA90AC2) 
+wglCreateContext(0x59012014) 
+wglShareLists(0x020000, 0x010001) 
+wglQueryPbufferARB(0xAFA90AC2, 8244, 0x5016050) 
+wglQueryPbufferARB(0xAFA90AC2, 8245, 0x5016054) 
+wglQueryPbufferARB(0xAFA90AC2, 8306, 0x3DF7A8) 
+wglGetPixelFormatAttribivARB(0x59012014, 725, 0, 8, 0x3DF780, 0x3DF758) 
+glShaderSourceARB(20, 1, 0x3DF600, 0x3DF528) [Context 2 - shader 20] 
+glCompileShaderARB(20) [Context 2 - shader 20] 
+glGetObjectParameterivARB(20, GL_COMPILE_STATUS, 0x3DF5F4) [Context 2 - shader 20] 
+glShaderSourceARB(21, 1, 0x3DF600, 0x3DF528) [Context 2 - shader 21] 
+glCompileShaderARB(21) [Context 2 - shader 21] 
+glGetObjectParameterivARB(21, GL_COMPILE_STATUS, 0x3DF5F4) [Context 2 - shader 21] 
+glGetError() 
+glGetError() 
+glGetObjectParameterivARB(21, GL_INFO_LOG_LENGTH, 0x3DF3F4) [Context 2 - shader 21] 
+glGetInfoLogARB(21, 270, 269, 0(9) : error C7532: global type sampler2DRect requires "#version 140" or later 0(9) : error C0000: ... or #extension GL_ARB_texture_rectangle : enable 0(15) : error C7531: global function texture2DRect requires "#extension GL_ARB_texture_rectangle : enable" before use ) [Context 2 - shader 21] 
+wglMakeCurrent(0x59012014, 0x010001) 
+glViewport(0, 0, 800, 600) 
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) 
+glDisable(GL_LIGHTING) 
+glPushMatrix() 
+glLoadIdentity() 
+glMatrixMode(GL_PROJECTION) 
+glPushMatrix() 
+glLoadIdentity() 
+glOrtho(0, 1, 0, 1, -1, 1) 
+glUseProgramObjectARB(19) [Context 2 - program 19] 
+glGetUniformLocationARB(19, s2Test) [Context 2 - program 19] 
+glUniform1iARB(-1, 0) 
+glGetUniformLocationARB(19, fExposure) [Context 2 - program 19] 
+glUniform1fARB(-1, 2) 
+glBindTexture(GL_TEXTURE_RECTANGLE, 1) [Context 2 - Texture 1: No preview available] 
+wglBindTexImageARB(0xAFA90AC2, 8323) 
+glEnable(GL_TEXTURE_RECTANGLE) 
+glBegin(GL_QUADS) 
+glTexCoord2f(0, 0) 
+glVertex2f(0, 0) 
+glTexCoord2f(1, 0) 
+glVertex2f(1, 0) 
+glTexCoord2f(1, 1) 
+glVertex2f(1, 1) 
+glTexCoord2f(0, 1) 
+glVertex2f(0, 1) 
+glEnd() 
+wglReleaseTexImageARB(0xAFA90AC2, 8323) 
+glDisable(GL_TEXTURE_RECTANGLE) 
+glUseProgramObjectARB(0) [Context 2 - program 0] 
+glPopMatrix() 
+glMatrixMode(GL_MODELVIEW) 
+glPopMatrix() 
+glEnable(GL_LIGHTING) 
+glFlush() 
+wglSwapBuffers(0x1F010B1F) 
+
+////////////////////////////////////////////////////////////
+// Log file recording suspended
+// Suspension time: 22:01:29
+////////////////////////////////////////////////////////////

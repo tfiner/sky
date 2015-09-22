@@ -28,10 +28,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __PixelBuffer_h__
-#define __PixelBuffer_h__
-
+#pragma once
 #include "Matrix.h"
+
+#include <cassert>
 
 #define ALIGN_SIZE		64
 #define ALIGN_MASK		(ALIGN_SIZE-1)
@@ -239,7 +239,7 @@ public:
 	void SwapBuffers(C3DBuffer &buf)
 	{
 		void *pTemp;
-		ASSERT(*this == buf);
+		assert(*this == buf);
 		SWAP(m_pAlloc, buf.m_pAlloc, pTemp);
 		SWAP(m_pBuffer, buf.m_pBuffer, pTemp);
 	}
@@ -306,4 +306,3 @@ public:
 	void MakePhaseBuffer(float ESun, float Kr, float Km, float g);
 };
 
-#endif // __PixelBuffer_h__

@@ -20,6 +20,7 @@
 
 #include <GL/glew.h>
 
+#include "GameEngine.h"
 
 #include <array>
 #include <iostream>
@@ -41,35 +42,19 @@ Testbed::~Testbed() {}
 
 
 bool Testbed::InitImpl() {
-    program_.reset(new Program);
-    auto vs = Shader(GL_VERTEX_SHADER,      "gl.vert");
-    auto fs = Shader(GL_FRAGMENT_SHADER,    "gl.frag");
-
-    program_->Attach(vs);
-    program_->Attach(fs);
-    program_->Link();
-
-    ::glClearColor(0.0f, 0.5f, 0.25f, 0.0f);
-    THROW_ON_GL_ERROR();
-
+    //::glClearColor(0.0f, 0.5f, 0.25f, 0.0f);
+    //THROW_ON_GL_ERROR();
+    engine_.reset(new CGameEngine);
     return true;
 }
 
 
 bool Testbed::DrawImpl() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    THROW_ON_GL_ERROR();
+   ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    const auto matProj  = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
-    const auto matView  = glm::mat4();
-    const auto matModel = glm::mat4();
-
-    ScopedBinder<Program> prog(*program_);
-    program_->SetUniformMat4("matProj", glm::value_ptr(matProj));
-    program_->SetUniformMat4("matView", glm::value_ptr(matView));
-    program_->SetUniformMat4("matModel", glm::value_ptr(matModel));
-
-
+    //glClear(GL_COLOR_BUFFER_BIT);
+    //THROW_ON_GL_ERROR();
+   engine_->RenderFrame(1000);
     return true;
 }
 

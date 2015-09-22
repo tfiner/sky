@@ -27,10 +27,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __Log_h__
-#define __Log_h__
+#pragma once
 
-#include "DateTime.h"
+#include <stdarg.h>
+#include <fstream>
+
 
 enum LoggingLevel
 {
@@ -47,82 +48,19 @@ enum LoggingLevel
 class CLog
 {
 protected:
-	static CLog *m_pSingleton;
 	const char **m_pszSeverity;
 	std::ofstream m_ofLog;
 	char m_szLogName[256];
 	int m_nLoggingLevel;
 	int m_nDaysToKeep;
 
-	void LogSwitch()
-	{
-		// Get today's date for the log switch
-		char szPath[_MAX_PATH];
-		CDateTime dtCurrent = CDateTime::GetCurrent();
-		
-		// If days to keep is 0, don't use a date-based log file
-		// Instead, use a generic filename and replace the file every time
-		if(m_nDaysToKeep == 0)
-		{
-			sprintf(szPath, "%s.log", m_szLogName);
-			if(!m_ofLog.is_open())
-				m_ofLog.open(szPath);
-			return;
-		}
-
-		// If the log file is currently open, close it and clear any error codes
-		if(m_ofLog.is_open())
-			m_ofLog.close();
-		m_ofLog.clear();
-
-		// See if there are old log files that should be deleted
-		sprintf(szPath, "%s-*.log", m_szLogName);
-		WIN32_FIND_DATA fd;
-		HANDLE hFind = FindFirstFile(szPath, &fd);
-		if(hFind != INVALID_HANDLE_VALUE)
-		{
-			int nOffset = (int)strlen(m_szLogName) + 1;
-			do
-			{
-				CDateTime dtFile;
-				if(dtFile.ParseString(fd.cFileName+nOffset))
-				{
-					int nSeconds = dtCurrent.GetSecsSinceMillenium() - dtFile.GetSecsSinceMillenium();
-					if(nSeconds > m_nDaysToKeep * 24*60*60)
-						DeleteFile(fd.cFileName);
-				}
-			} while(FindNextFile(hFind, &fd));
-			FindClose(hFind);
-		}
-
-		// Open (or create) the correct log file for today's date
-		char szDate[20], szTime[20];
-		sprintf(szPath, "%s-%s-%s.log", m_szLogName, dtCurrent.GetDate().GetString(szDate, false), dtCurrent.GetTime().GetString(szTime, false));
-		m_ofLog.open(szPath, std::ios::app);
-	}
-
 public:
-	CLog()
-	{
-		_ASSERT(!m_pSingleton);
-		m_pSingleton = this;
+	static CLog *GetPtr() {
+      static CLog log;
+      return &log;
 	}
-	~CLog()
-	{
-		_ASSERT(m_pSingleton);
-		m_pSingleton = NULL;
-	}
-
-	static bool IsValid()	{ return m_pSingleton != NULL; }
-	static CLog *GetPtr()
-	{
-		_ASSERT(m_pSingleton);
-		return m_pSingleton;
-	}
-	static CLog &GetRef()
-	{
-		_ASSERT(m_pSingleton);
-		return *m_pSingleton;
+	static CLog &GetRef() {
+      return *GetPtr();
 	}
 
 	// nLoggingLevel is an enummed loglevel or -1 if you want nothing
@@ -133,22 +71,13 @@ public:
 		strcpy(m_szLogName, pszLogName);
 		m_nLoggingLevel = nLoggingLevel;
 		m_nDaysToKeep = nDaysToKeep;
-		LogSwitch();
 	}
 
 	bool IsLogged(LoggingLevel nSeverity)			{ return (nSeverity <= m_nLoggingLevel); }
 
 	void Log(LoggingLevel nSeverity, const char *pszMessage)
 	{
-		char szBuffer[256], szDateTime[40];
-		CDateTime dtCurrent = CDateTime::GetCurrent();
-#ifdef MODULE_NAME
-		sprintf(szBuffer, "%s  Severity: %-12.12s  Module: %-30.30s  Thread: 0x%X", dtCurrent.GetString(szDateTime), m_pszSeverity[nSeverity], MODULE_NAME, GetCurrentThreadId());
-#else
-		sprintf(szBuffer, "%s  Severity: %-12.12s  Thread: 0x%X", dtCurrent.GetString(szDateTime), m_pszSeverity[nSeverity], GetCurrentThreadId());
-#endif
-
-		m_ofLog << szBuffer << std::endl << pszMessage << std::endl << std::endl;
+		m_ofLog << pszMessage << std::endl << std::endl;
 		m_ofLog.flush();
 	}
 
@@ -172,9 +101,7 @@ public:
 // does not exist, logging is disabled. This provides a simple way to turn logging on and off.
 inline bool IsLogged(LoggingLevel nSeverity)
 {
-	if(CLog::IsValid())
-		return CLog::GetRef().IsLogged(nSeverity);
-	return false;
+   return CLog::GetRef().IsLogged(nSeverity);
 }
 
 inline void Log(LoggingLevel nSeverity, const char *pszMessage)
@@ -235,4 +162,3 @@ DECLARE_LOG_FUNC(Spam_LogFunc, Spam);
 #define LogAssert(expr) ((void)0)
 #endif
 
-#endif // __Log_h__

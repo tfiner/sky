@@ -34,10 +34,12 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+    <Import Project="gpu-gems.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+    <Import Project="gpu-gems.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -89,7 +91,8 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>.\Release\AtmosphereTest.exe</OutputFile>
       <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -133,7 +136,8 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>.\Debug\AtmosphereTest.exe</OutputFile>
       <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -218,7 +222,6 @@
     <ClInclude Include="Testbed.h" />
     <ClInclude Include="tfgl\App.h" />
     <ClInclude Include="tfgl\Exception.h" />
-    <ClInclude Include="DateTime.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GLUtil.h" />
@@ -234,7 +237,6 @@
     <ClInclude Include="tfgl\Program.h" />
     <ClInclude Include="tfgl\Shader.h" />
     <ClInclude Include="tfgl\Types.h" />
-    <ClInclude Include="WndClass.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />

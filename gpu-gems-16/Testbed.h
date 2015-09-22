@@ -12,6 +12,8 @@
 
 #include <memory>
 
+class CGameEngine;
+
 
 namespace tfgl {
     class Buffer;
@@ -31,7 +33,8 @@ namespace tft {
         ~Testbed();
 
     private:
-        std::unique_ptr<tfgl::Program>              program_;
+        // std::unique_ptr<tfgl::Program>              program_;
+        std::unique_ptr<CGameEngine>              engine_;
 
         virtual std::string GetVersion() const override { return "Testbed 1.0"; }
 

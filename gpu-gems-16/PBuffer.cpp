@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 {
 	Cleanup();
+   m_shExposure.Load("HDR", m_nTarget == GL_TEXTURE_2D ? "HDRSquare" : "HDRRect");
+
 	m_nFlags = nFlags;
 	m_bATI = GLUtil()->IsATI();
 	m_nTarget = m_bATI ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_NV;	// Try 2D for nVidia if height and width are the same
@@ -163,8 +165,6 @@ bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 
 	if(wglGetPixelFormatAttribivARB(m_hDC, nFormat, 0, sizeof(iAttributes) / sizeof(int), iAttributes, iValues))
 		LogInfo("PBuffer::Init() - %dx%d r:%d g:%d b:%d a:%d depth:%d stencil:%d samples:%d aux:%d\n", m_nWidth, m_nHeight, iValues[0], iValues[1], iValues[2], iValues[3], iValues[4], iValues[5], iValues[6], iValues[7]);
-
-	m_shExposure.Load("HDR", m_nTarget == GL_TEXTURE_2D ? "HDRSquare" : "HDRRect");
 
 	return true;
 }

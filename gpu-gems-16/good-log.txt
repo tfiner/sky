@@ -1,0 +1,195 @@
+wglGetProcAddress(glCreateProgramObjectARB) 
+glCreateProgramObjectARB() [Context 1 - program 1] 
+wglGetProcAddress(glCreateShaderObjectARB) 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 2: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 3: source code is not available] 
+glCreateProgramObjectARB() [Context 1 - program 4] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 5: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 6: source code is not available] 
+glCreateProgramObjectARB() [Context 1 - program 7] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 8: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 9: source code is not available] 
+glCreateProgramObjectARB() [Context 1 - program 10] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 11: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 12: source code is not available] 
+glCreateProgramObjectARB() [Context 1 - program 13] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 14: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 15: source code is not available] 
+glCreateProgramObjectARB() [Context 1 - program 16] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 17: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 18: source code is not available] 
+glCreateProgramObjectARB() [Context 1 - program 19] 
+glCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 1 - Shader 20: source code is not available] 
+glCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 1 - Shader 21: source code is not available] 
+wglGetCurrentDC() 
+wglGetCurrentContext() 
+glGetString(GL_VENDOR) 
+glGetString(GL_VENDOR) 
+glGetString(GL_RENDERER) 
+glGetString(GL_VERSION) 
+glGetString(GL_EXTENSIONS) 
+wglMakeCurrent(0xDF010D25, 0x010000) 
+glEnable(GL_DEPTH_TEST) 
+glDepthFunc(GL_LEQUAL) 
+glEnable(GL_CULL_FACE) 
+glEnable(GL_LIGHTING) 
+glEnable(GL_LIGHT0) 
+glLightModelfv(GL_LIGHT_MODEL_AMBIENT, {0}) 
+wglMakeCurrent(0xDF010D25, 0x010000) 
+wglGetProcAddress(glShaderSourceARB) 
+glShaderSourceARB(2, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 2] 
+wglGetProcAddress(glCompileShaderARB) 
+glCompileShaderARB(2) [Context 1 - shader 2] 
+wglGetProcAddress(glGetObjectParameterivARB) 
+glGetObjectParameterivARB(2, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 2] 
+glShaderSourceARB(3, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 3] 
+glCompileShaderARB(3) [Context 1 - shader 3] 
+glGetObjectParameterivARB(3, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 3] 
+wglGetProcAddress(glAttachObjectARB) 
+glAttachObjectARB(1, 2) [Context 1 - program 1][Context 1 - shader 2] 
+glAttachObjectARB(1, 3) [Context 1 - program 1: shader 2][Context 1 - shader 3] 
+wglGetProcAddress(glLinkProgramARB) 
+glLinkProgramARB(1) [Context 1 - program 1: shader 2, shader 3] 
+glGetObjectParameterivARB(1, GL_LINK_STATUS, 0x31E8C4) [Context 1 - program 1: shader 2, shader 3] 
+glGetObjectParameterivARB(1, GL_INFO_LOG_LENGTH, 0x31E6C4) [Context 1 - program 1: shader 2, shader 3] 
+wglGetProcAddress(glGetInfoLogARB) 
+glGetInfoLogARB(1, 1, 0, ) [Context 1 - program 1: shader 2, shader 3] 
+glShaderSourceARB(5, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 5] 
+glCompileShaderARB(5) [Context 1 - shader 5] 
+glGetObjectParameterivARB(5, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 5] 
+glShaderSourceARB(6, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 6] 
+glCompileShaderARB(6) [Context 1 - shader 6] 
+glGetObjectParameterivARB(6, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 6] 
+glAttachObjectARB(4, 5) [Context 1 - program 4][Context 1 - shader 5] 
+glAttachObjectARB(4, 6) [Context 1 - program 4: shader 5][Context 1 - shader 6] 
+glLinkProgramARB(4) [Context 1 - program 4: shader 5, shader 6] 
+glGetObjectParameterivARB(4, GL_LINK_STATUS, 0x31E8C4) [Context 1 - program 4: shader 5, shader 6] 
+glGetObjectParameterivARB(4, GL_INFO_LOG_LENGTH, 0x31E6C4) [Context 1 - program 4: shader 5, shader 6] 
+glGetInfoLogARB(4, 1, 0, ) [Context 1 - program 4: shader 5, shader 6] 
+glShaderSourceARB(8, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 8] 
+glCompileShaderARB(8) [Context 1 - shader 8] 
+glGetObjectParameterivARB(8, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 8] 
+glShaderSourceARB(9, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 9] 
+glCompileShaderARB(9) [Context 1 - shader 9] 
+glGetObjectParameterivARB(9, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 9] 
+glAttachObjectARB(7, 8) [Context 1 - program 7][Context 1 - shader 8] 
+glAttachObjectARB(7, 9) [Context 1 - program 7: shader 8][Context 1 - shader 9] 
+glLinkProgramARB(7) [Context 1 - program 7: shader 8, shader 9] 
+glGetObjectParameterivARB(7, GL_LINK_STATUS, 0x31E8C4) [Context 1 - program 7: shader 8, shader 9] 
+glGetObjectParameterivARB(7, GL_INFO_LOG_LENGTH, 0x31E6C4) [Context 1 - program 7: shader 8, shader 9] 
+glGetInfoLogARB(7, 101, 100, Vertex info ----------- 0(69) : warning C7050: "v3Attenuate" might be used before being initialized ) [Context 1 - program 7: shader 8, shader 9] 
+glShaderSourceARB(11, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 11] 
+glCompileShaderARB(11) [Context 1 - shader 11] 
+glGetObjectParameterivARB(11, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 11] 
+glShaderSourceARB(12, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 12] 
+glCompileShaderARB(12) [Context 1 - shader 12] 
+glGetObjectParameterivARB(12, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 12] 
+glAttachObjectARB(10, 11) [Context 1 - program 10][Context 1 - shader 11] 
+glAttachObjectARB(10, 12) [Context 1 - program 10: shader 11][Context 1 - shader 12] 
+glLinkProgramARB(10) [Context 1 - program 10: shader 11, shader 12] 
+glGetObjectParameterivARB(10, GL_LINK_STATUS, 0x31E8C4) [Context 1 - program 10: shader 11, shader 12] 
+glGetObjectParameterivARB(10, GL_INFO_LOG_LENGTH, 0x31E6C4) [Context 1 - program 10: shader 11, shader 12] 
+glGetInfoLogARB(10, 101, 100, Vertex info ----------- 0(62) : warning C7050: "v3Attenuate" might be used before being initialized ) [Context 1 - program 10: shader 11, shader 12] 
+glShaderSourceARB(14, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 14] 
+glCompileShaderARB(14) [Context 1 - shader 14] 
+glGetObjectParameterivARB(14, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 14] 
+glShaderSourceARB(15, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 15] 
+glCompileShaderARB(15) [Context 1 - shader 15] 
+glGetObjectParameterivARB(15, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 15] 
+glAttachObjectARB(13, 14) [Context 1 - program 13][Context 1 - shader 14] 
+glAttachObjectARB(13, 15) [Context 1 - program 13: shader 14][Context 1 - shader 15] 
+glLinkProgramARB(13) [Context 1 - program 13: shader 14, shader 15] 
+glGetObjectParameterivARB(13, GL_LINK_STATUS, 0x31E8C4) [Context 1 - program 13: shader 14, shader 15] 
+glGetObjectParameterivARB(13, GL_INFO_LOG_LENGTH, 0x31E6C4) [Context 1 - program 13: shader 14, shader 15] 
+glGetInfoLogARB(13, 1, 0, ) [Context 1 - program 13: shader 14, shader 15] 
+glShaderSourceARB(17, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 17] 
+glCompileShaderARB(17) [Context 1 - shader 17] 
+glGetObjectParameterivARB(17, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 17] 
+glShaderSourceARB(18, 1, 0x31E8D0, 0x31E7F8) [Context 1 - shader 18] 
+glCompileShaderARB(18) [Context 1 - shader 18] 
+glGetObjectParameterivARB(18, GL_COMPILE_STATUS, 0x31E8C4) [Context 1 - shader 18] 
+glAttachObjectARB(16, 17) [Context 1 - program 16][Context 1 - shader 17] 
+glAttachObjectARB(16, 18) [Context 1 - program 16: shader 17][Context 1 - shader 18] 
+glLinkProgramARB(16) [Context 1 - program 16: shader 17, shader 18] 
+glGetObjectParameterivARB(16, GL_LINK_STATUS, 0x31E8C4) [Context 1 - program 16: shader 17, shader 18] 
+glGetObjectParameterivARB(16, GL_INFO_LOG_LENGTH, 0x31E6C4) [Context 1 - program 16: shader 17, shader 18] 
+glGetInfoLogARB(16, 1, 0, ) [Context 1 - program 16: shader 17, shader 18] 
+glGenLists(256) 
+wglUseFontBitmapsA(0xDF010D25, 0, 255, 1) 
+glGenTextures(1, {3452816845}) 
+glBindTexture(GL_TEXTURE_RECTANGLE, 1) [Context 1 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR) [Context 1 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR) [Context 1 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) [Context 1 - Texture 1: No preview available] 
+glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) [Context 1 - Texture 1: No preview available] 
+wglGetCurrentDC() 
+wglGetCurrentContext() 
+wglGetProcAddress(wglChoosePixelFormatARB) 
+wglChoosePixelFormatARB(0xDF010D25, 0x31E8E8, 0x000000, 1, 0x31E7C4, 0x31E7B8) 
+wglGetProcAddress(wglCreatePbufferARB) 
+wglCreatePbufferARB(0xDF010D25, 725, 1024, 1024, 0x31E7E0) 
+wglSetPixelFormat(0x7501238C, 1, 0x31E5E0) 
+wglGetProcAddress(wglGetPbufferDCARB) 
+wglGetPbufferDCARB(0xAC30AFFA) 
+wglCreateContext(0x7501238C) 
+wglShareLists(0x010000, 0x010001) 
+wglGetProcAddress(wglQueryPbufferARB) 
+wglQueryPbufferARB(0xAC30AFFA, 8244, 0x3028CA8) 
+wglQueryPbufferARB(0xAC30AFFA, 8245, 0x3028CAC) 
+wglQueryPbufferARB(0xAC30AFFA, 8306, 0x31E7AC) 
+wglGetProcAddress(wglGetPixelFormatAttribivARB) 
+wglGetPixelFormatAttribivARB(0x7501238C, 725, 0, 8, 0x31E784, 0x31E75C) 
+glShaderSourceARB(20, 1, 0x31E604, 0x31E52C) [Context 1 - shader 20] 
+glCompileShaderARB(20) [Context 1 - shader 20] 
+glGetObjectParameterivARB(20, GL_COMPILE_STATUS, 0x31E5F8) [Context 1 - shader 20] 
+glShaderSourceARB(21, 1, 0x31E604, 0x31E52C) [Context 1 - shader 21] 
+glCompileShaderARB(21) [Context 1 - shader 21] 
+glGetObjectParameterivARB(21, GL_COMPILE_STATUS, 0x31E5F8) [Context 1 - shader 21] 
+glAttachObjectARB(19, 20) [Context 1 - program 19][Context 1 - shader 20] 
+glAttachObjectARB(19, 21) [Context 1 - program 19: shader 20][Context 1 - shader 21] 
+glLinkProgramARB(19) [Context 1 - program 19: shader 20, shader 21] 
+glGetObjectParameterivARB(19, GL_LINK_STATUS, 0x31E5F8) [Context 1 - program 19: shader 20, shader 21] 
+glGetObjectParameterivARB(19, GL_INFO_LOG_LENGTH, 0x31E3F8) [Context 1 - program 19: shader 20, shader 21] 
+glGetInfoLogARB(19, 304, 303, Fragment info ------------- 0(9) : warning C7532: global type sampler2DRect requires "#version 140" or later 0(9) : warning C0000: ... or #extension GL_ARB_texture_rectangle : enable 0(15) : warning C7531: global function texture2DRect requires "#extension GL_ARB_texture_rectangle : enable" before use ) [Context 1 - program 19: shader 20, shader 21] 
+wglMakeCurrent(0x7501238C, 0x010001) 
+glViewport(0, 0, 800, 600) 
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) 
+glDisable(GL_LIGHTING) 
+glPushMatrix() 
+glLoadIdentity() 
+glMatrixMode(GL_PROJECTION) 
+glPushMatrix() 
+glLoadIdentity() 
+glOrtho(0, 1, 0, 1, -1, 1) 
+glUseProgramObjectARB(19) [Context 1 - program 19: shader 20, shader 21] 
+glGetUniformLocationARB(19, s2Test) [Context 1 - program 19: shader 20, shader 21] 
+glUniform1iARB(1, 0) 
+glGetUniformLocationARB(19, fExposure) [Context 1 - program 19: shader 20, shader 21] 
+glUniform1fARB(0, 2) 
+glBindTexture(GL_TEXTURE_RECTANGLE, 1) [Context 1 - Texture 1: No preview available] 
+wglGetProcAddress(wglBindTexImageARB) 
+wglBindTexImageARB(0xAC30AFFA, 8323) 
+glEnable(GL_TEXTURE_RECTANGLE) 
+glBegin(GL_QUADS) 
+glTexCoord2f(0, 0) 
+glVertex2f(0, 0) 
+glTexCoord2f(1, 0) 
+glVertex2f(1, 0) 
+glTexCoord2f(1, 1) 
+glVertex2f(1, 1) 
+glTexCoord2f(0, 1) 
+glVertex2f(0, 1) 
+glEnd() 
+wglGetProcAddress(wglReleaseTexImageARB) 
+wglReleaseTexImageARB(0xAC30AFFA, 8323) 
+glDisable(GL_TEXTURE_RECTANGLE) 
+glUseProgramObjectARB(0) [Context 1 - program 0] 
+glPopMatrix() 
+glMatrixMode(GL_MODELVIEW) 
+glPopMatrix() 
+glEnable(GL_LIGHTING) 
+glDisable(GL_LIGHTING) 
+glPushMatrix() 
+glLoadIdentity() 
+glMatrixMode(GL_PROJECTION) 
+glPushMatrix() 

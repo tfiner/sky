@@ -67,7 +67,6 @@ protected:
 	CPixelBuffer m_pbOpticalDepth;
 
 	CTexture m_tMoonGlow;
-	CTexture m_tEarth;
 
 	CShaderObject m_shSkyFromSpace;
 	CShaderObject m_shSkyFromAtmosphere;

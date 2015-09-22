@@ -51,15 +51,9 @@ CGameEngine::CGameEngine()
 	//glEnable(GL_MULTISAMPLE_ARB);
 
 	// Read last camera position and orientation from registry
-	CVector vPos(0, 0, 25);
-	const char *psz = GetApp()->GetProfileString("Camera", "Position", NULL);
-	if(psz)
-		sscanf(psz, "%f, %f, %f", &vPos.x, &vPos.y, &vPos.z);
+	CVector vPos(6.893204f, 6.880142f, 2.268824f);
 	m_3DCamera.SetPosition(CDoubleVector(vPos));
-	CQuaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
-	psz = GetApp()->GetProfileString("Camera", "Orientation", NULL);
-	if(psz)
-		sscanf(psz, "%f, %f, %f, %f", &qOrientation.x, &qOrientation.y, &qOrientation.z, &qOrientation.w);
+	CQuaternion qOrientation(0.395468f, 0.918049f, 0.019717f, 0.020077f);
 	qOrientation.Normalize();
 	m_3DCamera = qOrientation;
 
@@ -103,20 +97,10 @@ CGameEngine::CGameEngine()
 	pb.Init(256, 256, 1);
 	pb.MakeGlow2D(40.0f, 0.1f);
 	m_tMoonGlow.Init(&pb);
-
-	pb.LoadJPEG("earthmap1k.jpg");
-	m_tEarth.Init(&pb);
 }
 
 CGameEngine::~CGameEngine()
 {
-	// Write the camera position and orientation to the registry
-	char szBuffer[256];
-	sprintf(szBuffer, "%f, %f, %f", m_3DCamera.GetPosition().x, m_3DCamera.GetPosition().y, m_3DCamera.GetPosition().z);
-	GetApp()->WriteProfileString("Camera", "Position", szBuffer);
-	sprintf(szBuffer, "%f, %f, %f, %f", m_3DCamera.x, m_3DCamera.y, m_3DCamera.z, m_3DCamera.w);
-	GetApp()->WriteProfileString("Camera", "Orientation", szBuffer);
-
 	m_pBuffer.Cleanup();
 	GLUtil()->Cleanup();
 }
@@ -238,9 +222,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	*/
 	GLUquadricObj *pSphere = gluNewQuadric();
-	m_tEarth.Enable();
 	gluSphere(pSphere, m_fInnerRadius, 100, 50);
-	m_tEarth.Disable();
 	gluDeleteQuadric(pSphere);
 	pGroundShader->Disable();
 
@@ -305,13 +287,13 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glViewport(0, 0, 800, 600);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glDisable(GL_LIGHTING);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, 1, 0, 1, -1, 1);
+	//glDisable(GL_LIGHTING);
+	//glPushMatrix();
+	//glLoadIdentity();
+	//glMatrixMode(GL_PROJECTION);
+	//glPushMatrix();
+	////glLoadIdentity();
+	//glOrtho(0, 1, 0, 1, -1, 1);
 
 	//tTest.Enable();
 	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
@@ -324,12 +306,12 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	m_pBuffer.ReleaseTexture();
 	//tTest.Disable();
 
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
+	//glPopMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+	//glPopMatrix();
+	//glEnable(GL_LIGHTING);
 
-	glFlush();
+	// glFlush();
 }
 
 void CGameEngine::OnChar(WPARAM c)
@@ -352,8 +334,8 @@ void CGameEngine::OnChar(WPARAM c)
 	}
 }
 
-void CGameEngine::HandleInput(float fSeconds)
-{
+void CGameEngine::HandleInput(float fSeconds) {
+/*
 	if((GetKeyState('1') & 0x8000))
 	{
 		if((GetKeyState(VK_SHIFT) & 0x8000))
@@ -489,5 +471,6 @@ void CGameEngine::HandleInput(float fSeconds)
 			m_3DCamera.SetVelocity(-m_3DCamera.GetVelocity());
 		}
 	}
+*/
 }
 

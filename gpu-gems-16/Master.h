@@ -102,4 +102,3 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // My includes
 #include "Log.h"
-#include "WndClass.h"
