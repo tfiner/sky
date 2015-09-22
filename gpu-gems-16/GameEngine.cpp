@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 CGameEngine::CGameEngine()
 {
-	m_bUseHDR = true;
+	m_bUseHDR = false;
 
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
@@ -99,15 +99,6 @@ CGameEngine::CGameEngine()
 	m_fRayleighScaleDepth = 0.25f;
 	m_fMieScaleDepth = 0.1f;
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
-
-
-	CPixelBuffer pb;
-	pb.Init(256, 256, 1);
-	pb.MakeGlow2D(40.0f, 0.1f);
-	m_tMoonGlow.Init(&pb);
-
-	//pb.LoadJPEG("earthmap1k.jpg");
-	//m_tEarth.Init(&pb);
 }
 
 CGameEngine::~CGameEngine()
@@ -141,9 +132,15 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	// Move the camera
 	HandleInput(nMilliseconds * 0.001f);
 
-	m_pBuffer.MakeCurrent();
-	glViewport(0, 0, 1024, 1024);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   if(m_bUseHDR)	{
+      m_pBuffer.MakeCurrent();
+      glViewport(0, 0, 1024, 1024);
+   }
+   else 
+      GLUtil()->MakeCurrent();
+
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glPushMatrix();
 	glLoadMatrixf(m_3DCamera.GetViewMatrix());
 
@@ -183,18 +180,6 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->SetUniformParameter1i("s2Test", 0);
 	}
 
-	m_tMoonGlow.Enable();
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);
-	glVertex3f(-4.0f, 4.0f, -50.0f);
-	glTexCoord2f(0, 1);
-	glVertex3f(-4.0f, -4.0f, -50.0f);
-	glTexCoord2f(1, 1);
-	glVertex3f(4.0f, -4.0f, -50.0f);
-	glTexCoord2f(1, 0);
-	glVertex3f(4.0f, 4.0f, -50.0f);
-	glEnd();
-	m_tMoonGlow.Disable();
 
 	if(pSpaceShader)
 		pSpaceShader->Disable();
@@ -300,83 +285,35 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glPopMatrix();
 	glFlush();
 
-	//CTexture tTest;
-	//tTest.InitCopy(0, 0, 1024, 1024);
+   if(m_bUseHDR)	{
+      GLUtil()->MakeCurrent();
+      glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	GLUtil()->MakeCurrent();
-	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glDisable(GL_LIGHTING);
+      glPushMatrix();
+      glLoadIdentity();
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity();
+      glOrtho(0, 1, 0, 1, -1, 1);
 
-	glDisable(GL_LIGHTING);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, 1, 0, 1, -1, 1);
+      m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
+      glTexCoord2f(1, 0); glVertex2f(1, 0);
+      glTexCoord2f(1, 1); glVertex2f(1, 1);
+      glTexCoord2f(0, 1); glVertex2f(0, 1);
+      glEnd();
+      m_pBuffer.ReleaseTexture();
 
-	//tTest.Enable();
-	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
-	glTexCoord2f(1, 0); glVertex2f(1, 0);
-	glTexCoord2f(1, 1); glVertex2f(1, 1);
-	glTexCoord2f(0, 1); glVertex2f(0, 1);
-	glEnd();
-	m_pBuffer.ReleaseTexture();
-	//tTest.Disable();
+      glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+      glEnable(GL_LIGHTING);
+   }
 
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
-
-	// Draw info in the top-left corner
-	char szBuffer[256];
-	m_fFont.Begin();
-	glColor3d(1.0, 1.0, 1.0);
-	m_fFont.SetPosition(0, 0);
-	m_fFont.Print(szFrameCount);
-
-	m_fFont.SetPosition(0, 15);
-	sprintf(szBuffer, "Samples (+/-): %d", m_nSamples);
-	m_fFont.Print(szBuffer);
-
-	m_fFont.SetPosition(0, 30);
-	sprintf(szBuffer, "Kr (1/Sh+1): %-4.4f", m_Kr);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 45);
-	sprintf(szBuffer, "Km (2/Sh+2): %-4.4f", m_Km);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 60);
-	sprintf(szBuffer, "g (3/Sh+3): %-3.3f", m_g);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 75);
-	sprintf(szBuffer, "ESun (4/Sh+4): %-1.1f", m_ESun);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 90);
-	sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_fWavelength[0]);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 105);
-	sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_fWavelength[1]);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 120);
-	sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_fWavelength[2]);
-	m_fFont.Print(szBuffer);
-	m_fFont.SetPosition(0, 135);
-	sprintf(szBuffer, "Exposure (8/Sh+8): %-2.2f", m_fExposure);
-	m_fFont.Print(szBuffer);
-
-
-   m_fFont.SetPosition(0, 150);
-   sprintf(szBuffer, "Camera : %3.2f  %3.2f  %3.2f", 
-      m_3DCamera.GetPosition().x, 
-      m_3DCamera.GetPosition().y, 
-      m_3DCamera.GetPosition().z);
-   m_fFont.Print(szBuffer);
-
-	m_fFont.End();
-	glFlush();
+   DrawInfo(szFrameCount);
 }
 
 void CGameEngine::OnChar(WPARAM c)
@@ -538,3 +475,52 @@ void CGameEngine::HandleInput(float fSeconds)
 	}
 }
 
+
+void CGameEngine::DrawInfo(const char * szFrameCount) {
+   // Draw info in the top-left corner
+   char szBuffer[256];
+   m_fFont.Begin();
+   glColor3d(1.0, 1.0, 1.0);
+   m_fFont.SetPosition(0, 0);
+   m_fFont.Print(szFrameCount);
+
+   m_fFont.SetPosition(0, 15);
+   sprintf(szBuffer, "Samples (+/-): %d", m_nSamples);
+   m_fFont.Print(szBuffer);
+
+   m_fFont.SetPosition(0, 30);
+   sprintf(szBuffer, "Kr (1/Sh+1): %-4.4f", m_Kr);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 45);
+   sprintf(szBuffer, "Km (2/Sh+2): %-4.4f", m_Km);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 60);
+   sprintf(szBuffer, "g (3/Sh+3): %-3.3f", m_g);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 75);
+   sprintf(szBuffer, "ESun (4/Sh+4): %-1.1f", m_ESun);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 90);
+   sprintf(szBuffer, "Red (5/Sh+5): %-3.3f", m_fWavelength[0]);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 105);
+   sprintf(szBuffer, "Green (6/Sh+6): %-3.3f", m_fWavelength[1]);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 120);
+   sprintf(szBuffer, "Blue (7/Sh+7): %-3.3f", m_fWavelength[2]);
+   m_fFont.Print(szBuffer);
+   m_fFont.SetPosition(0, 135);
+   sprintf(szBuffer, "Exposure (8/Sh+8): %-2.2f", m_fExposure);
+   m_fFont.Print(szBuffer);
+
+
+   m_fFont.SetPosition(0, 150);
+   sprintf(szBuffer, "Camera : %3.2f  %3.2f  %3.2f",
+      m_3DCamera.GetPosition().x,
+      m_3DCamera.GetPosition().y,
+      m_3DCamera.GetPosition().z);
+   m_fFont.Print(szBuffer);
+
+   m_fFont.End();
+   glFlush();
+}

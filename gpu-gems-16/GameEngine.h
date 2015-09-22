@@ -68,9 +68,6 @@ protected:
 	float m_fMieScaleDepth;
 	CPixelBuffer m_pbOpticalDepth;
 
-	CTexture m_tMoonGlow;
-	CTexture m_tEarth;
-
 	CShaderObject m_shSkyFromSpace;
 	CShaderObject m_shSkyFromAtmosphere;
 	CShaderObject m_shGroundFromSpace;
@@ -84,7 +81,9 @@ public:
 	CGameEngine();
 	~CGameEngine();
 	void RenderFrame(int nMilliseconds);
-	void Pause()	{}
+   void DrawInfo(const char* szFrameCount);
+ 
+   void Pause()	{}
 	void Restore()	{}
 	void HandleInput(float fSeconds);
 	void OnChar(WPARAM c);
