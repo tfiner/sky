@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #define __PixelBuffer_h__
 
 #include "Matrix.h"
+#include <cassert>
 
 #define ALIGN_SIZE		64
 #define ALIGN_MASK		(ALIGN_SIZE-1)
@@ -239,7 +240,7 @@ public:
 	void SwapBuffers(C3DBuffer &buf)
 	{
 		void *pTemp;
-		ASSERT(*this == buf);
+		assert(*this == buf);
 		SWAP(m_pAlloc, buf.m_pAlloc, pTemp);
 		SWAP(m_pBuffer, buf.m_pBuffer, pTemp);
 	}

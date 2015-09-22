@@ -7,6 +7,7 @@
 //
 
 #include "Testbed.h"
+#include "GameEngine.h"
 
 #include "tfgl/Exception.h"
 #include "tfgl/Program.h"
@@ -19,7 +20,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <GL/glew.h>
-
+#include <GLFW/glfw3.h>
 
 #include <array>
 #include <iostream>
@@ -41,33 +42,43 @@ Testbed::~Testbed() {}
 
 
 bool Testbed::InitImpl() {
-    program_.reset(new Program);
-    auto vs = Shader(GL_VERTEX_SHADER,      "gl.vert");
-    auto fs = Shader(GL_FRAGMENT_SHADER,    "gl.frag");
+   gameEngine_.reset(new CGameEngine);
 
-    program_->Attach(vs);
-    program_->Attach(fs);
-    program_->Link();
+   ::glfwMakeContextCurrent(window_);
 
-    ::glClearColor(0.0f, 0.5f, 0.25f, 0.0f);
+    //program_.reset(new Program);
+    //auto vs = Shader(GL_VERTEX_SHADER,      "gl.vert");
+    //auto fs = Shader(GL_FRAGMENT_SHADER,    "gl.frag");
+
+    //program_->Attach(vs);
+    //program_->Attach(fs);
+    //program_->Link();
+
+    ::glClearColor(0.0f, 0.5f, 0.25f, 1.0f);
     THROW_ON_GL_ERROR();
+   
 
     return true;
 }
 
 
 bool Testbed::DrawImpl() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    THROW_ON_GL_ERROR();
+   ::glfwMakeContextCurrent(window_);
 
-    const auto matProj  = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
-    const auto matView  = glm::mat4();
-    const auto matModel = glm::mat4();
+   glClear(GL_COLOR_BUFFER_BIT);
+   THROW_ON_GL_ERROR();
 
-    ScopedBinder<Program> prog(*program_);
-    program_->SetUniformMat4("matProj", glm::value_ptr(matProj));
-    program_->SetUniformMat4("matView", glm::value_ptr(matView));
-    program_->SetUniformMat4("matModel", glm::value_ptr(matModel));
+   //if (gameEngine_)
+   //   gameEngine_->RenderFrame(100);
+
+    //const auto matProj  = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
+    //const auto matView  = glm::mat4();
+    //const auto matModel = glm::mat4();
+
+    //ScopedBinder<Program> prog(*program_);
+    //program_->SetUniformMat4("matProj", glm::value_ptr(matProj));
+    //program_->SetUniformMat4("matView", glm::value_ptr(matView));
+    //program_->SetUniformMat4("matModel", glm::value_ptr(matModel));
 
 
     return true;

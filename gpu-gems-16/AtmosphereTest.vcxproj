@@ -179,7 +179,6 @@
       </PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="GameEngine.cpp" />
-    <ClCompile Include="GLUtil.cpp" />
     <ClCompile Include="Master.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Master.h</PrecompiledHeaderFile>
@@ -217,13 +216,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ShaderObject.h" />
     <ClInclude Include="Testbed.h" />
     <ClInclude Include="tfgl\App.h" />
     <ClInclude Include="tfgl\Exception.h" />
-    <ClInclude Include="DateTime.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameEngine.h" />
-    <ClInclude Include="GLUtil.h" />
     <ClInclude Include="ListTemplates.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Master.h" />

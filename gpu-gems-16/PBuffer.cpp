@@ -36,8 +36,7 @@ bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 {
 	Cleanup();
 	m_nFlags = nFlags;
-	m_bATI = GLUtil()->IsATI();
-	m_nTarget = m_bATI ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_NV;	// Try 2D for nVidia if height and width are the same
+	m_nTarget = GL_TEXTURE_2D;
 	glGenTextures(1, &m_nTextureID);
 	glBindTexture(m_nTarget, m_nTextureID);
 	glTexParameteri(m_nTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -57,31 +56,14 @@ bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 	nFormatAttributes[i++] = WGL_DRAW_TO_PBUFFER_ARB;
 	nFormatAttributes[i++] = true;
 
-	if(m_bATI)
-	{
-		nFormatAttributes[i++] = WGL_PIXEL_TYPE_ARB;
-		nFormatAttributes[i++] = WGL_TYPE_RGBA_FLOAT_ATI;
-		nFormatAttributes[i++] = WGL_BIND_TO_TEXTURE_RGBA_ARB;
-		nFormatAttributes[i++] = true;
-		nBufferAttributes[j++] = WGL_TEXTURE_TARGET_ARB;
-		nBufferAttributes[j++] = WGL_TEXTURE_2D_ARB;
-		nBufferAttributes[j++] = WGL_TEXTURE_FORMAT_ARB;
-		nBufferAttributes[j++] = WGL_TEXTURE_RGBA_ARB;
-	}
-	else
-	{
-		nFormatAttributes[i++] = WGL_PIXEL_TYPE_ARB;
-		nFormatAttributes[i++] = WGL_TYPE_RGBA_ARB;
-		nFormatAttributes[i++] = WGL_FLOAT_COMPONENTS_NV;
-		nFormatAttributes[i++] = true;
-
-		nFormatAttributes[i++] = WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV;
-		nFormatAttributes[i++] = true;
-		nBufferAttributes[j++] = WGL_TEXTURE_TARGET_ARB;
-		nBufferAttributes[j++] = WGL_TEXTURE_RECTANGLE_NV;	// Try 2D for nVidia if height and width are the same
-		nBufferAttributes[j++] = WGL_TEXTURE_FORMAT_ARB;
-		nBufferAttributes[j++] = WGL_TEXTURE_FLOAT_RGBA_NV;
-	}
+	nFormatAttributes[i++] = WGL_PIXEL_TYPE_ARB;
+	nFormatAttributes[i++] = WGL_TYPE_RGBA_FLOAT_ATI;
+	nFormatAttributes[i++] = WGL_BIND_TO_TEXTURE_RGBA_ARB;
+	nFormatAttributes[i++] = true;
+	nBufferAttributes[j++] = WGL_TEXTURE_TARGET_ARB;
+	nBufferAttributes[j++] = WGL_TEXTURE_2D_ARB;
+	nBufferAttributes[j++] = WGL_TEXTURE_FORMAT_ARB;
+	nBufferAttributes[j++] = WGL_TEXTURE_RGBA_ARB;
 
 	nFormatAttributes[i++] = WGL_RED_BITS_ARB;
 	nFormatAttributes[i++] = 16;

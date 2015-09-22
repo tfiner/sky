@@ -31,35 +31,54 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Master.h"
 
 #include "GameEngine.h"
-#include "GLUtil.h"
+#include "tfgl/Exception.h"
 
 
 CGameEngine::CGameEngine()
 {
 	m_bUseHDR = true;
 
-	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
-	GLUtil()->Init();
+   glEnable(GL_DEPTH_TEST);
+   THROW_ON_GL_ERROR();
+
+   glDepthFunc(GL_LEQUAL);
+   THROW_ON_GL_ERROR();
+
+   glEnable(GL_CULL_FACE);
+   THROW_ON_GL_ERROR();
+
+   //glEnable(GL_LIGHTING);
+   //THROW_ON_GL_ERROR();
+
+   //glEnable(GL_LIGHT0);
+   //THROW_ON_GL_ERROR();
+
+   //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, CVector4(0.0f));
+   //THROW_ON_GL_ERROR();
+
 	m_nPolygonMode = GL_FILL;
+
 
 	m_pBuffer.Init(1024, 1024, 0);
 	m_pBuffer.MakeCurrent();
 	glEnable(GL_DEPTH_TEST);
+   THROW_ON_GL_ERROR();
+
+   return;
+
 	glDepthFunc(GL_LEQUAL);
+   THROW_ON_GL_ERROR();
+
 	glEnable(GL_CULL_FACE);
+   THROW_ON_GL_ERROR();
 
 	//glEnable(GL_MULTISAMPLE_ARB);
 
 	// Read last camera position and orientation from registry
-	CVector vPos(0, 0, 25);
-	const char *psz = GetApp()->GetProfileString("Camera", "Position", NULL);
-	if(psz)
-		sscanf(psz, "%f, %f, %f", &vPos.x, &vPos.y, &vPos.z);
+	CVector vPos(7, 7, 2);
 	m_3DCamera.SetPosition(CDoubleVector(vPos));
-	CQuaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
-	psz = GetApp()->GetProfileString("Camera", "Orientation", NULL);
-	if(psz)
-		sscanf(psz, "%f, %f, %f, %f", &qOrientation.x, &qOrientation.y, &qOrientation.z, &qOrientation.w);
+
+	CQuaternion qOrientation(0.395470f, 0.918053f, 0.019717f, 1.0f);
 	qOrientation.Normalize();
 	m_3DCamera = qOrientation;
 
@@ -90,6 +109,7 @@ CGameEngine::CGameEngine()
 	m_fRayleighScaleDepth = 0.25f;
 	m_fMieScaleDepth = 0.1f;
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+   THROW_ON_GL_ERROR();
 
 	m_shSkyFromSpace.Load("SkyFromSpace");
 	m_shSkyFromAtmosphere.Load("SkyFromAtmosphere");
@@ -97,28 +117,22 @@ CGameEngine::CGameEngine()
 	m_shGroundFromAtmosphere.Load("GroundFromAtmosphere");
 	m_shSpaceFromSpace.Load("SpaceFromSpace");
 	m_shSpaceFromAtmosphere.Load("SpaceFromAtmosphere");
-
+   THROW_ON_GL_ERROR();
 
 	CPixelBuffer pb;
 	pb.Init(256, 256, 1);
 	pb.MakeGlow2D(40.0f, 0.1f);
 	m_tMoonGlow.Init(&pb);
+   THROW_ON_GL_ERROR();
 
-	pb.LoadJPEG("earthmap1k.jpg");
-	m_tEarth.Init(&pb);
+	//pb.LoadJPEG("earthmap1k.jpg");
+	//m_tEarth.Init(&pb);
+ //  LOG_GL_ERRORS();
 }
 
 CGameEngine::~CGameEngine()
 {
-	// Write the camera position and orientation to the registry
-	char szBuffer[256];
-	sprintf(szBuffer, "%f, %f, %f", m_3DCamera.GetPosition().x, m_3DCamera.GetPosition().y, m_3DCamera.GetPosition().z);
-	GetApp()->WriteProfileString("Camera", "Position", szBuffer);
-	sprintf(szBuffer, "%f, %f, %f, %f", m_3DCamera.x, m_3DCamera.y, m_3DCamera.z, m_3DCamera.w);
-	GetApp()->WriteProfileString("Camera", "Orientation", szBuffer);
-
 	m_pBuffer.Cleanup();
-	GLUtil()->Cleanup();
 }
 
 void CGameEngine::RenderFrame(int nMilliseconds)
@@ -141,12 +155,20 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	m_pBuffer.MakeCurrent();
 	glViewport(0, 0, 1024, 1024);
+   THROW_ON_GL_ERROR();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   THROW_ON_GL_ERROR();
+
 	glPushMatrix();
+   THROW_ON_GL_ERROR();
+
 	glLoadMatrixf(m_3DCamera.GetViewMatrix());
+   THROW_ON_GL_ERROR();
 
 	C3DObject obj;
 	glMultMatrixf(obj.GetModelMatrix(&m_3DCamera));
+   THROW_ON_GL_ERROR();
 
 	CVector vCamera = m_3DCamera.GetPosition();
 	CVector vUnitCamera = vCamera / vCamera.Magnitude();
@@ -179,9 +201,12 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSpaceShader->SetUniformParameter1f("g", m_g);
 		pSpaceShader->SetUniformParameter1f("g2", m_g*m_g);
 		pSpaceShader->SetUniformParameter1i("s2Test", 0);
+      THROW_ON_GL_ERROR();
 	}
 
 	m_tMoonGlow.Enable();
+   THROW_ON_GL_ERROR();
+
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);
 	glVertex3f(-4.0f, 4.0f, -50.0f);
@@ -192,10 +217,15 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	glTexCoord2f(1, 0);
 	glVertex3f(4.0f, 4.0f, -50.0f);
 	glEnd();
-	m_tMoonGlow.Disable();
+   THROW_ON_GL_ERROR();
 
-	if(pSpaceShader)
-		pSpaceShader->Disable();
+	m_tMoonGlow.Disable();
+   THROW_ON_GL_ERROR();
+
+   if(pSpaceShader){
+      pSpaceShader->Disable();
+      THROW_ON_GL_ERROR();
+   }
 
 	CShaderObject *pGroundShader;
 	if(vCamera.Magnitude() >= m_fOuterRadius)
@@ -204,6 +234,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pGroundShader = &m_shGroundFromAtmosphere;
 
 	pGroundShader->Enable();
+   THROW_ON_GL_ERROR();
+
 	pGroundShader->SetUniformParameter3f("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
 	pGroundShader->SetUniformParameter3f("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 	pGroundShader->SetUniformParameter3f("v3InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
@@ -223,6 +255,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pGroundShader->SetUniformParameter1f("g", m_g);
 	pGroundShader->SetUniformParameter1f("g2", m_g*m_g);
 	pGroundShader->SetUniformParameter1i("s2Test", 0);
+   THROW_ON_GL_ERROR();
 
 	/*
 	if(vCamera.z < 0 && pGroundShader == &m_shGroundFromAtmosphere)
@@ -238,11 +271,22 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	*/
 	GLUquadricObj *pSphere = gluNewQuadric();
-	m_tEarth.Enable();
+   THROW_ON_GL_ERROR();
+
+	//m_tEarth.Enable();
+ //  THROW_ON_GL_ERROR();
+
 	gluSphere(pSphere, m_fInnerRadius, 100, 50);
-	m_tEarth.Disable();
+   THROW_ON_GL_ERROR();
+
+	//m_tEarth.Disable();
+ //  THROW_ON_GL_ERROR();
+
 	gluDeleteQuadric(pSphere);
+   THROW_ON_GL_ERROR();
+
 	pGroundShader->Disable();
+   THROW_ON_GL_ERROR();
 
 	CShaderObject *pSkyShader;
 	if(vCamera.Magnitude() >= m_fOuterRadius)
@@ -251,6 +295,8 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 		pSkyShader = &m_shSkyFromAtmosphere;
 
 	pSkyShader->Enable();
+   THROW_ON_GL_ERROR();
+
 	pSkyShader->SetUniformParameter3f("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
 	pSkyShader->SetUniformParameter3f("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
 	pSkyShader->SetUniformParameter3f("v3InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
@@ -269,6 +315,7 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	pSkyShader->SetUniformParameter1f("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
 	pSkyShader->SetUniformParameter1f("g", m_g);
 	pSkyShader->SetUniformParameter1f("g2", m_g*m_g);
+   THROW_ON_GL_ERROR();
 
 	/*
 	if(vCamera.z < 0 && pSkyShader == &m_shSkyFromAtmosphere)
@@ -284,26 +331,42 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	*/
 	glFrontFace(GL_CW);
+   THROW_ON_GL_ERROR();
+
 	//glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
+   THROW_ON_GL_ERROR();
 
 	pSphere = gluNewQuadric();
+   THROW_ON_GL_ERROR();
+
 	gluSphere(pSphere, m_fOuterRadius, 100, 50);
+   THROW_ON_GL_ERROR();
+
 	gluDeleteQuadric(pSphere);
+   THROW_ON_GL_ERROR();
 
 	//glDisable(GL_BLEND);
 	glFrontFace(GL_CCW);
+   THROW_ON_GL_ERROR();
+
 	pSkyShader->Disable();
+   THROW_ON_GL_ERROR();
 
 	glPopMatrix();
+   THROW_ON_GL_ERROR();
+
 	glFlush();
+   THROW_ON_GL_ERROR();
 
 	//CTexture tTest;
 	//tTest.InitCopy(0, 0, 1024, 1024);
 
-	GLUtil()->MakeCurrent();
 	glViewport(0, 0, 800, 600);
+   THROW_ON_GL_ERROR();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   THROW_ON_GL_ERROR();
 
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
@@ -315,21 +378,34 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	//tTest.Enable();
 	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
+   THROW_ON_GL_ERROR();
+
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
 	glTexCoord2f(1, 0); glVertex2f(1, 0);
 	glTexCoord2f(1, 1); glVertex2f(1, 1);
 	glTexCoord2f(0, 1); glVertex2f(0, 1);
 	glEnd();
+   THROW_ON_GL_ERROR();
+
 	m_pBuffer.ReleaseTexture();
+   THROW_ON_GL_ERROR();
 	//tTest.Disable();
 
 	glPopMatrix();
+   THROW_ON_GL_ERROR();
+
 	glMatrixMode(GL_MODELVIEW);
+   THROW_ON_GL_ERROR();
+
 	glPopMatrix();
+   THROW_ON_GL_ERROR();
+
 	glEnable(GL_LIGHTING);
+   THROW_ON_GL_ERROR();
 
 	glFlush();
+   THROW_ON_GL_ERROR();
 }
 
 void CGameEngine::OnChar(WPARAM c)

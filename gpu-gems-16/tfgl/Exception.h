@@ -47,5 +47,5 @@ namespace tfgl {
 
 }
 
-#define THROW_ON_GL_ERROR() ThrowOnGlError(__FILE__, __LINE__);
-#define LOG_GL_ERRORS() LogGlErrors(__FILE__, __LINE__);
+#define THROW_ON_GL_ERROR() tfgl::ThrowOnGlError(__FILE__, __LINE__);
+#define LOG_GL_ERRORS() tfgl::LogGlErrors(__FILE__, __LINE__);

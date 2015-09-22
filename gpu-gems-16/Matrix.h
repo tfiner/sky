@@ -33,6 +33,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Noise.h"	// Has some useful defines and inline functions
 
+#include <GL/glew.h>
+
+
 class CMatrix;
 class CQuaternion;
 class C3DObject;
@@ -1145,14 +1148,6 @@ public:
 
 	float DistanceTo(C3DObject &obj)		{ return (float)m_vPosition.Distance(obj.m_vPosition); }
 	CVector VectorTo(C3DObject &obj)		{ return obj.m_vPosition - m_vPosition; }
-	float GravityPull(float fDistSquared)	{ return (GRAVCONST * m_fMass) / fDistSquared; }
-	CVector GravityVector(C3DObject &obj)
-	{
-		CVector vGravity = obj.VectorTo(*this);
-		float fDistSquared = vGravity.MagnitudeSquared();
-		vGravity *= GravityPull(fDistSquared) / sqrtf(fDistSquared);
-		return vGravity;
-	}
 
 	void Accelerate(CVector &vAccel, float fSeconds, float fResistance=0)
 	{

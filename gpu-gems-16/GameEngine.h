@@ -31,11 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef __GameEngine_h__
 #define __GameEngine_h__
 
-#include "GLUtil.h"
 #include "PBuffer.h"
+#include "PixelBuffer.h"
 #include "Font.h"
-
-
+#include "Matrix.h"
+#include "Texture.h"
 
 class CGameEngine
 {

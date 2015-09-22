@@ -32,12 +32,13 @@ namespace tfgl {
         //      while(DrawImpl()) {}
         void Run(int argc, char** argv);
 
+    protected:
+       GLFWwindow* window_ = nullptr;
 
     private:
         int screenWidth_    = 800;
         int screenHeight_   = 600;
-        GLFWwindow* window_ = nullptr;
-        
+       
         // Top level initialize that ends up calling InitImpl.
         bool Init(int argc, char** argv);
         void InitGL();

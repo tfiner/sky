@@ -32,7 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #define __Texture_h__
 
 #include "PixelBuffer.h"
-#include "GLUtil.h"
 
 /*******************************************************************************
 * Class: CTexture
@@ -75,7 +74,7 @@ public:
 	static void Enable(int nType)			{ glEnable(nType); }
 	static void Disable(int nType)			{ glDisable(nType); }
 	
-	DWORD GetID()						{ return m_nID; }
+	int GetID()						{ return m_nID; }
 	int GetType()						{ return m_nType; }
 	void Bind()							{ if(m_nID != -1) glBindTexture(m_nType, m_nID); }
 	void Enable()						{ if(m_nID != -1) { Bind(); glEnable(m_nType); } }

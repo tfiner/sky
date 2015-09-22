@@ -28,30 +28,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __PBuffer_h__
-#define __PBuffer_h__
+#pragma once
+
+#include "ShaderObject.h"
+
+#include <GL/wglew.h>
 
 #define MAX_PFORMATS 256
 #define MAX_ATTRIBS  32
 
-#include "GLUtil.h"
+// Because fucking windows, that's why.
+struct HDC__;
+typedef HDC__* HDC;
 
-class CPBuffer
-{
-protected:
-	int m_nWidth;
-	int m_nHeight;
-	int m_nFlags;
+struct HGLRC__;
+typedef HGLRC__* HGLRC;
 
-	HDC m_hDC;
-	HGLRC m_hGLRC;
-	HPBUFFERARB m_hBuffer;
-	GLuint m_nTextureID;
+struct HPBUFFERARB__;
+typedef HPBUFFERARB__* HPBUFFERARB;
 
-	bool m_bATI;
-	unsigned int m_nTarget;
-	CShaderObject m_shExposure;
-
+class CPBuffer {
 public:
 	enum {NoFlags = 0x00, DepthBuffer = 0x01, StencilBuffer = 0x02};
 
@@ -98,6 +94,18 @@ public:
 		glDisable(m_nTarget);
 		m_shExposure.Disable();
 	}
+
+private:
+   int m_nWidth;
+   int m_nHeight;
+   int m_nFlags;
+
+   HDC m_hDC;
+   HGLRC m_hGLRC;
+   HPBUFFERARB m_hBuffer;
+   GLuint m_nTextureID;
+
+   unsigned int m_nTarget;
+   CShaderObject m_shExposure;
 };
 
-#endif // __PBuffer_h__

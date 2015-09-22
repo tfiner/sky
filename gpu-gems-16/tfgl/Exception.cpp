@@ -72,9 +72,12 @@ namespace {
         std::ostringstream os;
 
         os  << file.c_str() << "(" << line << "):" << " OpenGL error: ";
+        auto const oldError = error;
         while(error != GL_NO_ERROR) {
             os << "(" << error << ") " << GlErrorToString(error) << "\n";
             error = glGetError();
+            if(error == oldError)
+               break;
         }
         
         return os.str();
