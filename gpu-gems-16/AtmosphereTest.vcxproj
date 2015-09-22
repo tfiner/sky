@@ -66,7 +66,7 @@
       <PrecompiledHeaderFile>Master.h</PrecompiledHeaderFile>
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(SolutionDir)glfw\glfw-3.1.1\include;$(SolutionDir)jpeg;$(SolutionDir)glew-1.13.0\include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glfw\glfw-3.1.1\include;$(SolutionDir)glew-1.13.0\include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -88,9 +88,8 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OutputFile>.\Release\AtmosphereTest.exe</OutputFile>
-      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;opengl32.lib;glu32.lib;libjpeg.lib;glfw3dll.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);$(SolutionDir)glew-1.13.0\lib\$(Configuration)\$(Platform);$(SolutionDir)glfw\glfw-3.1.1\Build\src\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ShowProgress>NotSet</ShowProgress>
+      <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -111,7 +110,7 @@
       <ObjectFileName>.\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(SolutionDir)glfw\glfw-3.1.1\include;$(SolutionDir)jpeg;$(SolutionDir)glew-1.13.0\include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glfw\glfw-3.1.1\include;$(SolutionDir)glew-1.13.0\include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -133,9 +132,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OutputFile>.\Debug\AtmosphereTest.exe</OutputFile>
-      <AdditionalDependencies>kernel32.lib;user32.lib;winmm.lib;opengl32.lib;glu32.lib;libjpeg.lib;glfw3dll.lib;glew32d.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);$(SolutionDir)glew-1.13.0\lib\$(Configuration)\$(Platform);$(SolutionDir)glfw\glfw-3.1.1\Build\src\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ShowProgress>NotSet</ShowProgress>
+      <AdditionalDependencies>winmm.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(solutiondir)jpeg\$(configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
