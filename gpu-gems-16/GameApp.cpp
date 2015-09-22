@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <sstream>
 
+#include <GLFW/glfw3.h>
+
 CWinApp *CWinApp::m_pMainApp;
 CLog *CLog::m_pSingleton = NULL;
 
@@ -43,47 +45,64 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLin
 	CLog log;
 	log.Init(Debug, "AtmosphereTest", 0);
 	CGameApp app(hInstance, hPrevInstance, pszCmdLine, nShowCmd);
-	if(app.InitInstance())
-		app.Run();
-	return app.ExitInstance();
+   app.InitInstance();
 }
 
 bool CGameApp::InitInstance() {
-	const WNDCLASS wc = {
-      CS_OWNDC | CS_VREDRAW | CS_HREDRAW, 
-      (WNDPROC)WindowProc, 
-      0, 0, 
-      m_hInstance, 
-      LoadIcon(m_hInstance, MAKEINTRESOURCE(IDR_APPLICATION)), 
-      LoadCursor((HINSTANCE)NULL, IDC_ARROW), 
-      (HBRUSH)GetStockObject(BLACK_BRUSH), 
-      MAKEINTRESOURCE(IDR_APPLICATION), 
-      m_szAppName
-   };
-
-	if(!RegisterClass(&wc))	{
-		MessageBox("Unable to register window class, aborting.");
-		return false;
-	}
-
 	return InitMode(false, 800, 600);
 }
+
+void OnResize(GLFWwindow* window, int width, int height) {
+   if(!height || !width)
+      return;
+
+   glViewport(0, 0, width, height);
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   gluPerspective(45.0, (double)width / (double)height, 0.001, 100.0);
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+}
+
+
+void OnKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
+   if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+      glfwSetWindowShouldClose(window, GL_TRUE);
+
+   GetGameApp()->GetGameEngine()->OnChar(key);
+}
+
 
 bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
 {
 	m_nWidth = nWidth;
 	m_nHeight = nHeight;
 
-	DWORD dwStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_OVERLAPPEDWINDOW;
-	DWORD dwExStyle = 0;
-	CRect rect(0, 0, GetWidth(), GetHeight());
-	if(!wnd_.CreateEx(m_hInstance, m_szAppName, m_szAppName, dwExStyle, dwStyle, &rect))
-	{
-		MessageBox("Unable to create application window, aborting.");
-		return false;
-	}
-   wnd_.ShowWindow(m_nShowCmd);
-   wnd_.UpdateWindow();
+   if(!glfwInit()) {
+      MessageBox("Unable to init GLFW, aborting.");
+      return false;
+   }
+
+   window_ = glfwCreateWindow(GetWidth(), GetHeight(), "Atmosphere Test", NULL, NULL);
+   if(!window_)
+   {
+      MessageBox("Unable to create application window, aborting.");
+      glfwTerminate();
+      return false;
+   }
+
+   glfwSetWindowSizeCallback(window_, OnResize);
+   glfwSetKeyCallback(window_, OnKey);
+
+   OnCreate();
+
+   m_bActive = true;
+   while(!glfwWindowShouldClose(window_)) {
+      OnIdle();
+      glfwPollEvents();
+   }
+
+   OnDestroy();
 	return true;
 }
 
@@ -99,7 +118,7 @@ bool CGameApp::OnIdle()
 		return false;
 	int nTimer = timeGetTime();
 	m_pGameEngine->RenderFrame(nTimer-m_nTimer);
-	SwapBuffers(m_hDC);
+   glfwSwapBuffers(window_);
 	m_nTimer = nTimer;
 	Sleep(0);
 	return true;
@@ -130,36 +149,10 @@ void CGameApp::Restore()
 	}
 }
 
-int CGameApp::OnCreate(HWND hWnd) 
+int CGameApp::OnCreate() 
 {
-	PIXELFORMATDESCRIPTOR pfdDesc;
-	memset((char *)&pfdDesc, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfdDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pfdDesc.nVersion = 1;
-	pfdDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;// | PFD_SWAP_COPY;
-	pfdDesc.iPixelType = PFD_TYPE_RGBA;
-	pfdDesc.iLayerType = PFD_MAIN_PLANE;
-	pfdDesc.cColorBits = 32;
-	pfdDesc.cAlphaBits = 8;
-	pfdDesc.cDepthBits = 32;
-	pfdDesc.cStencilBits = 32;
-
-   wnd_.m_hWnd = hWnd;
-	m_hDC = ::GetDC(wnd_.m_hWnd);
-	int nPixelIndex = ChoosePixelFormat(m_hDC, &pfdDesc);
-	if(!SetPixelFormat(m_hDC, nPixelIndex, &pfdDesc))
-	{
-		MessageBox("Error finding a suitable pixel format.");
-		return -1;
-	}
-	DescribePixelFormat(m_hDC, nPixelIndex, sizeof(PIXELFORMATDESCRIPTOR), &pfdDesc);
-
-	m_hGLRC = wglCreateContext(m_hDC);
-	if(!m_hGLRC || !wglMakeCurrent(m_hDC, m_hGLRC))
-	{
-		MessageBox("Error creating OpenGL rendering context.");
-		return -1;
-	}
+   glfwMakeContextCurrent(window_);
+   glfwSwapInterval(1);
 
    auto glewStatus = ::glewInit();
    if(GLEW_OK != glewStatus) {
@@ -179,37 +172,25 @@ void CGameApp::OnDestroy()
 		delete m_pGameEngine;
 		m_pGameEngine = NULL;
 	}
-	if(wglGetCurrentContext())
-		wglMakeCurrent(NULL, NULL);
-	if(m_hGLRC)
-	{
-		wglDeleteContext(m_hGLRC);
-		m_hGLRC = NULL;
-	}
-	if(m_hDC)
-	{
-		::ReleaseDC(wnd_.m_hWnd, m_hDC);
-		m_hDC = NULL;
-	}
+
+   glfwDestroyWindow(window_);
+   glfwTerminate();
 }
 
 void CGameApp::OnSize(int nType, int nWidth, int nHeight)
 {
 	if(!nHeight || !nWidth)
 		return;
+
 	glViewport(0, 0, nWidth, nHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45.0, (double)nWidth / (double)nHeight, 0.001, 100.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-	CRect rect;
-   wnd_.GetClientRect(&rect);
-	m_nWidth = rect.Width();
-	m_nHeight = rect.Height();
 }
 
+/*
 LRESULT CALLBACK CGameApp::WindowProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	CRect rect;
@@ -254,4 +235,10 @@ LRESULT CALLBACK CGameApp::WindowProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARA
 			break;
 	}
 	return DefWindowProc(hWnd, nMsg, wParam, lParam);
+}
+*/
+
+
+void CGameApp::MakeCurrent(){ 
+   glfwMakeContextCurrent(window_); 
 }

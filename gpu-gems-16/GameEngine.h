@@ -86,7 +86,7 @@ public:
    void Pause()	{}
 	void Restore()	{}
 	void HandleInput(float fSeconds);
-	void OnChar(WPARAM c);
+	void OnChar(int c);
 };
 
 #endif // __GameEngine_h__

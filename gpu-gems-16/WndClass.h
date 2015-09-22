@@ -136,6 +136,7 @@ public:
 	BOOL KillTimer(int nID)							{ return ::KillTimer(m_hWnd, nID); }
 };
 
+struct GLFWwindow;
 
 class CWinApp {
 // Attributes
@@ -149,7 +150,8 @@ protected:
 	char m_szStartupPath[_MAX_PATH];
 	char m_szRegistryKey[_MAX_PATH];
 
-   CWnd wnd_;
+   // CWnd wnd_;
+   GLFWwindow* window_;
 
 public:
 	static CWinApp *m_pMainApp;

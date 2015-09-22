@@ -44,8 +44,7 @@ class CGameApp : public CWinApp
 {
 // Attributes
 protected:
-	HDC m_hDC;
-	HGLRC m_hGLRC;
+
 	bool m_bActive;
 	int m_nTimer;
 	int m_nWidth, m_nHeight;
@@ -54,8 +53,8 @@ protected:
 
 // Operations
 protected:
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
-	int OnCreate(HWND hWnd);
+	// static LRESULT CALLBACK WindowProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
+	int OnCreate();
 	void OnDestroy();
 	void OnSize(int nType, int nWidth, int nHeight);
 
@@ -63,8 +62,6 @@ public:
 	CGameApp(HINSTANCE hInstance, HINSTANCE hPrevInstance=NULL, char *pszCmdLine="", int nShowCmd=SW_SHOWNORMAL)
 		: CWinApp(hInstance, hPrevInstance, pszCmdLine, nShowCmd)
 	{
-		m_hDC = NULL;
-		m_hGLRC = NULL;
 		m_bActive = false;
 		m_pGameEngine = NULL;
 	}
@@ -76,9 +73,7 @@ public:
 	virtual void Restore();
 	virtual bool InitMode(bool bFullScreen, int nWidth, int nHeight);
 	bool IsActive()								{ return m_bActive; }
-	void MakeCurrent()							{ wglMakeCurrent(m_hDC, m_hGLRC); }
-	HGLRC GetHGLRC()							{ return m_hGLRC; }
-	HDC GetHDC()								{ return m_hDC; }
+   void MakeCurrent();
 	CGameEngine *GetGameEngine()				{ return m_pGameEngine; }
 
 	int GetWidth()	{ return m_nWidth; }

@@ -40,7 +40,7 @@ CGameEngine::CGameEngine()
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
 
-	m_fFont.Init(GetGameApp()->GetHDC());
+	// m_fFont.Init(GetGameApp()->GetHDC());
 	m_nPolygonMode = GL_FILL;
 
 	m_pBuffer.Init(1024, 1024, 0);
@@ -321,11 +321,12 @@ void CGameEngine::RenderFrame(int nMilliseconds)
       glEnable(GL_LIGHTING);
    }
 
-   DrawInfo(szFrameCount);
+   // DrawInfo(szFrameCount);
 }
 
-void CGameEngine::OnChar(WPARAM c)
+void CGameEngine::OnChar(int upperC)
 {
+   const auto c = tolower(upperC);
 	switch(c)
 	{
 		case 'p':
