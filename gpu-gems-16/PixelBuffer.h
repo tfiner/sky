@@ -298,8 +298,6 @@ public:
 	}
 
 	// Miscellaneous initalization routines
-	bool LoadJPEG(const char *pszFile);
-	bool SaveJPEG(const char *pszFile, int nQuality);
 	void MakeCloudCell(float fExpose, float fSizeDisc);
 	void Make3DNoise(int nSeed);
 	void MakeGlow1D();
