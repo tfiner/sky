@@ -7,3 +7,11 @@ gpu-gems-16/UpgradeLog.htm
 gpu-gems-16/ipch/
 gpu-gems-16/jpeg/Backup/
 gpu-gems-16/AtmosphereTest.log
+gpu-gems-16/Release/
+gpu-gems-16/glew-1.13.0/lib/Debug/
+gpu-gems-16/glfw/glfw-3.1.1/Build/
+gpu-gems-16/glm/Build/
+gpu-gems-16/glm/CTestConfig.cmake
+gpu-gems-16/glm/cmake/CMakePackageConfigHelpers.cmake
+gpu-gems-16/glm/cmake/GNUInstallDirs.cmake
+gpu-gems-16/AtmosphereTest.vcxproj.user
