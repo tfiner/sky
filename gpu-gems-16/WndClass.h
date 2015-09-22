@@ -63,7 +63,19 @@ public:
 
 	BOOL CreateEx(HINSTANCE hInstance, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwExStyle, DWORD dwStyle, LPCRECT pRect, HWND hParent=NULL, HMENU hMenu=NULL, LPVOID lpParam=NULL)
 	{
-		m_hWnd = ::CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, pRect->left, pRect->top, pRect->right-pRect->left, pRect->bottom-pRect->top, hParent, hMenu, hInstance, lpParam);
+		m_hWnd = ::CreateWindowEx(
+         dwExStyle, 
+         lpClassName, 
+         lpWindowName, 
+         dwStyle, 
+         CW_USEDEFAULT, 
+         CW_USEDEFAULT, 
+         pRect->right-pRect->left, 
+         pRect->bottom-pRect->top, 
+         hParent, 
+         hMenu, 
+         hInstance, 
+         lpParam);
 		return (m_hWnd != NULL);
 	}
 	BOOL DestroyWindow()							{ return ::DestroyWindow(m_hWnd); }

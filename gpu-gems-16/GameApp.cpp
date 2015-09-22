@@ -71,16 +71,10 @@ bool CGameApp::InitInstance() {
 
 bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
 {
-	if(wnd_.m_hWnd)
-	{
-      wnd_.DestroyWindow();
-      wnd_.m_hWnd = NULL;
-	}
 	m_nWidth = nWidth;
 	m_nHeight = nHeight;
 
 	DWORD dwStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_OVERLAPPEDWINDOW;
-	//DWORD dwStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP;
 	DWORD dwExStyle = 0;
 	CRect rect(0, 0, GetWidth(), GetHeight());
 	if(!wnd_.CreateEx(m_hInstance, m_szAppName, m_szAppName, dwExStyle, dwStyle, &rect))
@@ -88,8 +82,6 @@ bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
 		MessageBox("Unable to create application window, aborting.");
 		return false;
 	}
-   wnd_.CalcWindowRect(&rect);
-	// MoveWindow(0, 0, rect.Width(), rect.Height(), false);
    wnd_.ShowWindow(m_nShowCmd);
    wnd_.UpdateWindow();
 	return true;
