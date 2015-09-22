@@ -39,8 +39,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #define ASSERT			assert
 #define TRACE			Trace
 #else
-#define ASSERT			((void)0)
-#define TRACE			((void)0)
+#define ASSERT			__noop
+#define TRACE			__noop
 #endif
 
 #define RELEASE(a)		if(a) { a->Release(); a = NULL; }
