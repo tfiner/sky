@@ -184,12 +184,12 @@ public:
 	void Enable()
 	{
 		glUseProgramObjectARB(m_hProgram);
-      THROW_ON_GL_ERROR();
+      LOG_GL_ERRORS();
 	}
 	void Disable()
 	{
 		glUseProgramObjectARB(NULL);
-      THROW_ON_GL_ERROR();
+      LOG_GL_ERRORS();
 	}
 
 	GLint GetUniformParameterID(const char *pszParameter)

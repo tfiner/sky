@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 CGameEngine::CGameEngine()
 {
-	m_bUseHDR = true;
+	m_bUseHDR = false;
 
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
@@ -296,14 +296,16 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	//glOrtho(0, 1, 0, 1, -1, 1);
 
 	//tTest.Enable();
-	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
-	glTexCoord2f(1, 0); glVertex2f(1, 0);
-	glTexCoord2f(1, 1); glVertex2f(1, 1);
-	glTexCoord2f(0, 1); glVertex2f(0, 1);
-	glEnd();
-	m_pBuffer.ReleaseTexture();
+   if(m_bUseHDR)	{
+      m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
+      glTexCoord2f(1, 0); glVertex2f(1, 0);
+      glTexCoord2f(1, 1); glVertex2f(1, 1);
+      glTexCoord2f(0, 1); glVertex2f(0, 1);
+      glEnd();
+      m_pBuffer.ReleaseTexture();
+   }
 	//tTest.Disable();
 
 	//glPopMatrix();
