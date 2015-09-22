@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "GameApp.h"
 #include "GameEngine.h"
 
+#include <sstream>
 
 CWinApp *CWinApp::m_pMainApp;
 CLog *CLog::m_pSingleton = NULL;
@@ -88,7 +89,7 @@ bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
 		return false;
 	}
 	CalcWindowRect(&rect);
-	MoveWindow(0, 0, rect.Width(), rect.Height(), false);
+	// MoveWindow(0, 0, rect.Width(), rect.Height(), false);
 	ShowWindow(m_nShowCmd);
 	UpdateWindow();
 	return true;
@@ -167,6 +168,13 @@ int CGameApp::OnCreate(HWND hWnd)
 		MessageBox("Error creating OpenGL rendering context.");
 		return -1;
 	}
+
+   auto glewStatus = ::glewInit();
+   if(GLEW_OK != glewStatus) {
+      std::ostringstream ss;
+      ss << "Glew error: " << ::glewGetErrorString(glewStatus) << "\n";
+      throw std::runtime_error(ss.str());
+   }
 
 	m_pGameEngine = new CGameEngine;
 	return 0;

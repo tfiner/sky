@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "GameApp.h"
 #include "Font.h"
 
-
+#include <memory>
 
 class CGameEngine
 {
@@ -68,12 +68,12 @@ protected:
 	float m_fMieScaleDepth;
 	CPixelBuffer m_pbOpticalDepth;
 
-	CShaderObject m_shSkyFromSpace;
-	CShaderObject m_shSkyFromAtmosphere;
-	CShaderObject m_shGroundFromSpace;
-	CShaderObject m_shGroundFromAtmosphere;
-	CShaderObject m_shSpaceFromSpace;
-	CShaderObject m_shSpaceFromAtmosphere;
+	std::unique_ptr<CShaderObject> m_shSkyFromSpace;
+   std::unique_ptr<CShaderObject> m_shSkyFromAtmosphere;
+   std::unique_ptr<CShaderObject> m_shGroundFromSpace;
+   std::unique_ptr<CShaderObject> m_shGroundFromAtmosphere;
+   std::unique_ptr<CShaderObject> m_shSpaceFromSpace;
+   std::unique_ptr<CShaderObject> m_shSpaceFromAtmosphere;
 
 	CPBuffer m_pBuffer;
 

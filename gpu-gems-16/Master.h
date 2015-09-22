@@ -62,9 +62,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 
 // OpenGL headers
-#include <GL\gl.h>
-#include <GL\glu.h>
-#include "glprocs.h"	// GLSDK extension library
+#include <GL/glew.h>
+#include <GL/wglew.h>
 
 
 // Defines and macros

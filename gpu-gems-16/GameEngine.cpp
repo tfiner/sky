@@ -33,20 +33,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "GameEngine.h"
 #include "GLUtil.h"
 
-
 CGameEngine::CGameEngine()
 {
 	m_bUseHDR = false;
 
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
-
-   m_shSkyFromSpace.Load("SkyFromSpace");
-   m_shSkyFromAtmosphere.Load("SkyFromAtmosphere");
-   m_shGroundFromSpace.Load("GroundFromSpace");
-   m_shGroundFromAtmosphere.Load("GroundFromAtmosphere");
-   m_shSpaceFromSpace.Load("SpaceFromSpace");
-   m_shSpaceFromAtmosphere.Load("SpaceFromAtmosphere");
 
 	m_fFont.Init(GetGameApp()->GetHDC());
 	m_nPolygonMode = GL_FILL;
@@ -116,6 +108,22 @@ CGameEngine::~CGameEngine()
 
 void CGameEngine::RenderFrame(int nMilliseconds)
 {
+   if(!m_shSkyFromSpace) {
+      m_shSkyFromSpace           = std::make_unique<CShaderObject>();
+      m_shSkyFromAtmosphere      = std::make_unique<CShaderObject>();
+      m_shGroundFromSpace        = std::make_unique<CShaderObject>();
+      m_shGroundFromAtmosphere   = std::make_unique<CShaderObject>();
+      m_shSpaceFromSpace         = std::make_unique<CShaderObject>();
+      m_shSpaceFromAtmosphere    = std::make_unique<CShaderObject>();
+
+      m_shSkyFromSpace->Load("SkyFromSpace");
+      m_shSkyFromAtmosphere->Load("SkyFromAtmosphere");
+      m_shGroundFromSpace->Load("GroundFromSpace");
+      m_shGroundFromAtmosphere->Load("GroundFromAtmosphere");
+      m_shSpaceFromSpace->Load("SpaceFromSpace");
+      m_shSpaceFromAtmosphere->Load("SpaceFromAtmosphere");
+   }
+
 	// Determine the FPS
 	static char szFrameCount[20] = {0};
 	static int nTime = 0;
@@ -152,9 +160,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	CShaderObject *pSpaceShader = NULL;
 	if(vCamera.Magnitude() < m_fOuterRadius)
-		pSpaceShader = &m_shSpaceFromAtmosphere;
+		pSpaceShader = m_shSpaceFromAtmosphere.get();
 	else if(vCamera.z > 0.0f)
-		pSpaceShader = &m_shSpaceFromSpace;
+		pSpaceShader = m_shSpaceFromSpace.get();
 
 	if(pSpaceShader)
 	{
@@ -186,9 +194,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	CShaderObject *pGroundShader;
 	if(vCamera.Magnitude() >= m_fOuterRadius)
-		pGroundShader = &m_shGroundFromSpace;
+		pGroundShader = m_shGroundFromSpace.get();
 	else
-		pGroundShader = &m_shGroundFromAtmosphere;
+		pGroundShader = m_shGroundFromAtmosphere.get();
 
 	pGroundShader->Enable();
 	pGroundShader->SetUniformParameter3f("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
@@ -233,9 +241,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 
 	CShaderObject *pSkyShader;
 	if(vCamera.Magnitude() >= m_fOuterRadius)
-		pSkyShader = &m_shSkyFromSpace;
+		pSkyShader = m_shSkyFromSpace.get();
 	else
-		pSkyShader = &m_shSkyFromAtmosphere;
+		pSkyShader = m_shSkyFromAtmosphere.get();
 
 	pSkyShader->Enable();
 	pSkyShader->SetUniformParameter3f("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
