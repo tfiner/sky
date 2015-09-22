@@ -40,6 +40,14 @@ CGameEngine::CGameEngine()
 
 	//GetApp()->MessageBox((const char *)glGetString(GL_EXTENSIONS));
 	GLUtil()->Init();
+
+   m_shSkyFromSpace.Load("SkyFromSpace");
+   m_shSkyFromAtmosphere.Load("SkyFromAtmosphere");
+   m_shGroundFromSpace.Load("GroundFromSpace");
+   m_shGroundFromAtmosphere.Load("GroundFromAtmosphere");
+   m_shSpaceFromSpace.Load("SpaceFromSpace");
+   m_shSpaceFromAtmosphere.Load("SpaceFromAtmosphere");
+
 	m_fFont.Init(GetGameApp()->GetHDC());
 	m_nPolygonMode = GL_FILL;
 
@@ -92,21 +100,14 @@ CGameEngine::CGameEngine()
 	m_fMieScaleDepth = 0.1f;
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
 
-	m_shSkyFromSpace.Load("SkyFromSpace");
-	m_shSkyFromAtmosphere.Load("SkyFromAtmosphere");
-	m_shGroundFromSpace.Load("GroundFromSpace");
-	m_shGroundFromAtmosphere.Load("GroundFromAtmosphere");
-	m_shSpaceFromSpace.Load("SpaceFromSpace");
-	m_shSpaceFromAtmosphere.Load("SpaceFromAtmosphere");
-
 
 	CPixelBuffer pb;
 	pb.Init(256, 256, 1);
 	pb.MakeGlow2D(40.0f, 0.1f);
 	m_tMoonGlow.Init(&pb);
 
-	pb.LoadJPEG("earthmap1k.jpg");
-	m_tEarth.Init(&pb);
+	//pb.LoadJPEG("earthmap1k.jpg");
+	//m_tEarth.Init(&pb);
 }
 
 CGameEngine::~CGameEngine()
@@ -239,9 +240,9 @@ void CGameEngine::RenderFrame(int nMilliseconds)
 	}
 	*/
 	GLUquadricObj *pSphere = gluNewQuadric();
-	m_tEarth.Enable();
+	//m_tEarth.Enable();
 	gluSphere(pSphere, m_fInnerRadius, 100, 50);
-	m_tEarth.Disable();
+	//m_tEarth.Disable();
 	gluDeleteQuadric(pSphere);
 	pGroundShader->Disable();
 
