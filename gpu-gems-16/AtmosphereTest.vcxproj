@@ -86,7 +86,7 @@
       <OutputFile>.\Release\AtmosphereTest.bsc</OutputFile>
     </Bscmake>
     <Link>
-      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Release\AtmosphereTest.exe</OutputFile>
@@ -130,7 +130,7 @@
       <OutputFile>.\Debug\AtmosphereTest.bsc</OutputFile>
     </Bscmake>
     <Link>
-      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Debug\AtmosphereTest.exe</OutputFile>

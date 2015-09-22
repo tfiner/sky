@@ -71,10 +71,10 @@ bool CGameApp::InitInstance() {
 
 bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
 {
-	if(m_hWnd)
+	if(wnd_.m_hWnd)
 	{
-		DestroyWindow();
-		m_hWnd = NULL;
+      wnd_.DestroyWindow();
+      wnd_.m_hWnd = NULL;
 	}
 	m_nWidth = nWidth;
 	m_nHeight = nHeight;
@@ -83,15 +83,15 @@ bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
 	//DWORD dwStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP;
 	DWORD dwExStyle = 0;
 	CRect rect(0, 0, GetWidth(), GetHeight());
-	if(!CreateEx(m_hInstance, m_szAppName, m_szAppName, dwExStyle, dwStyle, &rect))
+	if(!wnd_.CreateEx(m_hInstance, m_szAppName, m_szAppName, dwExStyle, dwStyle, &rect))
 	{
 		MessageBox("Unable to create application window, aborting.");
 		return false;
 	}
-	CalcWindowRect(&rect);
+   wnd_.CalcWindowRect(&rect);
 	// MoveWindow(0, 0, rect.Width(), rect.Height(), false);
-	ShowWindow(m_nShowCmd);
-	UpdateWindow();
+   wnd_.ShowWindow(m_nShowCmd);
+   wnd_.UpdateWindow();
 	return true;
 }
 
@@ -152,8 +152,8 @@ int CGameApp::OnCreate(HWND hWnd)
 	pfdDesc.cDepthBits = 32;
 	pfdDesc.cStencilBits = 32;
 
-	m_hWnd = hWnd;
-	m_hDC = ::GetDC(m_hWnd);
+   wnd_.m_hWnd = hWnd;
+	m_hDC = ::GetDC(wnd_.m_hWnd);
 	int nPixelIndex = ChoosePixelFormat(m_hDC, &pfdDesc);
 	if(!SetPixelFormat(m_hDC, nPixelIndex, &pfdDesc))
 	{
@@ -196,7 +196,7 @@ void CGameApp::OnDestroy()
 	}
 	if(m_hDC)
 	{
-		::ReleaseDC(m_hWnd, m_hDC);
+		::ReleaseDC(wnd_.m_hWnd, m_hDC);
 		m_hDC = NULL;
 	}
 }
@@ -213,7 +213,7 @@ void CGameApp::OnSize(int nType, int nWidth, int nHeight)
 	glLoadIdentity();
 
 	CRect rect;
-	GetClientRect(&rect);
+   wnd_.GetClientRect(&rect);
 	m_nWidth = rect.Width();
 	m_nHeight = rect.Height();
 }
@@ -229,7 +229,7 @@ LRESULT CALLBACK CGameApp::WindowProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARA
 			GetGameApp()->OnDestroy();
 			break;
 		case WM_CLOSE:
-			GetGameApp()->DestroyWindow();
+			GetGameApp()->wnd_.DestroyWindow();
 			PostQuitMessage(0);
 			return 0;
 		case WM_SIZE:
