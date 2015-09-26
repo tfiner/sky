@@ -46,15 +46,15 @@ POSSIBILITY OF SUCH DAMAGE.
 * to glTexImage1D or glTexImage2D. Some of the standard pixel buffer routines
 * call fast MMX functions implemented in PixelBuffer.asm.
 *******************************************************************************/
-class CPixelBuffer : public C3DBuffer
+class PixelBuffer : public ThreeDBuffer
 {
 protected:
 	int m_nFormat;				// The format of the pixel data (i.e. GL_LUMINANCE, GL_RGBA)
 
 public:
-	CPixelBuffer() : C3DBuffer() {}
-	CPixelBuffer(int nWidth, int nHeight, int nDepth, int nChannels=3, int nFormat=GL_RGB, BufferDataType nDataType=UnsignedByteType) : 
-      C3DBuffer(nWidth, nHeight, nDepth, nDataType, nChannels)	{
+	PixelBuffer() : ThreeDBuffer() {}
+	PixelBuffer(int nWidth, int nHeight, int nDepth, int nChannels=3, int nFormat=GL_RGB, BufferDataType nDataType=UnsignedByteType) : 
+      ThreeDBuffer(nWidth, nHeight, nDepth, nDataType, nChannels)	{
 		m_nFormat = nFormat;
 	}
 
@@ -62,7 +62,7 @@ public:
 
 	void Init(int nWidth, int nHeight, int nDepth, int nChannels=3, int nFormat=GL_RGB, BufferDataType nDataType=UnsignedByteType, void *pBuffer=NULL)
 	{
-		C3DBuffer::Init(nWidth, nHeight, nDepth, nDataType, nChannels, pBuffer);
+		ThreeDBuffer::Init(nWidth, nHeight, nDepth, nDataType, nChannels, pBuffer);
 		m_nFormat = nFormat;
 	}
 

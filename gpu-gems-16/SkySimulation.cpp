@@ -71,7 +71,7 @@ SkySimulation::SkySimulation() {
 
 	m_vLight = CVector(0, 0, 1000);
 	m_vLightDirection = m_vLight / m_vLight.Magnitude();
-	CTexture::InitStaticMembers(238653, 256);
+	Texture::InitStaticMembers(238653, 256);
 
 	m_nSamples = 3;		// Number of sample rays to use in integral equation
 	m_Kr = 0.0025f;		// Rayleigh scattering constant

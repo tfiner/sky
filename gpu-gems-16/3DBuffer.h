@@ -75,7 +75,7 @@ inline const int GetDataTypeSize(BufferDataType nDataType) {
 
 
 
-class C3DBuffer
+class ThreeDBuffer
 {
 protected:
    int m_nWidth;				// The width of the buffer (x axis)
@@ -88,21 +88,21 @@ protected:
    void *m_pBuffer;			// A byte-aligned pointer (for faster memory access)
 
 public:
-   C3DBuffer()						{ m_pAlloc = m_pBuffer = NULL; }
-   C3DBuffer(const C3DBuffer &buf)	{ *this = buf; }
-   C3DBuffer(const int nWidth, const int nHeight, const int nDepth, BufferDataType nDataType, const int nChannels = 1, void *pBuffer = NULL)
+   ThreeDBuffer()						{ m_pAlloc = m_pBuffer = NULL; }
+   ThreeDBuffer(const ThreeDBuffer &buf)	{ *this = buf; }
+   ThreeDBuffer(const int nWidth, const int nHeight, const int nDepth, BufferDataType nDataType, const int nChannels = 1, void *pBuffer = NULL)
    {
       m_pAlloc = m_pBuffer = NULL;
       Init(nWidth, nHeight, nDepth, nDataType, nChannels, pBuffer);
    }
-   ~C3DBuffer()					{ Cleanup(); }
+   ~ThreeDBuffer()					{ Cleanup(); }
 
-   void operator=(const C3DBuffer &buf)
+   void operator=(const ThreeDBuffer &buf)
    {
       Init(buf.m_nWidth, buf.m_nHeight, buf.m_nDepth, buf.m_nDataType, buf.m_nChannels);
       memcpy(m_pBuffer, buf.m_pBuffer, GetBufferSize());
    }
-   bool operator==(const C3DBuffer &buf)
+   bool operator==(const ThreeDBuffer &buf)
    {
       return (m_nWidth == buf.m_nWidth && m_nHeight == buf.m_nHeight && m_nDepth == buf.m_nDepth && m_nDataType == buf.m_nDataType && m_nChannels == buf.m_nChannels);
    }
@@ -236,7 +236,7 @@ public:
    void *GetBuffer() const		{ return m_pBuffer; }
 
    void ClearBuffer()			{ memset(m_pBuffer, 0, GetBufferSize()); }
-   void SwapBuffers(C3DBuffer &buf)
+   void SwapBuffers(ThreeDBuffer &buf)
    {
       void *pTemp;
       assert(*this == buf);

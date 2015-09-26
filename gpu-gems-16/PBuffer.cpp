@@ -36,12 +36,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define MAX_ATTRIBS  32
 
-CPBuffer::~CPBuffer() { 
+PBuffer::~PBuffer() { 
    Cleanup(); 
 }
 
 
-bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
+bool PBuffer::Init(int nWidth, int nHeight, int nFlags)
 {
 	Cleanup();
 	m_nFlags = nFlags;
@@ -177,7 +177,7 @@ bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 	return true;
 }
 
-void CPBuffer::Cleanup() {
+void PBuffer::Cleanup() {
 	if(m_hBuffer){
 		glDeleteTextures(1, &m_nTextureID);
 		wglDeleteContext(m_hGLRC);
@@ -187,7 +187,7 @@ void CPBuffer::Cleanup() {
 	}
 }
 
-void CPBuffer::HandleModeSwitch() {
+void PBuffer::HandleModeSwitch() {
 	if(m_hBuffer) {
 		int nLost = 0;
 		wglQueryPbufferARB(m_hBuffer, WGL_PBUFFER_LOST_ARB, &nLost);
@@ -199,7 +199,7 @@ void CPBuffer::HandleModeSwitch() {
 }
 
 
-void CPBuffer::BindTexture(float fExposure, bool bUseExposure /*= true*/) {
+void PBuffer::BindTexture(float fExposure, bool bUseExposure /*= true*/) {
    if(m_hBuffer && m_nTextureID) {
       if(bUseExposure)
          m_shExposure->Bind();
@@ -212,7 +212,7 @@ void CPBuffer::BindTexture(float fExposure, bool bUseExposure /*= true*/) {
 }
 
 
-void CPBuffer::ReleaseTexture() {
+void PBuffer::ReleaseTexture() {
    if(m_hBuffer && m_nTextureID)
       wglReleaseTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
    glDisable(m_nTarget);

@@ -31,12 +31,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Master.h"
 #include "Texture.h"
 
-CTexture CTexture::m_tCloudCell;
-CTexture CTexture::m_t1DGlow;
+Texture Texture::m_tCloudCell;
+Texture Texture::m_t1DGlow;
 
-void CTexture::InitStaticMembers(int nSeed, int nSize)
+void Texture::InitStaticMembers(int nSeed, int nSize)
 {
-	CPixelBuffer pb;
+	PixelBuffer pb;
 
 	// Initialize the shared cloud cell texture
 	pb.Init(16, 16, 1, 2, GL_LUMINANCE_ALPHA);
@@ -48,7 +48,7 @@ void CTexture::InitStaticMembers(int nSeed, int nSize)
 	m_t1DGlow.Init(&pb);
 }
 
-void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
+void Texture::Init(PixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 {
 	Cleanup();
 	m_nType = pBuffer->GetHeight() == 1 ? GL_TEXTURE_1D : pBuffer->GetHeight() == pBuffer->GetWidth() ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_EXT;
@@ -79,7 +79,7 @@ void CTexture::Init(CPixelBuffer *pBuffer, bool bClamp, bool bMipmap)
 	}
 }
 
-void CTexture::Update(CPixelBuffer *pBuffer, int nLevel)
+void Texture::Update(PixelBuffer *pBuffer, int nLevel)
 {
 	Bind();
 	switch(m_nType)
@@ -94,7 +94,7 @@ void CTexture::Update(CPixelBuffer *pBuffer, int nLevel)
 	}
 }
 
-void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
+void Texture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 {
 	Cleanup();
 	m_nType = nHeight == 1 ? GL_TEXTURE_1D : nHeight == nWidth ? GL_TEXTURE_2D : GL_TEXTURE_RECTANGLE_EXT;
@@ -117,7 +117,7 @@ void CTexture::InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp)
 	}
 }
 
-void CTexture::UpdateCopy(int x, int y, int nWidth, int nHeight, int nOffx, int nOffy, int nOffz)
+void Texture::UpdateCopy(int x, int y, int nWidth, int nHeight, int nOffx, int nOffy, int nOffz)
 {
 	Bind();
 	switch(m_nType)

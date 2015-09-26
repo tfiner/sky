@@ -90,13 +90,13 @@ private:
    float m_fWavelength4[3];
    float m_fRayleighScaleDepth;
    float m_fMieScaleDepth;
-   CPixelBuffer m_pbOpticalDepth;
+   PixelBuffer m_pbOpticalDepth;
 
    std::unique_ptr<tfgl::Program> m_shSkyFromAtmosphere;
    std::unique_ptr<tfgl::Program> m_shGroundFromAtmosphere;
    std::unique_ptr<tfgl::Program> m_shSpaceFromAtmosphere;
 
-   CPBuffer m_pBuffer;
+   PBuffer m_pBuffer;
 };
 
 

@@ -42,24 +42,24 @@ POSSIBILITY OF SUCH DAMAGE.
 * CPixelBuffer instance and a flag indicating whether you want mipmaps to be
 * generated.
 *******************************************************************************/
-class CTexture
+class Texture
 {
 protected:
 	int m_nType;					// GL_TEXTURE_1D, GL_TEXTURE_2D, or GL_TEXTURE_3D
 	unsigned int m_nID;				// OpenGL-generated texture ID
 
-	static CTexture m_tCloudCell;		// Shared cloud cell texture
-	static CTexture m_t1DGlow;
+	static Texture m_tCloudCell;		// Shared cloud cell texture
+	static Texture m_t1DGlow;
 
 public:
 
-	CTexture()		{ m_nID = -1; }
-	CTexture(CPixelBuffer *pBuffer, bool bMipmap=true)
+	Texture()		{ m_nID = -1; }
+	Texture(PixelBuffer *pBuffer, bool bMipmap=true)
 	{
 		m_nID = -1;
 		Init(pBuffer, bMipmap);
 	}
-	~CTexture()		{ Cleanup(); }
+	~Texture()		{ Cleanup(); }
 	void Cleanup()
 	{
 		if(m_nID != -1)
@@ -70,9 +70,9 @@ public:
 	}
 
 	static void InitStaticMembers(int nSeed, int nSize);
-	static CTexture &GetCloudCell()			{ return m_tCloudCell; }
-	static CTexture &Get1DGlow()			{ return m_t1DGlow; }
-	static CTexture &Get3DNoise()			{ return m_t1DGlow; }
+	static Texture &GetCloudCell()			{ return m_tCloudCell; }
+	static Texture &Get1DGlow()			{ return m_t1DGlow; }
+	static Texture &Get3DNoise()			{ return m_t1DGlow; }
 	static void Enable(int nType)			{ glEnable(nType); }
 	static void Disable(int nType)			{ glDisable(nType); }
 	
@@ -82,8 +82,8 @@ public:
 	void Enable()						{ if(m_nID != -1) { Bind(); glEnable(m_nType); } }
 	void Disable()						{ if(m_nID != -1) glDisable(m_nType); }
 
-	void Init(CPixelBuffer *pBuffer, bool bClamp=true, bool bMipmap=true);
-	void Update(CPixelBuffer *pBuffer, int nLevel=0);
+	void Init(PixelBuffer *pBuffer, bool bClamp=true, bool bMipmap=true);
+	void Update(PixelBuffer *pBuffer, int nLevel=0);
 
 	// Use when rendering to texture (either in the back buffer or a CPBuffer)
 	void InitCopy(int x, int y, int nWidth, int nHeight, bool bClamp=true);
@@ -91,7 +91,7 @@ public:
 };
 
 
-class CTextureArray : public CTexture
+class CTextureArray : public Texture
 {
 protected:
 	int m_nTextureSize;
@@ -131,9 +131,9 @@ public:
 		for(int n = 0; n < m_nStackSize; n++)
 			m_pStack[n] = n;
 
-		CPixelBuffer pb(nTextureSize, nTextureSize, nChannels, nFormat, nDataType);
+		PixelBuffer pb(nTextureSize, nTextureSize, nChannels, nFormat, nDataType);
 		memset(pb.GetBuffer(), 0xFF, pb.GetBufferSize());
-		CTexture::Init(&pb, true, false);
+		Texture::Init(&pb, true, false);
 	}
 
 	void Cleanup()
@@ -143,7 +143,7 @@ public:
 			delete m_pStack;
 			m_pStack = NULL;
 		}
-		CTexture::Cleanup();
+		Texture::Cleanup();
 	}
 
 	int LockTexture()
@@ -161,7 +161,7 @@ public:
 		m_pStack[--m_nStackIndex] = nTexture;
 	}
 
-	void Update(int nTexture, CPixelBuffer *pBuffer)
+	void Update(int nTexture, PixelBuffer *pBuffer)
 	{
 		assert(nTexture >= 0 && nTexture < m_nStackSize);
 		if(nTexture < 0 || nTexture >= m_nStackSize)

@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Master.h"
 #include "PixelBuffer.h"
 
-void CPixelBuffer::MakeCloudCell(float fExpose, float fSizeDisc)
+void PixelBuffer::MakeCloudCell(float fExpose, float fSizeDisc)
 {
 	int i;
 	int n = 0;
@@ -60,7 +60,7 @@ void CPixelBuffer::MakeCloudCell(float fExpose, float fSizeDisc)
 	}
 }
 
-void CPixelBuffer::Make3DNoise(int nSeed)
+void PixelBuffer::Make3DNoise(int nSeed)
 {
 	CFractal noise(3, nSeed, 0.5f, 2.0f);
 	int n = 0;
@@ -86,7 +86,7 @@ void CPixelBuffer::Make3DNoise(int nSeed)
 	}
 }
 
-void CPixelBuffer::MakeGlow1D()
+void PixelBuffer::MakeGlow1D()
 {
 	int nIndex=0;
 	for(int x=0; x<m_nWidth; x++)
@@ -98,7 +98,7 @@ void CPixelBuffer::MakeGlow1D()
 	}
 }
 
-void CPixelBuffer::MakeGlow2D(float fExposure, float fRadius)
+void PixelBuffer::MakeGlow2D(float fExposure, float fRadius)
 {
 	int nIndex=0;
 	for(int y=0; y<m_nHeight; y++)
@@ -117,7 +117,7 @@ void CPixelBuffer::MakeGlow2D(float fExposure, float fRadius)
 	}
 }
 
-void CPixelBuffer::MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius, float fRayleighScaleHeight, float fMieScaleHeight)
+void PixelBuffer::MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius, float fRayleighScaleHeight, float fMieScaleHeight)
 {
 	const int nSize = 64;
 	const int nSamples = 50;
@@ -230,7 +230,7 @@ void CPixelBuffer::MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius
 	}
 }
 
-void CPixelBuffer::MakePhaseBuffer(float ESun, float Kr, float Km, float g)
+void PixelBuffer::MakePhaseBuffer(float ESun, float Kr, float Km, float g)
 {
 	Km *= ESun;
 	Kr *= ESun;

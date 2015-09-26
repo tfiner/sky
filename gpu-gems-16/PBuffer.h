@@ -39,17 +39,17 @@ namespace tfgl {
 }
 
 
-class CPBuffer {
+class PBuffer {
 public:
 	enum {NoFlags = 0x00, DepthBuffer = 0x01, StencilBuffer = 0x02};
 
-	CPBuffer()							{ m_hBuffer = NULL; }
-	CPBuffer(int nWidth, int nHeight, int nFlags=(DepthBuffer|StencilBuffer))
+	PBuffer()							{ m_hBuffer = NULL; }
+	PBuffer(int nWidth, int nHeight, int nFlags=(DepthBuffer|StencilBuffer))
 	{
 		m_hBuffer = NULL;
 		Init(nWidth, nHeight);
 	}
-   ~CPBuffer();
+   ~PBuffer();
 
 	bool Init(int nWidth, int nHeight, int nFlags=(DepthBuffer|StencilBuffer));
 	void Cleanup();
