@@ -69,14 +69,16 @@ void OnKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
       glfwSetWindowShouldClose(window, GL_TRUE);
 
-   GetGameApp()->GetGameEngine()->OnChar(key);
+   // Only process the up character.
+   if (action == GLFW_RELEASE)
+      GetGameApp()->GetGameEngine()->OnChar(key);
 }
 
 
-bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
+bool CGameApp::InitMode(bool bFullScreen, int width, int height)
 {
-	m_nWidth = nWidth;
-	m_nHeight = nHeight;
+	m_nWidth = width;
+	m_nHeight = height;
 
    if(!glfwInit()) {
       MessageBox("Unable to init GLFW, aborting.");
@@ -95,6 +97,8 @@ bool CGameApp::InitMode(bool bFullScreen, int nWidth, int nHeight)
    glfwSetKeyCallback(window_, OnKey);
 
    OnCreate();
+
+   OnResize(window_, width, height);
 
    m_bActive = true;
    while(!glfwWindowShouldClose(window_)) {
