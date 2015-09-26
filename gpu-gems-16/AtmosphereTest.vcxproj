@@ -198,6 +198,7 @@
     <ClInclude Include="..\..\sky-dependencies\tfgl\Exception.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Program.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Shader.h" />
+    <ClInclude Include="3DBuffer.h" />
     <ClInclude Include="DateTime.h" />
     <ClInclude Include="OpenGLApp.h" />
     <ClInclude Include="SkySimulation.h" />

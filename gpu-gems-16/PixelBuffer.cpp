@@ -125,7 +125,7 @@ void CPixelBuffer::MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius
 	//std::ofstream ofScale1("scale1.txt");
 	//std::ofstream ofScale2("scale2.txt");
 
-	Init(nSize, nSize, 1, 4, GL_RGBA, GL_FLOAT);
+	Init(nSize, nSize, 1, 4, GL_RGBA, FloatType);
 	int nIndex = 0;
 	float fPrev = 0;
 	for(int nAngle=0; nAngle<nSize; nAngle++)
