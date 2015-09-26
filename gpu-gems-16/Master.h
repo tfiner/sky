@@ -58,5 +58,3 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <GL/wglew.h>
 
 
-#include "Log.h"
-// #include "WndClass.h"

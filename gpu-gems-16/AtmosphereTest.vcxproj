@@ -141,9 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="AtmosphereTest.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="OpenGLApp.cpp" />
     <ClCompile Include="SkySimulation.cpp" />
     <ClCompile Include="GLUtil.cpp" />
@@ -164,7 +161,6 @@
     <ClInclude Include="OpenGLApp.h" />
     <ClInclude Include="SkySimulation.h" />
     <ClInclude Include="GLUtil.h" />
-    <ClInclude Include="ListTemplates.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Master.h" />
     <ClInclude Include="Matrix.h" />
