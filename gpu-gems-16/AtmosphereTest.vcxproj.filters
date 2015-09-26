@@ -17,9 +17,6 @@
       <UniqueIdentifier>{56681414-0e3a-45bc-882e-516ae6b72de9}</UniqueIdentifier>
       <Extensions>vert;frag</Extensions>
     </Filter>
-    <Filter Include="Cg Shader Files">
-      <UniqueIdentifier>{db9f97a4-e59d-4332-8cda-8d852afb7a02}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLUtil.cpp">
@@ -100,12 +97,6 @@
     <CustomBuild Include="GroundFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="GroundFromSpace.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="HDR.vert">
       <Filter>GLSL Shader Files</Filter>
     </CustomBuild>
@@ -121,71 +112,11 @@
     <CustomBuild Include="SkyFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="SkyFromSpace.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="SpaceFromAtmosphere.frag">
       <Filter>GLSL Shader Files</Filter>
     </CustomBuild>
     <CustomBuild Include="SpaceFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromSpace.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromSpace.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Common.cg">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromAtmosphereCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromAtmosphereCg.vert">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromSpaceCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GroundFromSpaceCg.vert">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HDRCg.vert">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HDRRectCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="HDRSquareCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromAtmosphereCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromAtmosphereCg.vert">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromSpaceCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SkyFromSpaceCg.vert">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromAtmosphereCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromAtmosphereCg.vert">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromSpaceCg.frag">
-      <Filter>Cg Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromSpaceCg.vert">
-      <Filter>Cg Shader Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
