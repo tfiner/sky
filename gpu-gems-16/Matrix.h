@@ -712,6 +712,8 @@ public:
 };
 
 
+
+
 /****************************************************************************
 * Class: C3DObject
 *****************************************************************************
@@ -725,32 +727,37 @@ class C3DObject {
 protected:
    CQuaternion    orient_;
    glm::dvec3     position_;
-	CVector        m_vVelocity;		// The object's velocity (km/s)
+   glm::vec3      velocity_;
 
 public:
-	C3DObject() : orient_(0.0f, 0.0f, 0.0f, 1.0f), position_(0.0f), m_vVelocity(0.0f) {}
+	C3DObject() : orient_(0.0f, 0.0f, 0.0f, 1.0f), position_(0.0f), velocity_(0.0f) {}
 
    C3DObject& SetOrientation(const CQuaternion& q) {
       orient_ = q;
       return *this;
    }
 
-   C3DObject& SetPosition(CDoubleVector &v)	{ 
+   C3DObject& SetPosition(CDoubleVector &v) {
       position_[0] = v[0];
       position_[1] = v[1];
       position_[2] = v[2];
       return *this;
    }
 
-	CDoubleVector GetPosition()			{ 
+	CDoubleVector GetPosition() { 
       return CDoubleVector(position_[0], position_[1], position_[2]);
    }
 	
-   C3DObject& SetVelocity(CVector &v)		{ 
-      m_vVelocity = v; 
+   C3DObject& SetVelocity(CVector &v) { 
+      velocity_[0] = v[0];
+      velocity_[1] = v[1];
+      velocity_[2] = v[2];
       return *this;
    }
-	CVector GetVelocity()				{ return m_vVelocity; }
+	
+   CVector GetVelocity() { 
+      return CVector(velocity_[0], velocity_[1], velocity_[2]);
+   }
 
 	CMatrix GetViewMatrix()	{
 		CMatrix m = orient_;
@@ -786,15 +793,13 @@ public:
 		return m;
 	}
 
-	void Accelerate(CVector &vAccel, float fSeconds, float fResistance=0){
-		m_vVelocity += vAccel * fSeconds;
-		if(fResistance > DELTA)
-			m_vVelocity *= 1.0f - fResistance * fSeconds;
+	void Accelerate(CVector &vAccel, float seconds, float resistance=0){
+      const auto accel = glm::vec3(vAccel[0], vAccel[1], vAccel[2]);
+		velocity_ += accel * seconds;
+		if(resistance > DELTA)
+         velocity_ *= 1.0f - resistance * seconds;
 
-      auto offset = m_vVelocity * fSeconds;
-      position_[0] += offset[0];
-      position_[1] += offset[1];
-      position_[2] += offset[2];
+      position_ += velocity_ * seconds;
 	}
 
 };
