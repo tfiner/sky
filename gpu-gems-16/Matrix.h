@@ -30,7 +30,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-// #include "Noise.h"	// Has some useful defines and inline functions
+#include <glm/glm.hpp>
+
 #include <math.h>
 
 #include "Math.h"
@@ -720,38 +721,68 @@ public:
 * Note: This class is derived from CQuaternion so it will inherit useful
 *       functions like Rotate(), GetViewAxis(), GetUpAxis(), and GetRightAxis().
 ****************************************************************************/
-class C3DObject : public CQuaternion {
+class C3DObject {
 protected:
-	CDoubleVector m_vPosition;	// The object's position (km)
-	CVector m_vVelocity;		// The object's velocity (km/s)
+   CQuaternion    orient_;
+   glm::dvec3     position_;
+	CVector        m_vVelocity;		// The object's velocity (km/s)
 
 public:
-	C3DObject() : CQuaternion(0.0f, 0.0f, 0.0f, 1.0f), m_vPosition(0.0f), m_vVelocity(0.0f) {}
+	C3DObject() : orient_(0.0f, 0.0f, 0.0f, 1.0f), position_(0.0f), m_vVelocity(0.0f) {}
 
-	void operator=(const CQuaternion &q)		{ CQuaternion::operator=(q); }
-   void operator=(const CMatrix &m) = delete;
+   C3DObject& SetOrientation(const CQuaternion& q) {
+      orient_ = q;
+      return *this;
+   }
 
-   void SetPosition(CDoubleVector &v)	{ m_vPosition = v; }
-	CDoubleVector GetPosition()			{ return m_vPosition; }
+   C3DObject& SetPosition(CDoubleVector &v)	{ 
+      position_[0] = v[0];
+      position_[1] = v[1];
+      position_[2] = v[2];
+      return *this;
+   }
+
+	CDoubleVector GetPosition()			{ 
+      return CDoubleVector(position_[0], position_[1], position_[2]);
+   }
 	
-   void SetVelocity(CVector &v)		{ m_vVelocity = v; }
+   C3DObject& SetVelocity(CVector &v)		{ 
+      m_vVelocity = v; 
+      return *this;
+   }
 	CVector GetVelocity()				{ return m_vVelocity; }
 
-	CMatrix GetViewMatrix()
-	{
-		// Don't use the normal view matrix because it causes precision problems if the camera is too far away from the origin.
-		// Instead, pretend the camera is at the origin and offset all model matrices by subtracting the camera's position.
-		CMatrix m = *this;
+	CMatrix GetViewMatrix()	{
+		CMatrix m = orient_;
 		m.Transpose();
 		return m;
 	}
+
+   void Rotate(const CVector& axis, const float angle) {
+      orient_.Rotate(axis, angle);
+   }
+
+   CVector GetUpAxis() const {
+      return orient_.GetUpAxis();
+   }
+
+
+   CVector GetRightAxis() const {
+      return orient_.GetRightAxis();
+   }
+
+
+   CVector GetViewAxis() const {
+      return orient_.GetViewAxis();
+   }
+
 
    CMatrix GetModelMatrix(C3DObject *pCamera)
 	{
 		// Don't use the normal model matrix because it causes precision problems if the camera and model are too far away from the origin.
 		// Instead, pretend the camera is at the origin and offset all model matrices by subtracting the camera's position.
 		CMatrix m;
-		m.ModelMatrix(*this, m_vPosition-pCamera->m_vPosition);
+		m.ModelMatrix(orient_, GetPosition() - pCamera->GetPosition());
 		return m;
 	}
 
@@ -759,7 +790,11 @@ public:
 		m_vVelocity += vAccel * fSeconds;
 		if(fResistance > DELTA)
 			m_vVelocity *= 1.0f - fResistance * fSeconds;
-		m_vPosition += m_vVelocity * fSeconds;
+
+      auto offset = m_vVelocity * fSeconds;
+      position_[0] += offset[0];
+      position_[1] += offset[1];
+      position_[2] += offset[2];
 	}
 
 };

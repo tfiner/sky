@@ -65,11 +65,11 @@ SkySimulation::SkySimulation() {
 	glEnable(GL_CULL_FACE);
 
 
-	CVector vPos(0, 0, 25);
-	m_3DCamera.SetPosition(CDoubleVector(6.946963, 6.913678, 2.205330));
 	CQuaternion qOrientation(0.404703f, 0.910458f, 0.040314f, 0.075190f);
 	qOrientation.Normalize();
-	m_3DCamera = qOrientation;
+   m_3DCamera
+      .SetPosition(CDoubleVector(6.946963, 6.913678, 2.205330))
+      .SetOrientation(qOrientation);
 
    light_ = glm::vec3(0.0f, 0.0f, 1000.0f);
    lightDir_ = glm::normalize(light_);
