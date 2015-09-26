@@ -28,30 +28,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __PBuffer_h__
-#define __PBuffer_h__
+#pragma once
 
-#define MAX_PFORMATS 256
-#define MAX_ATTRIBS  32
 
-#include "GLUtil.h"
+#include <memory>
 
-class CPBuffer
-{
-protected:
-	int m_nWidth;
-	int m_nHeight;
-	int m_nFlags;
 
-	HDC m_hDC;
-	HGLRC m_hGLRC;
-	HPBUFFERARB m_hBuffer;
-	GLuint m_nTextureID;
+namespace tfgl {
+   class Program;
+}
 
-	bool m_bATI;
-	unsigned int m_nTarget;
-	CShaderObject m_shExposure;
 
+class CPBuffer {
 public:
 	enum {NoFlags = 0x00, DepthBuffer = 0x01, StencilBuffer = 0x02};
 
@@ -61,7 +49,7 @@ public:
 		m_hBuffer = NULL;
 		Init(nWidth, nHeight);
 	}
-	~CPBuffer()							{ Cleanup(); }
+   ~CPBuffer();
 
 	bool Init(int nWidth, int nHeight, int nFlags=(DepthBuffer|StencilBuffer));
 	void Cleanup();
@@ -73,31 +61,28 @@ public:
 	HGLRC GetHGLRC()					{ return m_hGLRC; }
 	HDC GetHDC()						{ return m_hDC; }
 
-	void MakeCurrent()
-	{
+	void MakeCurrent(){
 		if(m_hBuffer)
 			wglMakeCurrent(m_hDC, m_hGLRC);
 	}
-	void BindTexture(float fExposure, bool bUseExposure=true)
-	{
-		if(m_hBuffer && m_nTextureID)
-		{
-			if(bUseExposure)
-				m_shExposure.Enable();
-			m_shExposure.SetUniformParameter1i("s2Test", 0);
-			m_shExposure.SetUniformParameter1f("fExposure", fExposure);
-			glBindTexture(m_nTarget, m_nTextureID);
-			wglBindTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
-			glEnable(m_nTarget);
-		}
-	}
-	void ReleaseTexture()
-	{
-		if(m_hBuffer && m_nTextureID)
-			wglReleaseTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
-		glDisable(m_nTarget);
-		m_shExposure.Disable();
-	}
+   void BindTexture(float fExposure, bool bUseExposure = true);
+   void ReleaseTexture();
+
+
+protected:
+   int m_nWidth;
+   int m_nHeight;
+   int m_nFlags;
+
+   HDC m_hDC;
+   HGLRC m_hGLRC;
+   HPBUFFERARB m_hBuffer;
+   GLuint m_nTextureID;
+
+   bool m_bATI;
+   unsigned int m_nTarget;
+
+   std::unique_ptr<tfgl::Program> m_shExposure;
 };
 
-#endif // __PBuffer_h__
+

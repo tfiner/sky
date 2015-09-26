@@ -30,6 +30,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Master.h"
 #include "PBuffer.h"
+#include "GLUtil.h"
+
+#include <tfgl/Program.h>
+
+#define MAX_ATTRIBS  32
+
+CPBuffer::~CPBuffer() { 
+   Cleanup(); 
+}
 
 
 bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
@@ -164,15 +173,12 @@ bool CPBuffer::Init(int nWidth, int nHeight, int nFlags)
 	if(wglGetPixelFormatAttribivARB(m_hDC, nFormat, 0, sizeof(iAttributes) / sizeof(int), iAttributes, iValues))
 		LogInfo("PBuffer::Init() - %dx%d r:%d g:%d b:%d a:%d depth:%d stencil:%d samples:%d aux:%d\n", m_nWidth, m_nHeight, iValues[0], iValues[1], iValues[2], iValues[3], iValues[4], iValues[5], iValues[6], iValues[7]);
 
-	m_shExposure.Load("HDR", m_nTarget == GL_TEXTURE_2D ? "HDRSquare" : "HDRRect");
-
+   m_shExposure = tfgl::MakeProgram("HDR.vert", m_nTarget == GL_TEXTURE_2D ? "HDRSquare.frag" : "HDRRect.frag");
 	return true;
 }
 
-void CPBuffer::Cleanup()
-{
-	if(m_hBuffer)
-	{
+void CPBuffer::Cleanup() {
+	if(m_hBuffer){
 		glDeleteTextures(1, &m_nTextureID);
 		wglDeleteContext(m_hGLRC);
 		wglReleasePbufferDCARB(m_hBuffer, m_hDC);
@@ -181,16 +187,35 @@ void CPBuffer::Cleanup()
 	}
 }
 
-void CPBuffer::HandleModeSwitch()
-{
-	if(m_hBuffer)
-	{
+void CPBuffer::HandleModeSwitch() {
+	if(m_hBuffer) {
 		int nLost = 0;
 		wglQueryPbufferARB(m_hBuffer, WGL_PBUFFER_LOST_ARB, &nLost);
-		if(nLost)
-		{
+		if(nLost) {
 			Cleanup();
 			Init(m_nWidth, m_nHeight, m_nFlags);
 		}
 	}
+}
+
+
+void CPBuffer::BindTexture(float fExposure, bool bUseExposure /*= true*/) {
+   if(m_hBuffer && m_nTextureID) {
+      if(bUseExposure)
+         m_shExposure->Bind();
+      m_shExposure->SetUniform("s2Test", 0);
+      m_shExposure->SetUniform("fExposure", fExposure);
+      glBindTexture(m_nTarget, m_nTextureID);
+      wglBindTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
+      glEnable(m_nTarget);
+   }
+}
+
+
+void CPBuffer::ReleaseTexture() {
+   if(m_hBuffer && m_nTextureID)
+      wglReleaseTexImageARB(m_hBuffer, WGL_FRONT_LEFT_ARB);
+   glDisable(m_nTarget);
+
+   m_shExposure->Unbind();
 }

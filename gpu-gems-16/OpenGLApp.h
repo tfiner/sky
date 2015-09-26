@@ -37,6 +37,7 @@ struct GLFWwindow;
 class OpenGLApp  {
 public:
    OpenGLApp() : window_(nullptr), m_bActive(false), lastRender(0), m_nWidth(0), m_nHeight(0), simulation_(nullptr) {}
+   ~OpenGLApp();
 
    void Run();
    SkySimulation* GetSimulation() { return simulation_; }

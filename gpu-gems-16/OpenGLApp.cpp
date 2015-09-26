@@ -32,6 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "OpenGLApp.h"
 #include "SkySimulation.h"
 
+#include <tfgl/Program.h>
+
 #include <sstream>
 
 #include <GLFW/glfw3.h>
@@ -45,11 +47,18 @@ CLog *CLog::m_pSingleton = nullptr;
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLine, int nShowCmd) {
-	CLog log;
-	log.Init(Debug, "AtmosphereTest", 0);
-	OpenGLApp app;
-   app.Run();
+   try {
+      CLog log;
+      log.Init(Debug, "AtmosphereTest", 0);
+      OpenGLApp app;
+      app.Run();
+   } catch(const std::exception& e) {
+      ::MessageBoxA(nullptr, e.what(), "Exception!", MB_OK);
+   }
 }
+
+// For pimp of tfgl::Program in SkySimluation
+OpenGLApp::~OpenGLApp(){}
 
 void OpenGLApp::Run() {
 	InitMode(false, 800, 600);
