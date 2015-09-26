@@ -28,8 +28,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __GameEngine_h__
-#define __GameEngine_h__
+#pragma once
 
 #include "GLUtil.h"
 #include "PBuffer.h"
@@ -37,62 +36,62 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <memory>
 
+struct GLFWwindow;
+
 class SkySimulation {
-private:
-	float m_fFPS;
-	int m_nTime;
-
-	C3DObject m_3DCamera;
-	CVector m_vLight;
-	CVector m_vLightDirection;
-	
-	// Variables that can be tweaked with keypresses
-	bool m_bUseHDR;
-	int m_nSamples;
-	GLenum m_nPolygonMode;
-	float m_Kr, m_Kr4PI;
-	float m_Km, m_Km4PI;
-	float m_ESun;
-	float m_g;
-	float m_fExposure;
-
-	float m_fInnerRadius;
-	float m_fOuterRadius;
-	float m_fScale;
-	float m_fWavelength[3];
-	float m_fWavelength4[3];
-	float m_fRayleighScaleDepth;
-	float m_fMieScaleDepth;
-	CPixelBuffer m_pbOpticalDepth;
-
-   std::unique_ptr<CShaderObject> m_shSkyFromAtmosphere;
-   std::unique_ptr<CShaderObject> m_shGroundFromAtmosphere;
-   std::unique_ptr<CShaderObject> m_shSpaceFromAtmosphere;
-
-	CPBuffer m_pBuffer;
-
 public:
 	SkySimulation();
    ~SkySimulation() = default;
 
-   void RenderFrame(unsigned milliseconds);
+   void RenderFrame(GLFWwindow* win, unsigned milliseconds, int width, int height);
    void SetContext();
    void InitShaders();
-   void RenderHDR();
+   void RenderHDR(int width, int height);
    void RenderSky(CVector &vCamera);
    void RenderGound(CVector &vCamera);
  
    void Pause()	{}
 	void Restore()	{}
-	void HandleInput(float fSeconds);
 
-   void InputCameraPosition(float fSeconds);
-
-   void InputCameraOrient(float fSeconds);
-
-   void InputRenderParams();
+	void HandleInput(GLFWwindow* win, float fSeconds);
+   void InputCameraPosition(GLFWwindow* win, float fSeconds);
+   void InputCameraOrient(GLFWwindow* win, float fSeconds);
+   void InputRenderParams(GLFWwindow* win);
 
    void OnChar(int c);
+
+private:
+   float m_fFPS;
+   int m_nTime;
+
+   C3DObject m_3DCamera;
+   CVector m_vLight;
+   CVector m_vLightDirection;
+
+   // Variables that can be tweaked with keypresses
+   bool m_bUseHDR;
+   int m_nSamples;
+   GLenum m_nPolygonMode;
+   float m_Kr, m_Kr4PI;
+   float m_Km, m_Km4PI;
+   float m_ESun;
+   float m_g;
+   float m_fExposure;
+
+   float m_fInnerRadius;
+   float m_fOuterRadius;
+   float m_fScale;
+   float m_fWavelength[3];
+   float m_fWavelength4[3];
+   float m_fRayleighScaleDepth;
+   float m_fMieScaleDepth;
+   CPixelBuffer m_pbOpticalDepth;
+
+   std::unique_ptr<CShaderObject> m_shSkyFromAtmosphere;
+   std::unique_ptr<CShaderObject> m_shGroundFromAtmosphere;
+   std::unique_ptr<CShaderObject> m_shSpaceFromAtmosphere;
+
+   CPBuffer m_pBuffer;
 };
 
-#endif // __GameEngine_h__
+

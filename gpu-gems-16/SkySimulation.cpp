@@ -96,11 +96,11 @@ SkySimulation::SkySimulation() {
 }
 
 
-void SkySimulation::RenderFrame(unsigned milliseconds) {
+void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int width, int height) {
    InitShaders();
 
 	// Move the camera
-	HandleInput(milliseconds * 0.001f);
+	HandleInput(win, milliseconds * 0.001f);
 
    SetContext();
 
@@ -121,9 +121,7 @@ void SkySimulation::RenderFrame(unsigned milliseconds) {
 	glPopMatrix();
 	glFlush();
 
-   RenderHDR();
-
-   // DrawInfo(nMilliseconds);
+   RenderHDR(width, height);
 }
 
 
@@ -150,12 +148,12 @@ void SkySimulation::InitShaders() {
    }
 }
 
-void SkySimulation::RenderHDR() {
+void SkySimulation::RenderHDR(int width, int height) {
    if(!m_bUseHDR)
       return;
 
    GLUtil()->MakeCurrent();
-   glViewport(0, 0, GetOpenGLApp()->GetWidth(), GetOpenGLApp()->GetHeight());
+   glViewport(0, 0, width, height);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    glDisable(GL_LIGHTING);
@@ -271,26 +269,25 @@ void SkySimulation::OnChar(int upperC) {
 }
 
 
-bool IsKeyDown(const char c, bool& shifted) {
-   if(!glfwGetKey(GetOpenGLApp()->GetWindow(), c))
+bool IsKeyDown(GLFWwindow* win, const char c, bool& shifted) {
+   if(!glfwGetKey(win, c))
       return false;
 
-   shifted = glfwGetKey(GetOpenGLApp()->GetWindow(), GLFW_KEY_RIGHT_SHIFT) ||
-             glfwGetKey(GetOpenGLApp()->GetWindow(), GLFW_KEY_LEFT_SHIFT);
+   shifted = glfwGetKey(win, GLFW_KEY_RIGHT_SHIFT) ||
+             glfwGetKey(win, GLFW_KEY_LEFT_SHIFT);
 
    return true;
 }
 
 
-void SkySimulation::HandleInput(float fSeconds) {
-   InputRenderParams();
-   InputCameraOrient(fSeconds);
-   InputCameraPosition(fSeconds);
+void SkySimulation::HandleInput(GLFWwindow* win, float seconds) {
+   InputRenderParams(win);
+   InputCameraOrient(win, seconds);
+   InputCameraPosition(win, seconds);
 }
 
 
-void SkySimulation::InputCameraPosition(float fSeconds) {
-   const auto win = GetOpenGLApp()->GetWindow();
+void SkySimulation::InputCameraPosition(GLFWwindow* win, float seconds) {
    CVector vAccel(0.0f);
    if(glfwGetKey(win, GLFW_KEY_SPACE)) {
       m_3DCamera.SetVelocity(CVector(0.0f));	// Full stop
@@ -322,7 +319,7 @@ void SkySimulation::InputCameraPosition(float fSeconds) {
       if(GetKeyState('N') & 0x8000)
          vAccel += v * -thrust;
 
-      m_3DCamera.Accelerate(vAccel, fSeconds, Resistance);
+      m_3DCamera.Accelerate(vAccel, seconds, Resistance);
       CVector vPos = m_3DCamera.GetPosition();
       float fMagnitude = vPos.Magnitude();
       if(fMagnitude < m_fInnerRadius) {
@@ -333,31 +330,30 @@ void SkySimulation::InputCameraPosition(float fSeconds) {
    }
 }
 
-void SkySimulation::InputCameraOrient(float fSeconds) {
-   const auto win = GetOpenGLApp()->GetWindow();
+void SkySimulation::InputCameraOrient(GLFWwindow* win, float seconds) {
    if(glfwGetKey(win, GLFW_KEY_RIGHT) || glfwGetKey(win, GLFW_KEY_KP_6))
-      m_3DCamera.Rotate(m_3DCamera.GetUpAxis(), fSeconds * -RadiansPerSecond);
+      m_3DCamera.Rotate(m_3DCamera.GetUpAxis(), seconds * -RadiansPerSecond);
 
    if(glfwGetKey(win, GLFW_KEY_LEFT) || glfwGetKey(win, GLFW_KEY_KP_4))
-      m_3DCamera.Rotate(m_3DCamera.GetUpAxis(), fSeconds * RadiansPerSecond);
+      m_3DCamera.Rotate(m_3DCamera.GetUpAxis(), seconds * RadiansPerSecond);
 
    if(glfwGetKey(win, GLFW_KEY_UP) || glfwGetKey(win, GLFW_KEY_KP_8))
-      m_3DCamera.Rotate(m_3DCamera.GetRightAxis(), fSeconds * -RadiansPerSecond);
+      m_3DCamera.Rotate(m_3DCamera.GetRightAxis(), seconds * -RadiansPerSecond);
 
    if(glfwGetKey(win, GLFW_KEY_DOWN) || glfwGetKey(win, GLFW_KEY_KP_2))
-      m_3DCamera.Rotate(m_3DCamera.GetRightAxis(), fSeconds * RadiansPerSecond);
+      m_3DCamera.Rotate(m_3DCamera.GetRightAxis(), seconds * RadiansPerSecond);
 
    if(glfwGetKey(win, GLFW_KEY_KP_7))
-      m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), fSeconds * -RadiansPerSecond);
+      m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), seconds * -RadiansPerSecond);
 
    if(glfwGetKey(win, GLFW_KEY_KP_9))
-      m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), fSeconds * RadiansPerSecond);
+      m_3DCamera.Rotate(m_3DCamera.GetViewAxis(), seconds * RadiansPerSecond);
 }
 
 
-void SkySimulation::InputRenderParams() {
+void SkySimulation::InputRenderParams(GLFWwindow* win) {
    bool isShifted = false;
-   if(const auto isOne = IsKeyDown('1', isShifted)){
+   if(const auto isOne = IsKeyDown(win, '1', isShifted)){
       if(isShifted)
          m_Kr = Max(0.0f, m_Kr - 0.0001f);
       else
@@ -366,7 +362,7 @@ void SkySimulation::InputRenderParams() {
       m_Kr4PI = m_Kr*4.0f*PI;
 
    }
-   else if(const auto isTwo = IsKeyDown('2', isShifted))	{
+   else if(const auto isTwo = IsKeyDown(win,  '2', isShifted))	{
       if(isShifted)
          m_Km = Max(0.0f, m_Km - 0.0001f);
       else
@@ -375,21 +371,21 @@ void SkySimulation::InputRenderParams() {
       m_Km4PI = m_Km*4.0f*PI;
 
    }
-   else if(IsKeyDown('3', isShifted)) {
+   else if(IsKeyDown(win,  '3', isShifted)) {
       if(isShifted)
          m_g = Max(-1.0f, m_g - 0.001f);
       else
          m_g = Min(1.0f, m_g + 0.001f);
 
    }
-   else if(IsKeyDown('4', isShifted))	{
+   else if(IsKeyDown(win,  '4', isShifted))	{
       if(isShifted)
          m_ESun = Max(0.0f, m_ESun - 0.1f);
       else
          m_ESun += 0.1f;
 
    }
-   else if(IsKeyDown('5', isShifted)) {
+   else if(IsKeyDown(win,  '5', isShifted)) {
       if(isShifted)
          m_fWavelength[0] = Max(0.001f, m_fWavelength[0] -= 0.001f);
       else
@@ -398,7 +394,7 @@ void SkySimulation::InputRenderParams() {
       m_fWavelength4[0] = powf(m_fWavelength[0], 4.0f);
 
    }
-   else if(IsKeyDown('6', isShifted)) {
+   else if(IsKeyDown(win,  '6', isShifted)) {
       if(isShifted)
          m_fWavelength[1] = Max(0.001f, m_fWavelength[1] -= 0.001f);
       else
@@ -407,7 +403,7 @@ void SkySimulation::InputRenderParams() {
       m_fWavelength4[1] = powf(m_fWavelength[1], 4.0f);
 
    }
-   else if(IsKeyDown('7', isShifted)) {
+   else if(IsKeyDown(win,  '7', isShifted)) {
       if(isShifted)
          m_fWavelength[2] = Max(0.001f, m_fWavelength[2] -= 0.001f);
       else
@@ -416,7 +412,7 @@ void SkySimulation::InputRenderParams() {
       m_fWavelength4[2] = powf(m_fWavelength[2], 4.0f);
 
    }
-   else if(IsKeyDown('8', isShifted)) {
+   else if(IsKeyDown(win,  '8', isShifted)) {
       if(isShifted)
          m_fExposure = Max(0.1f, m_fExposure - 0.1f);
       else

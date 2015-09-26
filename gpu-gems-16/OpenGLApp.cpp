@@ -36,19 +36,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <GLFW/glfw3.h>
 
-WinApp *WinApp::m_pMainApp;
 CLog *CLog::m_pSingleton = NULL;
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLine, int nShowCmd) {
 	CLog log;
 	log.Init(Debug, "AtmosphereTest", 0);
-	OpenGLApp app(hInstance, hPrevInstance, pszCmdLine);
-   app.InitInstance();
+	OpenGLApp app;
+   app.Run();
 }
 
-bool OpenGLApp::InitInstance() {
-	return InitMode(false, 800, 600);
+void OpenGLApp::Run() {
+	InitMode(false, 800, 600);
 }
 
 void OnResize(GLFWwindow* window, int width, int height) {
@@ -110,7 +109,7 @@ bool OpenGLApp::OnIdle() {
 	if(!m_bActive)
 		return false;
 	const auto milliseconds = timeGetTime();
-	simulation_->RenderFrame(milliseconds-lastRender);
+	simulation_->RenderFrame(window_, milliseconds-lastRender, m_nWidth, m_nHeight);
    glfwSwapBuffers(window_);
 	lastRender = milliseconds;
 	Sleep(0);

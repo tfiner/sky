@@ -173,7 +173,6 @@
     <ClInclude Include="PixelBuffer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />

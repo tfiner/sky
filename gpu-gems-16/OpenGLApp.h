@@ -30,25 +30,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "WinApp.h"
-
 class SkySimulation;
+struct GLFWwindow;
 
 
-class OpenGLApp : public WinApp {
+class OpenGLApp  {
 public:
-   OpenGLApp(HINSTANCE hInstance, HINSTANCE hPrevInstance = nullptr, char *pszCmdLine = "") :
-      m_bActive(false),
-      simulation_(nullptr),
-      WinApp(hInstance, hPrevInstance, pszCmdLine) {}
+   OpenGLApp() : window_(nullptr), m_bActive(false), lastRender(0), m_nWidth(0), m_nHeight(0), simulation_(nullptr) {}
 
-   virtual bool InitInstance();
+   void Run();
    SkySimulation* GetSimulation() { return simulation_; }
 
    int GetWidth()	{ return m_nWidth; }
    int GetHeight()	{ return m_nHeight; }
 
 private:
+   GLFWwindow* window_;
+
    bool m_bActive;
    unsigned lastRender;
    int m_nWidth, m_nHeight;
@@ -68,6 +66,3 @@ private:
    void MakeCurrent();
 };
 
-inline OpenGLApp* GetOpenGLApp() {
-   return dynamic_cast<OpenGLApp*>(GetApp());
-}

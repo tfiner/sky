@@ -89,9 +89,6 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OpenGLApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
