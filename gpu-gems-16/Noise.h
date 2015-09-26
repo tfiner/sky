@@ -28,106 +28,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __Noise_h__
-#define __Noise_h__
+#pragma once
 
 #include <math.h>
 #include <float.h>
 #include <stdlib.h>
 
-// Defines
-#define PI					3.14159f			// PI
-#define HALF_PI				1.57080f			// PI / 2
-#define TWO_PI				6.28318f			// PI * 2
-#define INV_PI				0.318310f			// 1 / PI
-#define INV_TWO_PI			0.159155f			// 1 / (PI*2)
-#define INV_HALF_PI			0.636618f			// 1 / (PI/2)
+#include <algorithm>
 
-#define LOGHALF				-0.693147f			// log(0.5)
-#define LOGHALFI			-1.442695f			// Inverse of log(0.5)
-#define DELTA				1e-6f				// Small number for comparing floating point numbers
 #define MAX_DIMENSIONS		4					// Maximum number of dimensions in a noise object
 #define MAX_OCTAVES			128					// Maximum # of octaves in an fBm object
 
-#define HALF_RAND			(RAND_MAX/2)
-
-// Macros
-#define SQUARE(a)			((a) * (a))
-#define FLOOR(a)			((int)(a) - ((a) < 0 && (a) != (int)(a)))
-#define CEILING(a)			((int)(a) + ((a) > 0 && (a) != (int)(a)))
-#define MIN(a, b)			((a) < (b) ? (a) : (b))
-#define MAX(a, b)			((a) > (b) ? (a) : (b))
-#define ABS(a)				((a) < 0 ? -(a) : (a))
-#define CLAMP(a, b, x)		((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
-#define LERP(a, b, x)		((a) + (x) * ((b) - (a)))
-#define CUBIC(a)			((a) * (a) * (3 - 2*(a)))
-#define STEP(a, x)			((x) >= (a))
-#define BOXSTEP(a, b, x)	Clamp(0, 1, ((x)-(a))/((b)-(a)))
-#define PULSE(a, b, x)		(((x) >= (a)) - ((x) >= (b)))
-#define GAMMA(a, g)			powf(a, 1/g)
-#define BIAS(a, b)			powf(a, logf(b) * LOGHALFI)
-#define EXPOSE(l, k)		(1 - expf(l * k))
-#define DEGTORAD(x)			((x) * 0.01745329251994f)
-#define RADTODEG(x)			((x) * 57.29577951308f)
-#define SWAP(a, b, t)		{ t = a; a = b; b = t; }
-
-// Inline functions (use instead of macros to avoid performing slow operations twice)
-template <class T> T Min(T a, T b)				{ return (a < b ? a : b); }
-template <class T> T Max(T a, T b)				{ return (a > b ? a : b); }
-inline float Square(float a)					{ return a * a; }
-inline int Floor(float a)						{ return ((int)a - (a < 0 && a != (int)a)); }
-inline int Ceiling(float a)						{ return ((int)a + (a > 0 && a != (int)a)); }
-inline float Abs(float a)						{ return (a < 0 ? -a : a); }
-inline float Clamp(float a, float b, float x)	{ return (x < a ? a : (x > b ? b : x)); }
-inline float Lerp(float a, float b, float x)	{ return a + x * (b - a); }
-inline float Cubic(float a)						{ return a * a * (3 - 2*a); }
-inline float Step(float a, float x)				{ return (float)(x >= a); }
-inline float Boxstep(float a, float b, float x)	{ return Clamp(0, 1, (x-a)/(b-a)); }
-inline float Pulse(float a, float b, float x)	{ return (float)((x >= a) - (x >= b)); }
-inline float Gamma(float a, float g)			{ return powf(a, 1/g); }
-inline float Bias(float a, float b)				{ return powf(a, logf(b) * LOGHALFI); }
-inline float Expose(float l, float k)			{ return (1 - expf(-l * k)); }
-
-inline float Gain(float a, float b)
-{
-	if(a <= DELTA)
-		return 0;
-	if(a >= 1-DELTA)
-		return 1;
-
-	register float p = (logf(1 - b) * LOGHALFI);
-	if(a < 0.5)
-		return powf(2 * a, p) * 0.5f;
-	else
-		return 1 - powf(2 * (1 - a), p) * 0.5f;
-}
-
-inline float Smoothstep(float a, float b, float x)
-{
-	if(x <= a)
-		return 0;
-	if(x >= b)
-		return 1;
-	return Cubic((x - a) / (b - a));
-}
-
-inline float Mod(float a, float b)
-{
-	a -= ((int)(a / b)) * b;
-	if(a < 0)
-		a += b;
-	return a;
-}
-
-inline void Normalize(float *f, int n)
-{
-	float fMagnitude = 0;
-	for(auto  i=0; i<n; i++)
-		fMagnitude += f[i]*f[i];
-	fMagnitude = 1 / sqrtf(fMagnitude);
-	for(auto i=0; i<n; i++)
-		f[i] *= fMagnitude;
-}
 
 /*******************************************************************************
 * Class: CRandom
@@ -149,13 +60,13 @@ public:
 	{
 		double dInterval = dMax - dMin;
 		double d = dInterval * Random();
-		return dMin + MIN(d, dInterval);
+		return dMin + (std::min)(d, dInterval);
 	}
 	unsigned int RandomI(unsigned int nMin, unsigned int nMax)
 	{
 		unsigned int nInterval = nMax - nMin;
 		unsigned int i = (unsigned int)((nInterval+1.0) * Random());
-		return nMin + MIN(i, nInterval);
+		return nMin + (std::min)(i, nInterval);
 	}
 };
 
@@ -264,4 +175,3 @@ public:
 	float fBmTest(float *f, float fOctaves);
 };
 
-#endif // __Noise_h__

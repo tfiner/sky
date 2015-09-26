@@ -30,12 +30,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Master.h"
 #include "Noise.h"
+#include "Math.h"
 
 #include <algorithm>
 
 void CNoise::Init(int nDimensions, unsigned int nSeed)
 {
-	m_nDimensions = MIN(nDimensions, MAX_DIMENSIONS);
+	m_nDimensions = (std::min)(nDimensions, MAX_DIMENSIONS);
 	CRandom r(nSeed);
 
 	int i, j, k;

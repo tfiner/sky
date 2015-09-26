@@ -28,10 +28,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __Matrix_h__
-#define __Matrix_h__
+#pragma once
 
-#include "Noise.h"	// Has some useful defines and inline functions
+// #include "Noise.h"	// Has some useful defines and inline functions
+#include <math.h>
+
+#include "Math.h"
 
 class CMatrix;
 class CQuaternion;
@@ -45,12 +47,9 @@ class C3DObject;
 * and because it's templatized, any numeric type can be used with it. Macros are
 * defined for the most common types.
 *******************************************************************************/
-#define CVector			TVector<float>
-#define CDoubleVector	TVector<double>
-#define CIntVector		TVector<int>
-#define CByteVector		TVector<unsigned char>
-template <class T> class TVector
-{
+
+
+template <class T> class TVector {
 public:
 	T x, y, z;
 
@@ -119,13 +118,20 @@ public:
 		TVector<T> v = *this / t;
 		return (v - n * (2 * (v | n))) * t;
 	}
-	TVector<T> Rotate(const T tAngle, const CVector &n) const
+
+
+	TVector<T> Rotate(const T tAngle, const TVector<T> &n) const
 	{
 		T tCos = (T)cos(tAngle);
 		T tSin = (T)sin(tAngle);
 		return TVector<T>(*this * tCos + ((n * *this) * (1 - tCos)) * n + (*this ^ n) * tSin);
 	}
 };
+
+using CVector = TVector<float>;
+using CDoubleVector = TVector<double>;
+
+
 
 // Returns the normal vector of two vectors (the normalized cross product)
 template <class T> inline TVector<T> NormalVector(const TVector<T> &v1, const TVector<T> &v2)
@@ -1263,4 +1269,3 @@ public:
 	}
 };
 
-#endif //__Matrix_h__

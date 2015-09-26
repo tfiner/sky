@@ -30,6 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Master.h"
 #include "PixelBuffer.h"
+#include "Noise.h"
 
 void PixelBuffer::MakeCloudCell(float fExpose, float fSizeDisc)
 {

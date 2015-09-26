@@ -200,6 +200,7 @@
     <ClInclude Include="..\..\sky-dependencies\tfgl\Shader.h" />
     <ClInclude Include="3DBuffer.h" />
     <ClInclude Include="DateTime.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="OpenGLApp.h" />
     <ClInclude Include="SkySimulation.h" />
     <ClInclude Include="GLUtil.h" />
