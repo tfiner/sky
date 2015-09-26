@@ -32,7 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #define __Texture_h__
 
 #include "PixelBuffer.h"
-#include "GLUtil.h"
+
+#include <cassert>
 
 /*******************************************************************************
 * Class: CTexture
@@ -147,14 +148,14 @@ public:
 
 	int LockTexture()
 	{
-		_ASSERT(m_nStackIndex < m_nStackSize);
+		assert(m_nStackIndex < m_nStackSize);
 		if(m_nStackIndex >= m_nStackSize)
 			return m_nStackSize;
 		return m_pStack[m_nStackIndex++];
 	}
 	void ReleaseTexture(int nTexture)
 	{
-		_ASSERT(m_nStackIndex > 0 && nTexture >= 0 && nTexture < m_nStackSize);
+		assert(m_nStackIndex > 0 && nTexture >= 0 && nTexture < m_nStackSize);
 		if(m_nStackIndex <= 0 || nTexture < 0 || nTexture >= m_nStackSize)
 			return;
 		m_pStack[--m_nStackIndex] = nTexture;
@@ -162,23 +163,23 @@ public:
 
 	void Update(int nTexture, CPixelBuffer *pBuffer)
 	{
-		_ASSERT(nTexture >= 0 && nTexture < m_nStackSize);
+		assert(nTexture >= 0 && nTexture < m_nStackSize);
 		if(nTexture < 0 || nTexture >= m_nStackSize)
 			return;
 
 		Bind();
 		int x = nTexture % m_nArrayWidth;
 		int y = nTexture / m_nArrayWidth;
-		_ASSERT(pBuffer->GetWidth() == m_nPartitionSize);
-		_ASSERT(pBuffer->GetHeight() == m_nPartitionSize);
-		_ASSERT(pBuffer->GetFormat() == m_nFormat);
-		_ASSERT(pBuffer->GetDataType() == m_nDataType);
+		assert(pBuffer->GetWidth() == m_nPartitionSize);
+		assert(pBuffer->GetHeight() == m_nPartitionSize);
+		assert(pBuffer->GetFormat() == m_nFormat);
+		assert(pBuffer->GetDataType() == m_nDataType);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x*m_nPartitionSize, y*m_nPartitionSize, pBuffer->GetWidth(), pBuffer->GetHeight(), pBuffer->GetFormat(), pBuffer->GetDataType(), pBuffer->GetBuffer());
 	}
 
 	void MapCorners(int nTexture, float fXMin, float fYMin, float fXMax, float fYMax)
 	{
-		_ASSERT(nTexture >= 0 && nTexture < m_nStackSize);
+		assert(nTexture >= 0 && nTexture < m_nStackSize);
 		if(nTexture < 0 || nTexture >= m_nStackSize)
 			return;
 

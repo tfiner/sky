@@ -38,10 +38,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 struct GLFWwindow;
 
+namespace tfgl {
+   class Program;
+}
+
 class SkySimulation {
 public:
 	SkySimulation();
-   ~SkySimulation() = default;
+   // For pimpl of Programs.
+   ~SkySimulation();
 
    void RenderFrame(GLFWwindow* win, unsigned milliseconds, int width, int height);
    void SetContext();
@@ -87,9 +92,9 @@ private:
    float m_fMieScaleDepth;
    CPixelBuffer m_pbOpticalDepth;
 
-   std::unique_ptr<CShaderObject> m_shSkyFromAtmosphere;
-   std::unique_ptr<CShaderObject> m_shGroundFromAtmosphere;
-   std::unique_ptr<CShaderObject> m_shSpaceFromAtmosphere;
+   std::unique_ptr<tfgl::Program> m_shSkyFromAtmosphere;
+   std::unique_ptr<tfgl::Program> m_shGroundFromAtmosphere;
+   std::unique_ptr<tfgl::Program> m_shSpaceFromAtmosphere;
 
    CPBuffer m_pBuffer;
 };

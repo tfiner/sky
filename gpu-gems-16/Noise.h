@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <math.h>
 #include <float.h>
+#include <stdlib.h>
 
 // Defines
 #define PI					3.14159f			// PI

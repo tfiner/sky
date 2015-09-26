@@ -33,6 +33,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SkySimulation.h"
 #include "GLUtil.h"
 
+#include <tfgl/Shader.h>
+#include <tfgl/Program.h>
+
 #include <GLFW/glfw3.h>
 
 namespace {
@@ -96,6 +99,9 @@ SkySimulation::SkySimulation() {
 }
 
 
+SkySimulation::~SkySimulation(){}
+
+
 void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int width, int height) {
    InitShaders();
 
@@ -138,13 +144,9 @@ void SkySimulation::SetContext() {
 // Lazily initialize shaders.
 void SkySimulation::InitShaders() {
    if(!m_shSkyFromAtmosphere) {
-      m_shSkyFromAtmosphere = std::make_unique<CShaderObject>();
-      m_shGroundFromAtmosphere = std::make_unique<CShaderObject>();
-      m_shSpaceFromAtmosphere = std::make_unique<CShaderObject>();
-
-      m_shSkyFromAtmosphere->Load("SkyFromAtmosphere");
-      m_shGroundFromAtmosphere->Load("GroundFromAtmosphere");
-      m_shSpaceFromAtmosphere->Load("SpaceFromAtmosphere");
+      m_shSkyFromAtmosphere      = tfgl::MakeProgram("SkyFromAtmosphere");
+      m_shGroundFromAtmosphere   = tfgl::MakeProgram("GroundFromAtmosphere");
+      m_shSpaceFromAtmosphere    = tfgl::MakeProgram("SpaceFromAtmosphere");
    }
 }
 
@@ -183,68 +185,66 @@ void SkySimulation::RenderHDR(int width, int height) {
 void SkySimulation::RenderSky(CVector &vCamera) {
    auto pSkyShader = m_shSkyFromAtmosphere.get();
 
-   pSkyShader->Enable();
-   pSkyShader->SetUniformParameter3f("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   pSkyShader->SetUniformParameter3f("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
-   pSkyShader->SetUniformParameter3f("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
-   pSkyShader->SetUniformParameter1f("fCameraHeight", vCamera.Magnitude());
-   pSkyShader->SetUniformParameter1f("fCameraHeight2", vCamera.MagnitudeSquared());
-   pSkyShader->SetUniformParameter1f("fInnerRadius", m_fInnerRadius);
-   pSkyShader->SetUniformParameter1f("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
-   pSkyShader->SetUniformParameter1f("fOuterRadius", m_fOuterRadius);
-   pSkyShader->SetUniformParameter1f("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
-   pSkyShader->SetUniformParameter1f("fKrESun", m_Kr*m_ESun);
-   pSkyShader->SetUniformParameter1f("fKmESun", m_Km*m_ESun);
-   pSkyShader->SetUniformParameter1f("fKr4PI", m_Kr4PI);
-   pSkyShader->SetUniformParameter1f("fKm4PI", m_Km4PI);
-   pSkyShader->SetUniformParameter1f("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-   pSkyShader->SetUniformParameter1f("fScaleDepth", m_fRayleighScaleDepth);
-   pSkyShader->SetUniformParameter1f("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-   pSkyShader->SetUniformParameter1f("g", m_g);
-   pSkyShader->SetUniformParameter1f("g2", m_g*m_g);
+   pSkyShader->Bind();
+   pSkyShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
+   pSkyShader->SetUniform("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+   pSkyShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
+   pSkyShader->SetUniform("fCameraHeight", vCamera.Magnitude());
+   pSkyShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
+   pSkyShader->SetUniform("fInnerRadius", m_fInnerRadius);
+   pSkyShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
+   pSkyShader->SetUniform("fOuterRadius", m_fOuterRadius);
+   pSkyShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
+   pSkyShader->SetUniform("fKrESun", m_Kr*m_ESun);
+   pSkyShader->SetUniform("fKmESun", m_Km*m_ESun);
+   pSkyShader->SetUniform("fKr4PI", m_Kr4PI);
+   pSkyShader->SetUniform("fKm4PI", m_Km4PI);
+   pSkyShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
+   pSkyShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
+   pSkyShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
+   pSkyShader->SetUniform("g", m_g);
+   pSkyShader->SetUniform("g2", m_g*m_g);
 
    glFrontFace(GL_CW);
-   //glEnable(GL_BLEND);
    glBlendFunc(GL_ONE, GL_ONE);
 
    auto pSphere = gluNewQuadric();
    gluSphere(pSphere, m_fOuterRadius, 100, 50);
    gluDeleteQuadric(pSphere);
 
-   //glDisable(GL_BLEND);
    glFrontFace(GL_CCW);
-   pSkyShader->Disable();
+   pSkyShader->Unbind();
 }
 
 
 void SkySimulation::RenderGound(CVector &vCamera) {
    auto pGroundShader = m_shGroundFromAtmosphere.get();
 
-   pGroundShader->Enable();
-   pGroundShader->SetUniformParameter3f("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   pGroundShader->SetUniformParameter3f("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
-   pGroundShader->SetUniformParameter3f("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
-   pGroundShader->SetUniformParameter1f("fCameraHeight", vCamera.Magnitude());
-   pGroundShader->SetUniformParameter1f("fCameraHeight2", vCamera.MagnitudeSquared());
-   pGroundShader->SetUniformParameter1f("fInnerRadius", m_fInnerRadius);
-   pGroundShader->SetUniformParameter1f("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
-   pGroundShader->SetUniformParameter1f("fOuterRadius", m_fOuterRadius);
-   pGroundShader->SetUniformParameter1f("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
-   pGroundShader->SetUniformParameter1f("fKrESun", m_Kr*m_ESun);
-   pGroundShader->SetUniformParameter1f("fKmESun", m_Km*m_ESun);
-   pGroundShader->SetUniformParameter1f("fKr4PI", m_Kr4PI);
-   pGroundShader->SetUniformParameter1f("fKm4PI", m_Km4PI);
-   pGroundShader->SetUniformParameter1f("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-   pGroundShader->SetUniformParameter1f("fScaleDepth", m_fRayleighScaleDepth);
-   pGroundShader->SetUniformParameter1f("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-   pGroundShader->SetUniformParameter1f("g", m_g);
-   pGroundShader->SetUniformParameter1f("g2", m_g*m_g);
-   pGroundShader->SetUniformParameter1i("s2Test", 0);
+   pGroundShader->Bind();
+   pGroundShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
+   pGroundShader->SetUniform("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+   pGroundShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
+   pGroundShader->SetUniform("fCameraHeight", vCamera.Magnitude());
+   pGroundShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
+   pGroundShader->SetUniform("fInnerRadius", m_fInnerRadius);
+   pGroundShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
+   pGroundShader->SetUniform("fOuterRadius", m_fOuterRadius);
+   pGroundShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
+   pGroundShader->SetUniform("fKrESun", m_Kr*m_ESun);
+   pGroundShader->SetUniform("fKmESun", m_Km*m_ESun);
+   pGroundShader->SetUniform("fKr4PI", m_Kr4PI);
+   pGroundShader->SetUniform("fKm4PI", m_Km4PI);
+   pGroundShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
+   pGroundShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
+   pGroundShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
+   pGroundShader->SetUniform("g", m_g);
+   pGroundShader->SetUniform("g2", m_g*m_g);
+   pGroundShader->SetUniform("s2Test", 0);
 
    GLUquadricObj *pSphere = gluNewQuadric();
    gluSphere(pSphere, m_fInnerRadius, 100, 50);
    gluDeleteQuadric(pSphere);
-   pGroundShader->Disable();
+   pGroundShader->Unbind();
 }
 
 

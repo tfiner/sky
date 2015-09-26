@@ -17,6 +17,9 @@
       <UniqueIdentifier>{56681414-0e3a-45bc-882e-516ae6b72de9}</UniqueIdentifier>
       <Extensions>vert;frag</Extensions>
     </Filter>
+    <Filter Include="tfgl">
+      <UniqueIdentifier>{4f55343c-5524-495d-baf1-edb930e0ba6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLUtil.cpp">
@@ -45,6 +48,15 @@
     </ClCompile>
     <ClCompile Include="SkySimulation.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sky-dependencies\tfgl\Exception.cpp">
+      <Filter>tfgl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sky-dependencies\tfgl\Program.cpp">
+      <Filter>tfgl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sky-dependencies\tfgl\Shader.cpp">
+      <Filter>tfgl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +95,15 @@
     </ClInclude>
     <ClInclude Include="SkySimulation.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\Exception.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\Program.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\Shader.h">
+      <Filter>tfgl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

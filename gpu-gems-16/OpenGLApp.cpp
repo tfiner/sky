@@ -36,7 +36,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <GLFW/glfw3.h>
 
-CLog *CLog::m_pSingleton = NULL;
+#define WIN32_LEAN_AND_MEAN
+#define NO_MINMAX
+#include <windows.h>
+#include <mmsystem.h>
+
+CLog *CLog::m_pSingleton = nullptr;
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLine, int nShowCmd) {

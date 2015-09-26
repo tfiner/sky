@@ -30,6 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __DateTime_h__
 #define __DateTime_h__
 
+#include <string>
+
 
 class CDateTime;	// Forward declaration
 

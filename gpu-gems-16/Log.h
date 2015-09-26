@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DateTime.h"
 
+#include <fstream>
+
 enum LoggingLevel
 {
 	None = 0,

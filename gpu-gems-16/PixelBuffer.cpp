@@ -109,7 +109,7 @@ void CPixelBuffer::MakeGlow2D(float fExposure, float fRadius)
 			float fY = ((m_nHeight-1)*0.5f - y) / (float)(m_nHeight-1);
 			float fDist = Max(0.0f, sqrtf(fX*fX + fY*fY) - fRadius);
 
-			float fIntensity = exp(-fExposure * fDist);
+			float fIntensity = expf(-fExposure * fDist);
 			unsigned char c = (unsigned char)(fIntensity*192 + 0.5f);
 			for(int i=0; i<m_nChannels; i++)
 				((unsigned char *)m_pBuffer)[nIndex++] = c;
