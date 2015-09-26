@@ -87,51 +87,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "/D/master/src/3rdParty/glu_1.3/glu/src/libutil/quad.c",
-			"settings":
-			{
-				"buffer_size": 29473,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "gpu-gems-16/AtmosphereTest.log",
-			"settings":
-			{
-				"buffer_size": 10786,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "gpu-gems-16/good-log.txt",
-			"settings":
-			{
-				"buffer_size": 12017,
-				"line_ending": "Windows",
-				"name": "wglGetProcAddress(glCreateProgramObjectARB)"
-			}
-		},
-		{
-			"contents": "glCreateProgramObjectARB() [Context 2 - program 1] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 2: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 3: source code is not available] \nglCreateProgramObjectARB() [Context 2 - program 4] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 5: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 6: source code is not available] \nglCreateProgramObjectARB() [Context 2 - program 7] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 8: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 9: source code is not available] \nglCreateProgramObjectARB() [Context 2 - program 10] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 11: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 12: source code is not available] \nglCreateProgramObjectARB() [Context 2 - program 13] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 14: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 15: source code is not available] \nglCreateProgramObjectARB() [Context 2 - program 16] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 17: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 18: source code is not available] \nglCreateProgramObjectARB() [Context 2 - program 19] \nglCreateShaderObjectARB(GL_VERTEX_SHADER) [Context 2 - Shader 20: source code is not available] \nglCreateShaderObjectARB(GL_FRAGMENT_SHADER) [Context 2 - Shader 21: source code is not available] \nwglGetCurrentDC() \nwglGetCurrentContext() \nglGetString(GL_VENDOR) \nwglMakeCurrent(0x1F010B1F, 0x020000) \nglEnable(GL_DEPTH_TEST) \nglDepthFunc(GL_LEQUAL) \nglEnable(GL_CULL_FACE) \nglEnable(GL_LIGHTING) \nglEnable(GL_LIGHT0) \nglLightModelfv(GL_LIGHT_MODEL_AMBIENT, {0}) \nwglMakeCurrent(0x1F010B1F, 0x020000) \nglGenTextures(1, {3452816845}) \nglBindTexture(GL_TEXTURE_RECTANGLE, 1) [Context 2 - Texture 1: No preview available] \nglTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR) [Context 2 - Texture 1: No preview available] \nglTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR) [Context 2 - Texture 1: No preview available] \nglTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) [Context 2 - Texture 1: No preview available] \nglTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) [Context 2 - Texture 1: No preview available] \nwglGetCurrentDC() \nwglGetCurrentContext() \nwglChoosePixelFormatARB(0x1F010B1F, 0x3DF8E4, 0x000000, 1, 0x3DF7C0, 0x3DF7B4) \nwglCreatePbufferARB(0x1F010B1F, 725, 1024, 1024, 0x3DF7DC) \nwglSetPixelFormat(0x59012014, 1, 0x3DF600) \nwglGetPbufferDCARB(0xAFA90AC2) \nwglCreateContext(0x59012014) \nwglShareLists(0x020000, 0x010001) \nwglQueryPbufferARB(0xAFA90AC2, 8244, 0x5016050) \nwglQueryPbufferARB(0xAFA90AC2, 8245, 0x5016054) \nwglQueryPbufferARB(0xAFA90AC2, 8306, 0x3DF7A8) \nwglGetPixelFormatAttribivARB(0x59012014, 725, 0, 8, 0x3DF780, 0x3DF758) \nglShaderSourceARB(20, 1, 0x3DF600, 0x3DF528) [Context 2 - shader 20] \nglCompileShaderARB(20) [Context 2 - shader 20] \nglGetObjectParameterivARB(20, GL_COMPILE_STATUS, 0x3DF5F4) [Context 2 - shader 20] \nglShaderSourceARB(21, 1, 0x3DF600, 0x3DF528) [Context 2 - shader 21] \nglCompileShaderARB(21) [Context 2 - shader 21] \nglGetObjectParameterivARB(21, GL_COMPILE_STATUS, 0x3DF5F4) [Context 2 - shader 21] \nglGetError() \nglGetError() \nglGetObjectParameterivARB(21, GL_INFO_LOG_LENGTH, 0x3DF3F4) [Context 2 - shader 21] \nglGetInfoLogARB(21, 270, 269, 0(9) : error C7532: global type sampler2DRect requires \"#version 140\" or later 0(9) : error C0000: ... or #extension GL_ARB_texture_rectangle : enable 0(15) : error C7531: global function texture2DRect requires \"#extension GL_ARB_texture_rectangle : enable\" before use ) [Context 2 - shader 21] \nwglMakeCurrent(0x59012014, 0x010001) \nglViewport(0, 0, 800, 600) \nglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) \nglDisable(GL_LIGHTING) \nglPushMatrix() \nglLoadIdentity() \nglMatrixMode(GL_PROJECTION) \nglPushMatrix() \nglLoadIdentity() \nglOrtho(0, 1, 0, 1, -1, 1) \nglUseProgramObjectARB(19) [Context 2 - program 19] \nglGetUniformLocationARB(19, s2Test) [Context 2 - program 19] \nglUniform1iARB(-1, 0) \nglGetUniformLocationARB(19, fExposure) [Context 2 - program 19] \nglUniform1fARB(-1, 2) \nglBindTexture(GL_TEXTURE_RECTANGLE, 1) [Context 2 - Texture 1: No preview available] \nwglBindTexImageARB(0xAFA90AC2, 8323) \nglEnable(GL_TEXTURE_RECTANGLE) \nglBegin(GL_QUADS) \nglTexCoord2f(0, 0) \nglVertex2f(0, 0) \nglTexCoord2f(1, 0) \nglVertex2f(1, 0) \nglTexCoord2f(1, 1) \nglVertex2f(1, 1) \nglTexCoord2f(0, 1) \nglVertex2f(0, 1) \nglEnd() \nwglReleaseTexImageARB(0xAFA90AC2, 8323) \nglDisable(GL_TEXTURE_RECTANGLE) \nglUseProgramObjectARB(0) [Context 2 - program 0] \nglPopMatrix() \nglMatrixMode(GL_MODELVIEW) \nglPopMatrix() \nglEnable(GL_LIGHTING) \nglFlush() \nwglSwapBuffers(0x1F010B1F) \n\n////////////////////////////////////////////////////////////\n// Log file recording suspended\n// Suspension time: 22:01:29\n////////////////////////////////////////////////////////////\n",
-			"file": "gpu-gems-16/bad-log.txt",
-			"file_size": 5383,
-			"file_write_time": 130873717530998157,
-			"settings":
-			{
-				"buffer_size": 5281,
-				"line_ending": "Windows",
-				"name": "glCreateProgramObjectARB() [Context 2 - program 1]"
-			}
-		},
-		{
-			"file": "gpu-gems-16/Glfw.props",
-			"settings":
-			{
-				"buffer_size": 792,
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -189,8 +144,32 @@
 	},
 	"file_history":
 	[
-		"/C/Users/Tim/Documents/sky/gpu-gems-16/AtmosphereTest.vcxproj",
-		"/C/Users/Tim/Documents/sky/gpu-gems-16/gpu-gems.props",
+		"/C/Users/Tim/Documents/sky/sky.sublime-workspace",
+		"/D/master/src/Voxler/.vs/Voxler4/v14/.suo",
+		"/D/master/src/Surfer/Source/Core/Utility.cpp",
+		"/D/master/src/Subsystems/Shared/SystemInfo.cpp",
+		"/D/master/src/Subsystems/Shared/XPTheme.cpp",
+		"/D/master/src/Subsystems/SharedGui/WelcomeDlg.cpp",
+		"/D/master/src/Subsystems/GsCrash/Common/ExamineDump.cpp",
+		"/D/master/src/Voxler/Build/VxCommon.props",
+		"/D/master/src/Voxler/UI/VxGui.props",
+		"/D/master/src/Subsystems/Build/IncludeSubsystems.props",
+		"/D/master/src/Surfer/Source/Core/WksDoc.cpp",
+		"/D/master/src/Surfer/Source/Core/WksDoc.h",
+		"/D/master/src/Subsystems/Wkslib/Open.cpp",
+		"/D/master/src/Subsystems/Wkslib/WksAfx.cpp",
+		"/D/master/src/Subsystems/Wkslib/WksAfxUtils.cpp",
+		"/D/master/src/Subsystems/Wkslib/WksAfx2.h",
+		"/D/master/src/Surfer/Source/Core/WksInterface.cpp",
+		"/D/master/src/Surfer/Source/UI/UiFileOpen.cpp",
+		"/D/master/src/Surfer/Source/UI/Surfer.cpp",
+		"/D/master/src/Surfer/Source/Core/WksInterface.h",
+		"/D/master/src/Voxler/UI/CoreInterface.cpp",
+		"/C/Users/Tim/Documents/jira/vox-2776/v4-bad.txt",
+		"/C/Users/Tim/Documents/jira/vox-2776/v3-good.txt",
+		"/C/Users/Tim/scripts/BuildCrashDir.js",
+		"/D/master/src/Didger/didger_ui/src/bcg_helpers.cpp",
+		"/D/master/src/Grapher/Grapher.cpp",
 		"/D/master/src/Voxler/Core/VoNetwork.cpp",
 		"/D/master/src/Subsystems/Wks/WksApi0.cpp",
 		"/D/master/src/Subsystems/Wks/Main.cpp",
@@ -202,10 +181,8 @@
 		"/C/Users/Tim/Documents/sky/testbed/src/Testbed.h",
 		"/D/master/src/Subsystems/Wks/WksApi2.h",
 		"/C/Users/Tim/Documents/jira/vox-2788/Mansourah Nabita Structures thick3d4.dxf",
-		"/C/Users/Tim/scripts/BuildCrashDir.js",
 		"/D/master/src/Golden.sublime-project",
 		"/D/master/src/Subsystems/Gsio/ioLidar/IncludeLibLAS.props",
-		"/D/master/src/Surfer/Source/Core/WksInterface.cpp",
 		"/C/Users/Tim/AppData/Roaming/Golden Software/Voxler 4/Voxlerd.log",
 		"/D/master/src/Didger/GsComLib4/Legacy.h",
 		"/D/master/src/Grapher/PropMan/FillPropList.cpp",
@@ -250,7 +227,6 @@
 		"/C/Users/Tim/AppData/Roaming/Golden Software/Voxler 4/Voxler.ini",
 		"/D/master/src/Subsystems/Shared/MathUtility.h",
 		"/E/coin/src/rendering/SoOffscreenRenderer.cpp",
-		"/D/master/src/Grapher/Grapher.cpp",
 		"/D/master/src/Surfer/Source/Core/Application.cpp",
 		"/D/master/src/Subsystems/.gitignore",
 		"/C/Users/Tim/AppData/Roaming/Golden Software/Voxler 4/Voxler.log",
@@ -295,28 +271,7 @@
 		"/D/master/src/Subsystems/SharedGui/Test/SharedGuiTestBuild.props",
 		"/D/master/src/Subsystems/Build/GSSubsysUnitTest.props",
 		"/D/master/src/Subsystems/Build/GSSubsysTest.props",
-		"/D/master/src/Subsystems/Build/QtIncludeLibs.props",
-		"/D/master/src/Voxler/Build/IncludeGle.props",
-		"/D/master/src/Subsystems/Build/libSuffixDebug.props",
-		"/D/master/src/Subsystems/Build/IncludeBoostNoDynLink.props",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/test/unit_test.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/test/prg_exec_monitor.hpp",
-		"/D/master/src/Subsystems/Build/IncludeBoost.props",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/interprocess/managed_shared_memory.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/date_time/filetime_functions.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/date_time/managed_shared_memory.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/interprocess/detail/config_begin.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/run-first.bat",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/system/error_code.hpp",
-		"/D/master/src/Voxler/Setup/Voxler.yaml",
-		"/C/Users/Tim/Documents/bullshit.clr",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/spirit/home/classic/error_handling/exceptions.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/spirit/home/classic/core/assert.hpp",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/throw_exception.hpp",
-		"/C/Users/Tim/Downloads/boost_1_59_0/boost_1_59_0/build.txt",
-		"/D/master/src/3rdParty/Boost_1.59.0/Boost/boost/spirit/home/classic/utility/scoped_lock.hpp",
-		"/C/Users/Tim/Downloads/boost_1_59_0/boost_1_59_0/build-clean.txt",
-		"/D/master/src/Voxler/CopyRuntimes/CopyRuntimes.props"
+		"/D/master/src/Subsystems/Build/QtIncludeLibs.props"
 	],
 	"find":
 	{
@@ -324,9 +279,16 @@
 	},
 	"find_in_files":
 	{
-		"height": 90.0,
+		"height": 0.0,
 		"where_history":
 		[
+			"<open folders>,*.cpp,*.h,",
+			"<open folders>,*.vcxproj,*.props",
+			"<open folders>,*.cpp,*.h,",
+			"<open folders>,*.vcxproj,*.props",
+			"<open folders>,*.cpp,*.h,",
+			"<open folders>,*.vcxproj,*.props",
+			"<open folders>,*.cpp,*.h,",
 			"<open folders>,*.vcxproj,*.props,*.rc,*.rc2,*.xml,*.manifest,*.cpp,*.h, *.filters",
 			"<open folders>,*.vcxproj,*.props",
 			"<open folders>,*.vcxproj,*.props,*.rc,*.rc2,*.xml,*.manifest,*.cpp,*.h, *.filters",
@@ -438,16 +400,38 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
-			"glCreateShaderObjectARB",
-			"AdditionalDependencies",
-			"AdditionalIncludeDirectories",
-			"..\\tfgl",
-			"<SubSystem>Windows</SubSystem>",
-			"SubSystem",
-			"<Link",
+			"GetOSName",
+			"GetOSNameAndVersion",
+			"GetOSName",
+			"OSNameFromVersionAndPlatform",
+			"GetOSName",
+			"GetWinVersion",
+			"LIB_SUFFIX",
+			"#pragma comment(lib",
+			"wks2dm",
+			"Wks2",
+			"Wks2.*lib",
+			"wkslib",
+			"wkslib2.lib",
+			"IMPLEMENT_DYNCREATE(.*, CWksDoc)",
+			"wlLoadNewOrExisting",
+			"LoadNewOrExisting",
+			"wlAfxOpenWorksheet",
+			"wksNewDocument",
+			"OpenDocumentFileWithOptions",
+			"OpenDocumentFile",
+			"GetWksDocTemplate",
+			"OpenDocFromTemplate",
+			"SerialDelay2",
+			".*?(\\d+)$",
+			".*(\\d+)$",
+			"CBCGPMDIFrameWnd",
+			"CBCGP",
+			"CBCGPMiniFrameWnd",
+			"CTime",
 			"GL_NO_ERROR",
 			"No error has been recorded. The value of this symbolic constant is guaranteed to be 0.",
 			"alloc",
@@ -546,29 +530,7 @@
 			"boost.*date",
 			"date",
 			"errno_ecat",
-			"system",
-			"throw",
-			"boost::system",
-			"boost",
-			"system",
-			"boost.*system",
-			"boost.*thread",
-			"BOOST_DISABLE_THREADS",
-			"boost.*thread",
-			"thread",
-			"58>",
-			"error",
-			"BOOST_MSVC_VER",
-			"BOOST_SUFFIX_VER",
-			"BOOST_VER",
-			"1.58",
-			"boost_1.58",
-			"boost",
-			"25000",
-			"welldatapathmethod",
-			"ComputePaths",
-			"paths: ",
-			"MW-1"
+			"system"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -576,8 +538,7 @@
 		"regex": false,
 		"replace_history":
 		[
-			"tfgl",
-			"<SubSystem>Console</SubSystem>",
+			"\\1",
 			"\\n",
 			"",
 			"\\1\\t",
@@ -671,149 +632,14 @@
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": false,
+		"whole_word": true,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "/D/master/src/3rdParty/glu_1.3/glu/src/libutil/quad.c",
-					"settings":
-					{
-						"buffer_size": 29473,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								18226,
-								18235
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 10381.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "gpu-gems-16/AtmosphereTest.log",
-					"settings":
-					{
-						"buffer_size": 10786,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								9561,
-								9561
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 997.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "gpu-gems-16/good-log.txt",
-					"settings":
-					{
-						"buffer_size": 12017,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								164,
-								141
-							]
-						],
-						"settings":
-						{
-							"auto_name": "wglGetProcAddress(glCreateProgramObjectARB)",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "gpu-gems-16/bad-log.txt",
-					"settings":
-					{
-						"buffer_size": 5281,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1328,
-								1328
-							]
-						],
-						"settings":
-						{
-							"auto_name": "glCreateProgramObjectARB() [Context 2 - program 1]",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "gpu-gems-16/Glfw.props",
-					"settings":
-					{
-						"buffer_size": 792,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								638,
-								638
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -866,6 +692,22 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"eol",
+				"Scripts/python/eolfix.py"
+			],
+			[
+				"includesu",
+				"Subsystems/Build/IncludeSubsystems.props"
+			],
+			[
+				"vxcom",
+				"Voxler/Build/VxCommon.props"
+			],
+			[
+				"vxgui",
+				"Voxler/UI/VxGui.props"
+			],
 			[
 				"vxwk",
 				"Voxler/UI/VxWks.cpp"
@@ -1361,22 +1203,6 @@
 			[
 				"copytun",
 				"Voxler/CopyRuntimes/CopyRuntimes.props"
-			],
-			[
-				"gscrash.",
-				"Voxler/Setup/ProgFiles/GSCrash.ini"
-			],
-			[
-				"crash",
-				"Subsystems/GsCrash/CrashTrap/CrashTrap.h"
-			],
-			[
-				"includesu",
-				"Subsystems/Build/IncludeSubsystems.props"
-			],
-			[
-				"vec4.h",
-				"Subsystems/Shared/Vec4.h"
 			]
 		],
 		"width": 0.0
@@ -1388,7 +1214,7 @@
 		[
 			[
 				"",
-				"/D/master/src/Golden.sublime-project"
+				"/C/Users/Tim/Documents/sky/sky.sublime-project"
 			]
 		],
 		"width": 380.0

@@ -144,8 +144,8 @@
     <ResourceCompile Include="AtmosphereTest.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameApp.cpp" />
-    <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="OpenGLApp.cpp" />
+    <ClCompile Include="SkySimulation.cpp" />
     <ClCompile Include="GLUtil.cpp" />
     <ClCompile Include="Master.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -161,9 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DateTime.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="GameApp.h" />
-    <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="OpenGLApp.h" />
+    <ClInclude Include="SkySimulation.h" />
     <ClInclude Include="GLUtil.h" />
     <ClInclude Include="ListTemplates.h" />
     <ClInclude Include="Log.h" />
@@ -174,7 +173,7 @@
     <ClInclude Include="PixelBuffer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="WndClass.h" />
+    <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
