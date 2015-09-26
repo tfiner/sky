@@ -5,7 +5,6 @@
 
 #define BUFFER_OFFSET(i) ((char *) NULL + (i))
 
-#include "Texture.h"
 #include "Log.h"
 
 

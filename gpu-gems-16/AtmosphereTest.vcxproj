@@ -37,6 +37,7 @@
     <Import Project="Glew.props" />
     <Import Project="Glfw.props" />
     <Import Project="tfgl.props" />
+    <Import Project="glm.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -189,10 +190,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Master.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="Noise.cpp" />
     <ClCompile Include="PBuffer.cpp" />
     <ClCompile Include="PixelBuffer.cpp" />
-    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\sky-dependencies\tfgl\Exception.h" />
@@ -211,7 +210,6 @@
     <ClInclude Include="PBuffer.h" />
     <ClInclude Include="PixelBuffer.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />

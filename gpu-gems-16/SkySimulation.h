@@ -33,6 +33,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "GLUtil.h"
 #include "PBuffer.h"
 #include "OpenGLApp.h"
+#include "Matrix.h"
+#include "PixelBuffer.h"
+
+#include <glm/glm.hpp>
 
 #include <memory>
 
@@ -70,9 +74,10 @@ private:
    int m_nTime;
 
    C3DObject m_3DCamera;
-   CVector m_vLight;
-   CVector m_vLightDirection;
 
+   glm::vec3 light_;
+   glm::vec3 lightDir_;
+   
    // Variables that can be tweaked with keypresses
    bool m_bUseHDR;
    int m_nSamples;

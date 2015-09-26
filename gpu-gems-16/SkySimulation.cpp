@@ -38,6 +38,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <GLFW/glfw3.h>
 
+
+
 namespace {
    // Camera rotation:
    const auto RadiansPerSecond = 1.0f;
@@ -69,9 +71,8 @@ SkySimulation::SkySimulation() {
 	qOrientation.Normalize();
 	m_3DCamera = qOrientation;
 
-	m_vLight = CVector(0, 0, 1000);
-	m_vLightDirection = m_vLight / m_vLight.Magnitude();
-	Texture::InitStaticMembers(238653, 256);
+   light_ = glm::vec3(0.0f, 0.0f, 1000.0f);
+   lightDir_ = glm::normalize(light_);
 
 	m_nSamples = 3;		// Number of sample rays to use in integral equation
 	m_Kr = 0.0025f;		// Rayleigh scattering constant
@@ -187,7 +188,7 @@ void SkySimulation::RenderSky(CVector &vCamera) {
 
    pSkyShader->Bind();
    pSkyShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   pSkyShader->SetUniform("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+   pSkyShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
    pSkyShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
    pSkyShader->SetUniform("fCameraHeight", vCamera.Magnitude());
    pSkyShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
@@ -222,7 +223,7 @@ void SkySimulation::RenderGound(CVector &vCamera) {
 
    pGroundShader->Bind();
    pGroundShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   pGroundShader->SetUniform("v3LightPos", m_vLightDirection.x, m_vLightDirection.y, m_vLightDirection.z);
+   pGroundShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
    pGroundShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
    pGroundShader->SetUniform("fCameraHeight", vCamera.Magnitude());
    pGroundShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());

@@ -28,8 +28,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __PixelBuffer_h__
-#define __PixelBuffer_h__
+#pragma once
 
 #include "Matrix.h"
 #include "3DBuffer.h"
@@ -67,12 +66,6 @@ public:
 	}
 
 	// Miscellaneous initalization routines
-	void MakeCloudCell(float fExpose, float fSizeDisc);
-	void Make3DNoise(int nSeed);
-	void MakeGlow1D();
-	void MakeGlow2D(float fExposure, float fRadius);
 	void MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius, float fRayleighScaleHeight, float fMieScaleHeight);
-	void MakePhaseBuffer(float ESun, float Kr, float Km, float g);
 };
 
-#endif // __PixelBuffer_h__

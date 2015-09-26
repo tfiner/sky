@@ -32,92 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "PixelBuffer.h"
 #include "Noise.h"
 
-void PixelBuffer::MakeCloudCell(float fExpose, float fSizeDisc)
-{
-	int i;
-	int n = 0;
-	unsigned char nIntensity;
-	for(int y=0; y<m_nHeight; y++)
-	{
-		float fDy = (y+0.5f)/m_nHeight - 0.5f;
-		for(int x=0; x<m_nWidth; x++)
-		{
-			float fDx = (x+0.5f)/m_nWidth - 0.5f;
-			float fDist = sqrtf(fDx*fDx + fDy*fDy);
-			float fIntensity = 2.0f - Min(2.0f, powf(2.0f, Max(fDist-fSizeDisc,0.0f)*fExpose));
-			switch(m_nDataType)
-			{
-				case GL_UNSIGNED_BYTE:
-					nIntensity = (unsigned char)(fIntensity*255 + 0.5f);
-					for(i=0; i<m_nChannels; i++)
-						((unsigned char *)m_pBuffer)[n++] = nIntensity;
-					break;
-				case GL_FLOAT:
-					for(i=0; i<m_nChannels; i++)
-						((float *)m_pBuffer)[n++] = fIntensity;
-					break;
-			}
-		}
-	}
-}
-
-void PixelBuffer::Make3DNoise(int nSeed)
-{
-	CFractal noise(3, nSeed, 0.5f, 2.0f);
-	int n = 0;
-	float fValues[3];
-	for(int z=0; z<m_nDepth; z++)
-	{
-		fValues[2] = (float)z * 0.0625f;
-		for(int y=0; y<m_nHeight; y++)
-		{
-			fValues[1] = (float)y * 0.0625f;
-			for(int x=0; x<m_nWidth; x++)
-			{
-				fValues[0] = (float)x * 0.0625f;
-				float fIntensity = Abs(noise.fBm(fValues, 4.0f)) - 0.5f;
-				if(fIntensity < 0.0)
-					fIntensity = 0.0f;
-				fIntensity = 1.0f - powf(0.9f, fIntensity*255);
-				unsigned char nIntensity = (unsigned char)(fIntensity*255 + 0.5f);
-				((unsigned char *)m_pBuffer)[n++] = 255;
-				((unsigned char *)m_pBuffer)[n++] = nIntensity;
-			}
-		}
-	}
-}
-
-void PixelBuffer::MakeGlow1D()
-{
-	int nIndex=0;
-	for(int x=0; x<m_nWidth; x++)
-	{
-		float fIntensity = powf((float)x / m_nWidth, 0.75f);
-		for(int i=0; i<m_nChannels-1; i++)
-			((unsigned char *)m_pBuffer)[nIndex++] = (unsigned char)255;
-		((unsigned char *)m_pBuffer)[nIndex++] = (unsigned char)(fIntensity*255 + 0.5f);
-	}
-}
-
-void PixelBuffer::MakeGlow2D(float fExposure, float fRadius)
-{
-	int nIndex=0;
-	for(int y=0; y<m_nHeight; y++)
-	{
-		for(int x=0; x<m_nWidth; x++)
-		{
-			float fX = ((m_nWidth-1)*0.5f - x) / (float)(m_nWidth-1);
-			float fY = ((m_nHeight-1)*0.5f - y) / (float)(m_nHeight-1);
-			float fDist = Max(0.0f, sqrtf(fX*fX + fY*fY) - fRadius);
-
-			float fIntensity = expf(-fExposure * fDist);
-			unsigned char c = (unsigned char)(fIntensity*192 + 0.5f);
-			for(int i=0; i<m_nChannels; i++)
-				((unsigned char *)m_pBuffer)[nIndex++] = c;
-		}
-	}
-}
-
 void PixelBuffer::MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius, float fRayleighScaleHeight, float fMieScaleHeight)
 {
 	const int nSize = 64;
@@ -228,25 +142,6 @@ void PixelBuffer::MakeOpticalDepthBuffer(float fInnerRadius, float fOuterRadius,
 			*/
 		}
 		//ofGraph << std::endl;
-	}
-}
-
-void PixelBuffer::MakePhaseBuffer(float ESun, float Kr, float Km, float g)
-{
-	Km *= ESun;
-	Kr *= ESun;
-	float g2 = g*g;
-	float fMiePart = 1.5f * (1.0f - g2) / (2.0f + g2);
-
-	int nIndex = 0;
-	for(int nAngle=0; nAngle<m_nWidth; nAngle++)
-	{
-		float fCos = 1.0f - (nAngle+nAngle) / (float)m_nWidth;
-		float fCos2 = fCos*fCos;
-		float fRayleighPhase = 0.75f * (1.0f + fCos2);
-		float fMiePhase = fMiePart * (1.0f + fCos2) / powf(1.0f + g2 - 2.0f*g*fCos, 1.5f);
-		((float *)m_pBuffer)[nIndex++] = fRayleighPhase * Kr;
-		((float *)m_pBuffer)[nIndex++] = fMiePhase * Km;
 	}
 }
 

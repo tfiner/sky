@@ -3,6 +3,7 @@
 
 #include "Master.h"
 #include "GLUtil.h"
+#include "Matrix.h"
 
 CGLUtil g_glUtil;
 CGLUtil *CGLUtil::m_pMain = &g_glUtil;
