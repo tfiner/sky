@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <tfgl/Program.h>
 
 #include <GLFW/glfw3.h>
-
+#include <algorithm>
 
 
 namespace {
@@ -49,6 +49,8 @@ namespace {
 
    // Camera damping effect on velocity:
    const auto Resistance = 0.1f;
+
+   const auto PI = 3.1415927f;
 }
 
 
@@ -356,7 +358,7 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
    bool isShifted = false;
    if(const auto isOne = IsKeyDown(win, '1', isShifted)){
       if(isShifted)
-         m_Kr = Max(0.0f, m_Kr - 0.0001f);
+         m_Kr = (std::max)(0.0f, m_Kr - 0.0001f);
       else
          m_Kr += 0.0001f;
 
@@ -365,7 +367,7 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
    }
    else if(const auto isTwo = IsKeyDown(win,  '2', isShifted))	{
       if(isShifted)
-         m_Km = Max(0.0f, m_Km - 0.0001f);
+         m_Km = (std::max)(0.0f, m_Km - 0.0001f);
       else
          m_Km += 0.0001f;
 
@@ -374,21 +376,21 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
    }
    else if(IsKeyDown(win,  '3', isShifted)) {
       if(isShifted)
-         m_g = Max(-1.0f, m_g - 0.001f);
+         m_g = (std::max)(-1.0f, m_g - 0.001f);
       else
-         m_g = Min(1.0f, m_g + 0.001f);
+         m_g = (std::min)(1.0f, m_g + 0.001f);
 
    }
    else if(IsKeyDown(win,  '4', isShifted))	{
       if(isShifted)
-         m_ESun = Max(0.0f, m_ESun - 0.1f);
+         m_ESun = (std::max)(0.0f, m_ESun - 0.1f);
       else
          m_ESun += 0.1f;
 
    }
    else if(IsKeyDown(win,  '5', isShifted)) {
       if(isShifted)
-         m_fWavelength[0] = Max(0.001f, m_fWavelength[0] -= 0.001f);
+         m_fWavelength[0] = (std::max)(0.001f, m_fWavelength[0] -= 0.001f);
       else
          m_fWavelength[0] += 0.001f;
 
@@ -397,7 +399,7 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
    }
    else if(IsKeyDown(win,  '6', isShifted)) {
       if(isShifted)
-         m_fWavelength[1] = Max(0.001f, m_fWavelength[1] -= 0.001f);
+         m_fWavelength[1] = (std::max)(0.001f, m_fWavelength[1] -= 0.001f);
       else
          m_fWavelength[1] += 0.001f;
 
@@ -406,7 +408,7 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
    }
    else if(IsKeyDown(win,  '7', isShifted)) {
       if(isShifted)
-         m_fWavelength[2] = Max(0.001f, m_fWavelength[2] -= 0.001f);
+         m_fWavelength[2] = (std::max)(0.001f, m_fWavelength[2] -= 0.001f);
       else
          m_fWavelength[2] += 0.001f;
 
@@ -415,7 +417,7 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
    }
    else if(IsKeyDown(win,  '8', isShifted)) {
       if(isShifted)
-         m_fExposure = Max(0.1f, m_fExposure - 0.1f);
+         m_fExposure = (std::max)(0.1f, m_fExposure - 0.1f);
       else
          m_fExposure += 0.1f;
    }
