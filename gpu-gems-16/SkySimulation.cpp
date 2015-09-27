@@ -73,7 +73,7 @@ SkySimulation::SkySimulation() {
       .SetPosition(CDoubleVector(6.946963, 6.913678, 2.205330))
       .SetOrientation(qOrientation);
 
-   light_ = glm::vec3(0.0f, 0.0f, 1000.0f);
+   light_ = glm::vec3(0.0f, -400.0f, 1000.0f);
    lightDir_ = glm::normalize(light_);
 
 	m_nSamples = 3;		// Number of sample rays to use in integral equation
@@ -161,10 +161,10 @@ void SkySimulation::RenderHDR(int width, int height) {
    glViewport(0, 0, width, height);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   glDisable(GL_LIGHTING);
    glPushMatrix();
    glLoadIdentity();
    glMatrixMode(GL_PROJECTION);
+
    glPushMatrix();
    glLoadIdentity();
    glOrtho(0, 1, 0, 1, -1, 1);
@@ -181,7 +181,6 @@ void SkySimulation::RenderHDR(int width, int height) {
    glPopMatrix();
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix();
-   glEnable(GL_LIGHTING);
 }
 
 
@@ -213,7 +212,7 @@ void SkySimulation::RenderSky(CVector &vCamera) {
    glBlendFunc(GL_ONE, GL_ONE);
 
    auto pSphere = gluNewQuadric();
-   gluSphere(pSphere, m_fOuterRadius, 100, 50);
+   gluSphere(pSphere, m_fOuterRadius, 100, 100);
    gluDeleteQuadric(pSphere);
 
    glFrontFace(GL_CCW);
