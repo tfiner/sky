@@ -31,14 +31,23 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include <math.h>
 
-#include "Math.h"
+#include <algorithm>
 
 class CMatrix;
 class CQuaternion;
 class C3DObject;
+
+// Small number for comparing floating point numbers
+const auto DELTA = 1e-6f;
+
+inline float DegToRad(float d)   {
+   return d * 0.01745329251994f;
+}
+
 
 /*******************************************************************************
 * Template Class: TVector
@@ -688,7 +697,7 @@ public:
 	void ProjectionMatrix(const float fNear, const float fFar, const float fFOV, const float fAspect)
 	{
 		// 2 muls, 3 divs, 2 adds, 1 trig function call
-		float h = 1.0f / tanf(DEGTORAD(fFOV * 0.5f));
+		float h = 1.0f / tanf(DegToRad(fFOV * 0.5f));
 		float Q = fFar / (fFar - fNear);
 		f12 = f13 = f14 = f21 = f23 = f24 = f31 = f32 = f41 = f42 = f44 = 0;
 		f11 = h / fAspect;
@@ -701,13 +710,12 @@ public:
 	// For orthogonal matrices, I belive this also gives you the inverse.
 	void Transpose()
 	{
-		float f;
-		SWAP(f12, f21, f);
-		SWAP(f13, f31, f);
-		SWAP(f14, f41, f);
-		SWAP(f23, f32, f);
-		SWAP(f24, f42, f);
-		SWAP(f34, f43, f);
+		(std::swap)(f12, f21);
+		(std::swap)(f13, f31);
+		(std::swap)(f14, f41);
+		(std::swap)(f23, f32);
+		(std::swap)(f24, f42);
+		(std::swap)(f34, f43);
 	}
 };
 
