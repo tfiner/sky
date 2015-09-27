@@ -207,6 +207,7 @@ void SkySimulation::RenderSky(CVector &vCamera) {
    pSkyShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
    pSkyShader->SetUniform("g", m_g);
    pSkyShader->SetUniform("g2", m_g*m_g);
+   pSkyShader->SetUniform("nSamples", m_nSamples);
 
    glFrontFace(GL_CW);
    glBlendFunc(GL_ONE, GL_ONE);
@@ -262,7 +263,7 @@ void SkySimulation::OnChar(int upperC) {
 		case 'h':
 			m_bUseHDR = !m_bUseHDR;
 			break;
-		case '+':
+		case '=':
 			m_nSamples++;
 			break;
 		case '-':
