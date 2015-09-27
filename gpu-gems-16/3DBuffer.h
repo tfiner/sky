@@ -31,8 +31,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <memory>
+
 
 enum BufferDataType {
    UnsignedByteType = GL_UNSIGNED_BYTE,
@@ -118,27 +120,27 @@ public:
 
    void *operator()(const float x)
    {
-      int nX = Min(m_nWidth - 1, Max(0, (int)(x*(m_nWidth - 1) + 0.5f)));
+      int nX = (std::min)(m_nWidth - 1, (std::max)(0, (int)(x*(m_nWidth - 1) + 0.5f)));
       return (void *)((unsigned long)m_pBuffer + m_nElementSize * nX);
    }
    void *operator()(const float x, const float y)
    {
-      int nX = Min(m_nWidth - 1, Max(0, (int)(x*(m_nWidth - 1) + 0.5f)));
-      int nY = Min(m_nHeight - 1, Max(0, (int)(y*(m_nHeight - 1) + 0.5f)));
+      int nX = (std::min)(m_nWidth - 1, (std::max)(0, (int)(x*(m_nWidth - 1) + 0.5f)));
+      int nY = (std::min)(m_nHeight - 1, (std::max)(0, (int)(y*(m_nHeight - 1) + 0.5f)));
       return (void *)((unsigned long)m_pBuffer + m_nElementSize * (m_nWidth * nY + nX));
    }
    void *operator()(const float x, const float y, const float z)
    {
-      int nX = Min(m_nWidth - 1, Max(0, (int)(x*(m_nWidth - 1) + 0.5f)));
-      int nY = Min(m_nHeight - 1, Max(0, (int)(y*(m_nHeight - 1) + 0.5f)));
-      int nZ = Min(m_nDepth - 1, Max(0, (int)(z*(m_nDepth - 1) + 0.5f)));
+      int nX = (std::min)(m_nWidth - 1, (std::max)(0, (int)(x*(m_nWidth - 1) + 0.5f)));
+      int nY = (std::min)(m_nHeight - 1, (std::max)(0, (int)(y*(m_nHeight - 1) + 0.5f)));
+      int nZ = (std::min)(m_nDepth - 1, (std::max)(0, (int)(z*(m_nDepth - 1) + 0.5f)));
       return (void *)((unsigned long)m_pBuffer + m_nElementSize * (m_nWidth * (m_nHeight * nZ + nY) + nX));
    }
 
    void Interpolate(float *p, const float x)
    {
       float fX = x*(m_nWidth - 1);
-      int nX = Min(m_nWidth - 2, Max(0, (int)fX));
+      int nX = (std::min)(m_nWidth - 2, (std::max)(0, (int)fX));
       float fRatioX = fX - nX;
       float *pValue = (float *)((unsigned long)m_pBuffer + m_nElementSize * nX);
       for(int i = 0; i < m_nChannels; i++)
@@ -151,8 +153,8 @@ public:
    {
       float fX = x*(m_nWidth - 1);
       float fY = y*(m_nHeight - 1);
-      int nX = Min(m_nWidth - 2, Max(0, (int)fX));
-      int nY = Min(m_nHeight - 2, Max(0, (int)fY));
+      int nX = (std::min)(m_nWidth - 2, (std::max)(0, (int)fX));
+      int nY = (std::min)(m_nHeight - 2, (std::max)(0, (int)fY));
       float fRatioX = fX - nX;
       float fRatioY = fY - nY;
       float *pValue = (float *)((unsigned long)m_pBuffer + m_nElementSize * (m_nWidth * nY + nX));
@@ -170,9 +172,9 @@ public:
       float fX = x*(m_nWidth - 1);
       float fY = y*(m_nHeight - 1);
       float fZ = z*(m_nDepth - 1);
-      int nX = Min(m_nWidth - 2, Max(0, (int)fX));
-      int nY = Min(m_nHeight - 2, Max(0, (int)fY));
-      int nZ = Min(m_nDepth - 2, Max(0, (int)fZ));
+      int nX = (std::min)(m_nWidth - 2, (std::max)(0, (int)fX));
+      int nY = (std::min)(m_nHeight - 2, (std::max)(0, (int)fY));
+      int nZ = (std::min)(m_nDepth - 2, (std::max)(0, (int)fZ));
       float fRatioX = fX - nX;
       float fRatioY = fY - nY;
       float fRatioZ = fZ - nZ;
@@ -236,18 +238,11 @@ public:
    void *GetBuffer() const		{ return m_pBuffer; }
 
    void ClearBuffer()			{ memset(m_pBuffer, 0, GetBufferSize()); }
-   void SwapBuffers(ThreeDBuffer &buf)
-   {
-      void *pTemp;
-      assert(*this == buf);
-      SWAP(m_pAlloc, buf.m_pAlloc, pTemp);
-      SWAP(m_pBuffer, buf.m_pBuffer, pTemp);
-   }
 
    float LinearSample2D(int nChannel, float x, float y)
    {
-      x = Min(Max(x, 0.0001f), 0.9999f);
-      y = Min(Max(y, 0.0001f), 0.9999f);
+      x = (std::min)((std::max)(x, 0.0001f), 0.9999f);
+      y = (std::min)((std::max)(y, 0.0001f), 0.9999f);
       x *= m_nWidth;
       y *= m_nHeight;
       int n[2] = {(int)x, (int)y};

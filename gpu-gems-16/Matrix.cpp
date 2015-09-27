@@ -134,9 +134,9 @@ CQuaternion Slerp(const CQuaternion &q1, const CQuaternion &q2, const float t)
 	double dCos = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
 
 	// If the angle is significant, use the spherical interpolation
-	if((1.0 - ABS(dCos)) > DELTA)
+	if((1.0 - fabs(dCos)) > DELTA)
 	{
-		double dTemp = acos(ABS(dCos));
+		double dTemp = acos(fabs(dCos));
 		double dSin = sin(dTemp);
 		fScale0 = (float)(sin((1.0 - t) * dTemp) / dSin);
 		fScale1 = (float)(sin(t * dTemp) / dSin);
