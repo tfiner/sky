@@ -116,10 +116,10 @@ void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int widt
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glPushMatrix();
-	glLoadMatrixf(m_3DCamera.GetViewMatrix());
+	glLoadMatrixf(m_3DCamera.GetViewMatrix().Data());
 
 	C3DObject obj;
-	glMultMatrixf(obj.GetModelMatrix(&m_3DCamera));
+	glMultMatrixf(obj.GetModelMatrix(&m_3DCamera).Data());
 
 	CVector vCamera = m_3DCamera.GetPosition();
 	CVector vUnitCamera = vCamera / vCamera.Magnitude();

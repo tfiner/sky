@@ -420,7 +420,7 @@ public:
 		f11 = f22 = f33 = f44 = 1;
 	}
 
-	operator float*()								{ return f1; }
+	const float* Data() const { return f1; }
 	float &operator[](const int n)					{ return f1[n]; }
 	float &operator()(const int i, const int j)		{ return f2[i][j]; }
 	operator const float*() const					{ return f1; }
@@ -720,6 +720,15 @@ public:
 };
 
 
+inline bool operator ==(const CMatrix& m1, const CMatrix& m2) {
+   auto equal = true;
+   for(auto i = 0; equal && i < 16; ++i)
+      equal = m1.f1[i] == m2.f1[i];
+
+   return equal;
+}
+
+
 inline glm::fquat QuatToGlm(const CQuaternion& q) {
    return glm::fquat(q.w, q.x, q.y, q.z);
 }
@@ -731,13 +740,25 @@ inline CQuaternion GlmToQuat(const glm::fquat& q) {
 
 inline glm::mat4 MatToGlm(const CMatrix& mat) {
    auto m = glm::mat4();
-   memcpy(glm::value_ptr(m), &mat.f1[0], 16);
+   std::copy(std::begin(mat.f1), std::end(mat.f1), glm::value_ptr(m));
    return m;
 }
 
 inline CMatrix GlmToMat(const glm::mat4& mat) {
    return CMatrix(glm::value_ptr(mat));
 }
+
+inline bool operator==(const CQuaternion& q1, const glm::fquat& q2) {
+   return   q1.x == q2.x &&
+            q1.y == q2.y &&
+            q1.z == q2.z &&
+            q1.w == q2.w;
+}
+
+inline bool operator==(const glm::fquat& q1, const CQuaternion& q2) {
+   return q2 == q1;
+}
+
 
 
 /****************************************************************************
@@ -751,15 +772,23 @@ inline CMatrix GlmToMat(const glm::mat4& mat) {
 ****************************************************************************/
 class C3DObject {
 protected:
-   CQuaternion    orient_;
+   glm::fquat     orient_;
+   CQuaternion    qOrient_;
+
    glm::dvec3     position_;
    glm::vec3      velocity_;
 
 public:
-	C3DObject() : orient_(0.0f, 0.0f, 0.0f, 1.0f), position_(0.0f), velocity_(0.0f) {}
+	C3DObject() : 
+      orient_(1.0f, 0.0f, 0.0f, 0.0f), 
+      qOrient_(GlmToQuat(orient_)), 
+      position_(0.0f), 
+      velocity_(0.0f) {}
 
    C3DObject& SetOrientation(const CQuaternion& q) {
-      orient_ = q;
+      qOrient_ = q;
+      orient_ = glm::normalize(QuatToGlm(qOrient_));
+      assert(orient_ == qOrient_);
       return *this;
    }
 
@@ -786,37 +815,55 @@ public:
    }
 
 	CMatrix GetViewMatrix()	{
-		CMatrix m = orient_;
-		m.Transpose();
-		return m;
+      assert(orient_ == qOrient_);
+
+      CMatrix m1 = GlmToQuat(orient_);
+		m1.Transpose();
+
+      CMatrix m2 = qOrient_;
+      m2.Transpose();
+      assert(m1 == m2);
+
+		return m2;
 	}
 
    void Rotate(const CVector& axis, const float angle) {
-      orient_.Rotate(axis, angle);
+      auto q = GlmToQuat(orient_);
+      q.Rotate(axis, angle);
+      orient_ = QuatToGlm(q);
+      qOrient_.Rotate(axis, angle);
+
+      assert(orient_ == qOrient_);
    }
 
    CVector GetUpAxis() const {
-      return orient_.GetUpAxis();
+      return GlmToQuat(orient_).GetUpAxis();
    }
 
 
    CVector GetRightAxis() const {
-      return orient_.GetRightAxis();
+      return GlmToQuat(orient_).GetRightAxis();
    }
 
 
    CVector GetViewAxis() const {
-      return orient_.GetViewAxis();
+      return GlmToQuat(orient_).GetViewAxis();
    }
 
 
-   CMatrix GetModelMatrix(C3DObject *pCamera)
-	{
+   CMatrix GetModelMatrix(C3DObject *pCamera) {
+      assert(orient_ == qOrient_);
+
 		// Don't use the normal model matrix because it causes precision problems if the camera and model are too far away from the origin.
 		// Instead, pretend the camera is at the origin and offset all model matrices by subtracting the camera's position.
-		CMatrix m;
-		m.ModelMatrix(orient_, GetPosition() - pCamera->GetPosition());
-		return m;
+		CMatrix m1;
+		m1.ModelMatrix(GlmToQuat(orient_), GetPosition() - pCamera->GetPosition());
+
+      CMatrix m2;
+      m2.ModelMatrix(qOrient_, GetPosition() - pCamera->GetPosition());
+
+      assert(m1 == m2);
+		return m2;
 	}
 
 	void Accelerate(CVector &vAccel, float seconds, float resistance=0){
