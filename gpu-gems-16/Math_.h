@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 // Defines
 #define PI					3.14159f			// PI
@@ -79,47 +79,4 @@ inline float Cubic(float a)						{ return a * a * (3 - 2 * a); }
 inline float Step(float a, float x)				{ return (float)(x >= a); }
 inline float Boxstep(float a, float b, float x)	{ return Clamp(0, 1, (x - a) / (b - a)); }
 inline float Pulse(float a, float b, float x)	{ return (float)((x >= a) - (x >= b)); }
-inline float Gamma(float a, float g)			{ return powf(a, 1 / g); }
-inline float Bias(float a, float b)				{ return powf(a, logf(b) * LOGHALFI); }
-inline float Expose(float l, float k)			{ return (1 - expf(-l * k)); }
 
-inline float Gain(float a, float b)
-{
-   if(a <= DELTA)
-      return 0;
-   if(a >= 1 - DELTA)
-      return 1;
-
-   register float p = (logf(1 - b) * LOGHALFI);
-   if(a < 0.5)
-      return powf(2 * a, p) * 0.5f;
-   else
-      return 1 - powf(2 * (1 - a), p) * 0.5f;
-}
-
-inline float Smoothstep(float a, float b, float x)
-{
-   if(x <= a)
-      return 0;
-   if(x >= b)
-      return 1;
-   return Cubic((x - a) / (b - a));
-}
-
-inline float Mod(float a, float b)
-{
-   a -= ((int)(a / b)) * b;
-   if(a < 0)
-      a += b;
-   return a;
-}
-
-inline void Normalize(float *f, int n)
-{
-   float fMagnitude = 0;
-   for(auto i = 0; i < n; i++)
-      fMagnitude += f[i] * f[i];
-   fMagnitude = 1 / sqrtf(fMagnitude);
-   for(auto i = 0; i < n; i++)
-      f[i] *= fMagnitude;
-}

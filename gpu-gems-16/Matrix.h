@@ -31,10 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include <math.h>
 
-#include "Math.h"
+#include "Math_.h"
 
 class CMatrix;
 class CQuaternion;
