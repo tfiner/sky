@@ -38,13 +38,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <GLFW/glfw3.h>
 
+CLog *CLog::m_pSingleton = nullptr;
+
+#if defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
 #define NO_MINMAX
 #include <windows.h>
 #include <mmsystem.h>
-
-CLog *CLog::m_pSingleton = nullptr;
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLine, int nShowCmd) {
    try {
@@ -56,6 +56,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLin
       ::MessageBoxA(nullptr, e.what(), "Exception!", MB_OK);
    }
 }
+#endif
+
 
 // For pimp of tfgl::Program in SkySimluation
 OpenGLApp::~OpenGLApp(){}
@@ -126,34 +128,9 @@ bool OpenGLApp::OnIdle() {
 	simulation_->RenderFrame(window_, milliseconds-lastRender, m_nWidth, m_nHeight);
    glfwSwapBuffers(window_);
 	lastRender = milliseconds;
-	Sleep(0);
 	return true;
 }
 
-void OpenGLApp::Pause()
-{
-	if(m_bActive)
-	{
-#ifndef _DEBUG
-		//SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
-#endif
-		simulation_->Pause();
-		m_bActive = false;
-	}
-}
-
-void OpenGLApp::Restore()
-{
-	if(!m_bActive)
-	{
-#ifndef _DEBUG
-		//SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-#endif
-		m_bActive = true;
-		lastRender = timeGetTime();
-		simulation_->Restore();
-	}
-}
 
 int OpenGLApp::OnCreate() 
 {

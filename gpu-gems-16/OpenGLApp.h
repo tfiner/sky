@@ -60,8 +60,6 @@ private:
 
 
 	virtual bool OnIdle();
-	virtual void Pause();
-	virtual void Restore();
 	virtual bool InitMode(bool bFullScreen, int nWidth, int nHeight);
 	bool IsActive()								{ return m_bActive; }
    void MakeCurrent();
