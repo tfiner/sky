@@ -83,7 +83,7 @@ public:
 	void operator=(const T t)					{ x = y = z = t; }
 	void operator=(const T *pt)					{ x = pt[0]; y = pt[1]; z = pt[2]; }
 	void operator=(const TVector<T> &v)			{ x = v.x; y = v.y; z = v.z; }
-	bool operator==(TVector<T> &v) const		{ return (Abs(x - v.x) <= (T)0.001f && Abs(y - v.y) <= 0.001f && Abs(z - v.z) <= 0.001f); }
+	// bool operator==(TVector<T> &v) const		{ return (Abs(x - v.x) <= (T)0.001f && Abs(y - v.y) <= 0.001f && Abs(z - v.z) <= 0.001f); }
 	bool operator!=(TVector<T> &v) const		{ return !(*this == v); }
 
 	// Arithmetic operators (vector with scalar)
@@ -175,71 +175,11 @@ template <class T> inline float length(const TVector<T> &v1)
 	return v1.Magnitude();
 }
 
-
-/*******************************************************************************
-* Template Class: TVector4
-********************************************************************************
-* This template class implements a simple 4D vector with x, y, z, and w
-* coordinates. Like TVector, it is templatized and macros are defined for the
-* most common types.
-*******************************************************************************/
-#define CVector4		TVector4<float>
-#define CDoubleVector4	TVector4<double>
-#define CIntVector4		TVector4<int>
-#define CByteVector4	TVector4<unsigned char>
-template <class T> class TVector4
-{
-public:
-	T x, y, z, w;
-
-	// Constructors
-	TVector4()									{}
-	TVector4(const T a, const T b, const T c, const T d)	{ x = a; y = b; z = c; w = d; }
-	TVector4(const T t)							{ *this = t; }
-	TVector4(const T *pt)						{ *this = pt; }
-	TVector4(const TVector<T> &v)				{ *this = v; }
-	TVector4(const TVector4<T> &v)				{ *this = v; }
-
-	// Casting and unary operators
-	operator T*()								{ return &x; }
-	T &operator[](const int n)					{ return (&x)[n]; }
-	operator const T*() const					{ return &x; }
-	T operator[](const int n) const				{ return (&x)[n]; }
-	TVector4<T> operator-() const				{ return TVector4<T>(-x, -y, -z, -w); }
-
-	// Equal and comparison operators
-	void operator=(const T t)					{ x = y = z = w = t; }
-	void operator=(const T *pt)					{ x = pt[0]; y = pt[1]; z = pt[2]; w = pt[3]; }
-	void operator=(const TVector<T> &v)			{ x = v.x; y = v.y; z = v.z; w = 0; }
-	void operator=(const TVector4<T> &v)		{ x = v.x; y = v.y; z = v.z; w = v.w; }
-	bool operator==(TVector4<T> &v) const		{ return (Abs(x - v.x) <= (T)DELTA && Abs(y - v.y) <= (T)DELTA && Abs(z - v.z) <= (T)DELTA && Abs(w - v.w) <= (T)DELTA); }
-	bool operator!=(TVector4<T> &v) const		{ return !(*this == v); }
-
-	// Arithmetic operators (vector with scalar)
-	TVector4<T> operator+(const T t) const		{ return TVector4<T>(x+t, y+t, z+t, w+t); }
-	TVector4<T> operator-(const T t) const		{ return TVector4<T>(x-t, y-t, z-t, w-t); }
-	TVector4<T> operator*(const T t) const		{ return TVector4<T>(x*t, y*t, z*t, w*t); }
-	TVector4<T> operator/(const T t) const		{ return TVector4<T>(x/t, y/t, z/t, w/t); }
-	void operator+=(const T t)					{ x += t; y += t; z += t; w += t; }
-	void operator-=(const T t)					{ x -= t; y -= t; z -= t; w -= t; }
-	void operator*=(const T t)					{ x *= t; y *= t; z *= t; w *= t; }
-	void operator/=(const T t)					{ x /= t; y /= t; z /= t; w /= t; }
-
-	// Arithmetic operators (vector with vector)
-	TVector4<T> operator+(const TVector4<T> &v) const	{ return TVector4<T>(x+v.x, y+v.y, z+v.z, w+v.w); }
-	TVector4<T> operator-(const TVector4<T> &v) const	{ return TVector4<T>(x-v.x, y-v.y, z-v.z, w-v.w); }
-	TVector4<T> operator*(const TVector4<T> &v) const	{ return TVector4<T>(x*v.x, y*v.y, z*v.z, w*v.w); }
-	TVector4<T> operator/(const TVector4<T> &v) const	{ return TVector4<T>(x/v.x, y/v.y, z/v.z, w/v.w); }
-	void operator+=(const TVector4<T> &v)		{ x += v.x; y += v.y; z += v.z; w += v.w; }
-	void operator-=(const TVector4<T> &v)		{ x -= v.x; y -= v.y; z -= v.z; w -= v.w; }
-	void operator*=(const TVector4<T> &v)		{ x *= v.x; y *= v.y; z *= v.z; w *= v.w; }
-	void operator/=(const TVector4<T> &v)		{ x /= v.x; y /= v.y; z /= v.z; w /= v.w; }
-
-	// Magnitude/normalize methods
-	T MagnitudeSquared() const					{ return x*x + y*y + z*z + w*w; }
-	T Magnitude() const							{ return (T)sqrt(MagnitudeSquared()); }
-	void Normalize()							{ *this /= Magnitude(); }
-};
+inline bool operator ==(const CVector& v1, const CVector& v2) {
+   return   v1.x == v2.x &&
+            v1.y == v2.y &&
+            v1.z == v2.z;
+}
 
 
 /*******************************************************************************
@@ -773,22 +713,17 @@ inline bool operator==(const glm::fquat& q1, const CQuaternion& q2) {
 class C3DObject {
 protected:
    glm::fquat     orient_;
-   CQuaternion    qOrient_;
-
    glm::dvec3     position_;
    glm::vec3      velocity_;
 
 public:
 	C3DObject() : 
       orient_(1.0f, 0.0f, 0.0f, 0.0f), 
-      qOrient_(GlmToQuat(orient_)), 
       position_(0.0f), 
       velocity_(0.0f) {}
 
    C3DObject& SetOrientation(const CQuaternion& q) {
-      qOrient_ = q;
-      orient_ = glm::normalize(QuatToGlm(qOrient_));
-      assert(orient_ == qOrient_);
+      orient_ = glm::normalize(QuatToGlm(q));
       return *this;
    }
 
@@ -815,25 +750,14 @@ public:
    }
 
 	CMatrix GetViewMatrix()	{
-      assert(orient_ == qOrient_);
-
-      CMatrix m1 = GlmToQuat(orient_);
-		m1.Transpose();
-
-      CMatrix m2 = qOrient_;
-      m2.Transpose();
-      assert(m1 == m2);
-
-		return m2;
+      auto m1 = glm::transpose(glm::toMat4(orient_));
+		return GlmToMat(m1);
 	}
 
    void Rotate(const CVector& axis, const float angle) {
       auto q = GlmToQuat(orient_);
       q.Rotate(axis, angle);
       orient_ = QuatToGlm(q);
-      qOrient_.Rotate(axis, angle);
-
-      assert(orient_ == qOrient_);
    }
 
    CVector GetUpAxis() const {
@@ -852,18 +776,11 @@ public:
 
 
    CMatrix GetModelMatrix(C3DObject *pCamera) {
-      assert(orient_ == qOrient_);
-
 		// Don't use the normal model matrix because it causes precision problems if the camera and model are too far away from the origin.
 		// Instead, pretend the camera is at the origin and offset all model matrices by subtracting the camera's position.
 		CMatrix m1;
 		m1.ModelMatrix(GlmToQuat(orient_), GetPosition() - pCamera->GetPosition());
-
-      CMatrix m2;
-      m2.ModelMatrix(qOrient_, GetPosition() - pCamera->GetPosition());
-
-      assert(m1 == m2);
-		return m2;
+		return m1;
 	}
 
 	void Accelerate(CVector &vAccel, float seconds, float resistance=0){

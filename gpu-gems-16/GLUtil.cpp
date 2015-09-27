@@ -59,7 +59,7 @@ void CGLUtil::InitRenderContext(HDC hDC, HGLRC hGLRC)
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, CVector4(0.0f));
+// 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, CVector4(0.0f));
 
 	wglMakeCurrent(m_hDC, m_hGLRC);
 }
