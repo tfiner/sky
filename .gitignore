@@ -15,3 +15,4 @@ gpu-gems-16/glm/CTestConfig.cmake
 gpu-gems-16/glm/cmake/CMakePackageConfigHelpers.cmake
 gpu-gems-16/glm/cmake/GNUInstallDirs.cmake
 gpu-gems-16/AtmosphereTest.vcxproj.user
+AtmosTest/Debug/
