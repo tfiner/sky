@@ -720,6 +720,24 @@ public:
 };
 
 
+inline glm::fquat QuatToGlm(const CQuaternion& q) {
+   return glm::fquat(q.w, q.x, q.y, q.z);
+}
+
+inline CQuaternion GlmToQuat(const glm::fquat& q) {
+   return CQuaternion(q.x, q.y, q.z, q.w);
+}
+
+
+inline glm::mat4 MatToGlm(const CMatrix& mat) {
+   auto m = glm::mat4();
+   memcpy(glm::value_ptr(m), &mat.f1[0], 16);
+   return m;
+}
+
+inline CMatrix GlmToMat(const glm::mat4& mat) {
+   return CMatrix(glm::value_ptr(mat));
+}
 
 
 /****************************************************************************
