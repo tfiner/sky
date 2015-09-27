@@ -57,8 +57,6 @@ inline float DegToRad(float d)   {
 * and because it's templatized, any numeric type can be used with it. Macros are
 * defined for the most common types.
 *******************************************************************************/
-
-
 template <class T> class TVector {
 public:
 	T x, y, z;
@@ -751,7 +749,7 @@ inline CMatrix GlmToMat(const glm::mat4& mat) {
 ****************************************************************************/
 class C3DObject {
 protected:
-   CQuaternion    orient_;
+   glm::fquat     orient_;
    glm::dvec3     position_;
    glm::vec3      velocity_;
 
@@ -759,7 +757,7 @@ public:
 	C3DObject() : orient_(0.0f, 0.0f, 0.0f, 1.0f), position_(0.0f), velocity_(0.0f) {}
 
    C3DObject& SetOrientation(const CQuaternion& q) {
-      orient_ = q;
+      orient_ = QuatToGlm(q);
       return *this;
    }
 
@@ -786,27 +784,32 @@ public:
    }
 
 	CMatrix GetViewMatrix()	{
-		CMatrix m = orient_;
+      auto mat4 = glm::mat4_cast(orient_);
+      auto m = GlmToMat(mat4);
 		m.Transpose();
 		return m;
 	}
 
-   void Rotate(const CVector& axis, const float angle) {
-      orient_.Rotate(axis, angle);
+   void Rotate(const CVector& cvAxis, const float angle) {
+      auto axis = glm::vec3(cvAxis[0], cvAxis[1], cvAxis[2]);
+      orient_ = glm::rotate(orient_, angle, axis);
    }
 
    CVector GetUpAxis() const {
-      return orient_.GetUpAxis();
+      const auto q = GlmToQuat(orient_);
+      return q.GetUpAxis();
    }
 
 
    CVector GetRightAxis() const {
-      return orient_.GetRightAxis();
+      const auto q = GlmToQuat(orient_);
+      return q.GetRightAxis();
    }
 
 
    CVector GetViewAxis() const {
-      return orient_.GetViewAxis();
+      const auto q = GlmToQuat(orient_);
+      return q.GetViewAxis();
    }
 
 
@@ -815,7 +818,8 @@ public:
 		// Don't use the normal model matrix because it causes precision problems if the camera and model are too far away from the origin.
 		// Instead, pretend the camera is at the origin and offset all model matrices by subtracting the camera's position.
 		CMatrix m;
-		m.ModelMatrix(orient_, GetPosition() - pCamera->GetPosition());
+      const auto q = GlmToQuat(orient_);
+		m.ModelMatrix(q, GetPosition() - pCamera->GetPosition());
 		return m;
 	}
 
