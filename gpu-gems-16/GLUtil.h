@@ -37,7 +37,7 @@ public:
 
 	HDC GetHDC()					{ return m_hDC; }
 	HGLRC GetHGLRC()				{ return m_hGLRC; }
-	void MakeCurrent()				{ wglMakeCurrent(m_hDC, m_hGLRC); }
+   void MakeCurrent();
 	bool IsATI()					{ return m_bATI; }
 
 	void BeginOrtho2D(int nWidth=640, int nHeight=480)

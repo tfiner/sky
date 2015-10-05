@@ -45,6 +45,8 @@ public:
    int GetWidth()	{ return m_nWidth; }
    int GetHeight()	{ return m_nHeight; }
 
+   void OnSize(int nWidth, int nHeight);
+
 private:
    GLFWwindow* window_;
 
@@ -56,7 +58,6 @@ private:
 
    int OnCreate();
    void OnDestroy();
-   void OnSize(int nType, int nWidth, int nHeight);
 
 
 	virtual bool OnIdle();

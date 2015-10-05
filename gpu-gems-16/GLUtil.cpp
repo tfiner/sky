@@ -63,3 +63,8 @@ void CGLUtil::InitRenderContext(HDC hDC, HGLRC hGLRC)
 
 	wglMakeCurrent(m_hDC, m_hGLRC);
 }
+
+
+void CGLUtil::MakeCurrent() { 
+   ::wglMakeCurrent(m_hDC, m_hGLRC); 
+}

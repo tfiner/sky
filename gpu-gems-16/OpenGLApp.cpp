@@ -70,12 +70,8 @@ void OnResize(GLFWwindow* window, int width, int height) {
    if(!height || !width)
       return;
 
-   glViewport(0, 0, width, height);
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluPerspective(45.0, (double)width / (double)height, 0.001, 100.0);
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
+   if(auto app = reinterpret_cast<OpenGLApp*>(glfwGetWindowUserPointer(window)))
+      app->OnSize(width, height);
 }
 
 
@@ -160,7 +156,7 @@ void OpenGLApp::OnDestroy()
    glfwTerminate();
 }
 
-void OpenGLApp::OnSize(int nType, int nWidth, int nHeight) {
+void OpenGLApp::OnSize(int nWidth, int nHeight) {
 	if(!nHeight || !nWidth)
 		return;
 
