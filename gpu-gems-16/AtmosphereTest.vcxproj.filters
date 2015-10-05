@@ -52,6 +52,12 @@
     <ClCompile Include="..\..\sky-dependencies\tfgl\Shader.cpp">
       <Filter>tfgl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\sky-dependencies\tfgl\FrameBuffer.cpp">
+      <Filter>tfgl</Filter>
+    </ClCompile>
+    <ClCompile Include="HdrSky.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DateTime.h">
@@ -98,6 +104,18 @@
     </ClInclude>
     <ClInclude Include="3DBuffer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\FrameBuffer.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\ScopedBinder.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\Types.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
+    <ClInclude Include="HdrSky.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

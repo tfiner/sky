@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SkySimulation.h"
 #include "GLUtil.h"
 
+#include <tfgl/ScopedBinder.h>
 #include <tfgl/Shader.h>
 #include <tfgl/Program.h>
 
@@ -60,12 +61,8 @@ SkySimulation::SkySimulation() {
 
 	m_nPolygonMode = GL_FILL;
 
-	m_pBuffer.Init(1024, 1024, 0);
-	m_pBuffer.MakeCurrent();
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_CULL_FACE);
-
+   sky_.Init(1024, 1024, 0);
+   sky_.SetExposure(2.0f);
 
 	CQuaternion qOrientation(0.404703f, 0.910458f, 0.040314f, 0.075190f);
 	qOrientation.Normalize();
@@ -83,7 +80,6 @@ SkySimulation::SkySimulation() {
 	m_Km4PI = m_Km*4.0f*PI;
 	m_ESun = 20.0f;		// Sun brightness constant
 	m_g = -0.990f;		// The Mie phase asymmetry factor
-	m_fExposure = 2.0f;
 
 	m_fInnerRadius = 10.0f;
 	m_fOuterRadius = 10.25f;
@@ -135,10 +131,8 @@ void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int widt
 
 
 void SkySimulation::SetContext() {
-   if(m_bUseHDR)	{
-      m_pBuffer.MakeCurrent();
-      glViewport(0, 0, 1024, 1024);
-   }
+   if(m_bUseHDR)
+      sky_.SetContext();
    else
       GLUtil()->MakeCurrent();
 }
@@ -169,14 +163,17 @@ void SkySimulation::RenderHDR(int width, int height) {
    glLoadIdentity();
    glOrtho(0, 1, 0, 1, -1, 1);
 
-   m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
-   glBegin(GL_QUADS);
-   glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
-   glTexCoord2f(1, 0); glVertex2f(1, 0);
-   glTexCoord2f(1, 1); glVertex2f(1, 1);
-   glTexCoord2f(0, 1); glVertex2f(0, 1);
-   glEnd();
-   m_pBuffer.ReleaseTexture();
+
+   {
+      tfgl::ScopedBinder<sky::HdrSky> hdrBind(sky_);
+
+      glBegin(GL_QUADS);
+      glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
+      glTexCoord2f(1, 0); glVertex2f(1, 0);
+      glTexCoord2f(1, 1); glVertex2f(1, 1);
+      glTexCoord2f(0, 1); glVertex2f(0, 1);
+      glEnd();
+   }
 
    glPopMatrix();
    glMatrixMode(GL_MODELVIEW);
@@ -416,10 +413,12 @@ void SkySimulation::InputRenderParams(GLFWwindow* win) {
 
    }
    else if(IsKeyDown(win,  '8', isShifted)) {
+      auto exposure = sky_.GetExposure();
       if(isShifted)
-         m_fExposure = (std::max)(0.1f, m_fExposure - 0.1f);
+         exposure = (std::max)(0.1f, exposure - 0.1f);
       else
-         m_fExposure += 0.1f;
+         exposure += 0.1f;
+      sky_.SetExposure(exposure);
    }
 }
 

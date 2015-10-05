@@ -33,10 +33,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <memory>
 
+// Avoid windows.h
+struct HDC__;
+using HDC = struct HDC__*;
 
-namespace tfgl {
-   class Program;
-}
+struct HGLRC__;
+using HGLRC = struct HGLRC__*;
+
+struct HPBUFFERARB__;
+using HPBUFFERARB = struct HPBUFFERARB__*;
+
 
 
 class PBuffer {
@@ -58,18 +64,13 @@ public:
 	int GetWidth()						{ return m_nWidth; }
 	int GetHeight()						{ return m_nHeight; }
 	int GetFlags()						{ return m_nFlags; }
-	HGLRC GetHGLRC()					{ return m_hGLRC; }
-	HDC GetHDC()						{ return m_hDC; }
 
-	void MakeCurrent(){
-		if(m_hBuffer)
-			wglMakeCurrent(m_hDC, m_hGLRC);
-	}
+   void MakeCurrent();
    void BindTexture(float fExposure, bool bUseExposure = true);
    void ReleaseTexture();
 
 
-protected:
+private:
    int m_nWidth;
    int m_nHeight;
    int m_nFlags;
@@ -77,12 +78,10 @@ protected:
    HDC m_hDC;
    HGLRC m_hGLRC;
    HPBUFFERARB m_hBuffer;
-   GLuint m_nTextureID;
+   unsigned int m_nTextureID;
 
    bool m_bATI;
    unsigned int m_nTarget;
-
-   std::unique_ptr<tfgl::Program> m_shExposure;
 };
 
 

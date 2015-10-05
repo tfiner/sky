@@ -157,6 +157,18 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="..\..\sky-dependencies\tfgl\FrameBuffer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="..\..\sky-dependencies\tfgl\Program.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -170,6 +182,18 @@
       </PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="..\..\sky-dependencies\tfgl\Shader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="HdrSky.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeaderFile>
@@ -196,10 +220,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\sky-dependencies\tfgl\Exception.h" />
+    <ClInclude Include="..\..\sky-dependencies\tfgl\FrameBuffer.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Program.h" />
+    <ClInclude Include="..\..\sky-dependencies\tfgl\ScopedBinder.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Shader.h" />
+    <ClInclude Include="..\..\sky-dependencies\tfgl\Types.h" />
     <ClInclude Include="3DBuffer.h" />
     <ClInclude Include="DateTime.h" />
+    <ClInclude Include="HdrSky.h" />
     <ClInclude Include="OpenGLApp.h" />
     <ClInclude Include="SkySimulation.h" />
     <ClInclude Include="GLUtil.h" />

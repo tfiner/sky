@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "OpenGLApp.h"
 #include "Matrix.h"
 #include "PixelBuffer.h"
+#include "HdrSky.h"
 
 #include <glm/glm.hpp>
 
@@ -86,7 +87,6 @@ private:
    float m_Km, m_Km4PI;
    float m_ESun;
    float m_g;
-   float m_fExposure;
 
    float m_fInnerRadius;
    float m_fOuterRadius;
@@ -101,7 +101,7 @@ private:
    std::unique_ptr<tfgl::Program> m_shGroundFromAtmosphere;
    std::unique_ptr<tfgl::Program> m_shSpaceFromAtmosphere;
 
-   PBuffer m_pBuffer;
+   sky::HdrSky sky_;
 };
 
 
