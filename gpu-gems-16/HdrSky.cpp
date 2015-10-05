@@ -9,10 +9,10 @@
 //
 
 #include "HdrSky.h"
-#include "PBuffer.h"
+// #include "PBuffer.h"
 
 #include <tfgl/Program.h>
-// #include <tfgl/FrameBuffer.h>
+#include <tfgl/FrameBuffer.h>
 
 #include <GLFW/glfw3.h>
 
@@ -20,7 +20,7 @@
 using namespace sky;
 
 
-HdrSky::HdrSky() : pBuffer_(std::make_unique<PBuffer>()) {}
+HdrSky::HdrSky() : buffer_(std::make_unique<tfgl::FrameBuffer>(1024, 1024, GL_RGBA, GL_FLOAT)) {}
 
 
 // For pimpl
@@ -28,22 +28,18 @@ HdrSky::~HdrSky() {}
 
 
 void HdrSky::Init(int width, int height, int flags) {
-   // tfgl::FrameBuffer fb(256, 256, GL_RGB, GL_FLOAT);
-
-   pBuffer_->Init(1024, 1024, 0);
-
-   pBuffer_->MakeCurrent();
-   ::glEnable(GL_DEPTH_TEST);
-   ::glDepthFunc(GL_LEQUAL);
-   ::glEnable(GL_CULL_FACE);
-
+   // buffer_->Init(1024, 1024, GL_RGBA, GL_FLOAT);
+   // pBuffer_->MakeCurrent();
    exposureProg_ = tfgl::MakeProgram("HDR.vert", "HDRRect.frag");
 }
 
 
 void HdrSky::SetContext() const {
-   pBuffer_->MakeCurrent();
-   ::glViewport(0, 0, 1024, 1024);
+   // pBuffer_->MakeCurrent();
+
+   ::glEnable(GL_DEPTH_TEST);
+   ::glDepthFunc(GL_LEQUAL);
+   ::glEnable(GL_CULL_FACE);
 }
 
 
@@ -52,11 +48,22 @@ void HdrSky::Bind() const {
    exposureProg_->SetUniform("s2Test", 0);
    exposureProg_->SetUniform("fExposure", exposure_);
 
-   pBuffer_->BindTexture(exposure_, true);
+   buffer_->Bind();
 }
 
 void HdrSky::Unbind() const {
-   pBuffer_->ReleaseTexture();
+   buffer_->Unbind();
    exposureProg_->Unbind();
+}
+
+
+
+void HdrSky::BindTexture() const {
+   buffer_->BindTexture();
+}
+
+
+void HdrSky::UnbindTexture() const {
+   buffer_->UnbindTexture();
 }
 

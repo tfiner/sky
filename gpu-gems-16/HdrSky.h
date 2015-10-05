@@ -14,10 +14,11 @@
 #include <memory>
 
 
-class PBuffer;
+// class PBuffer;
 
 namespace tfgl {
    class Program;
+   class FrameBuffer;
 }
 
 namespace sky {
@@ -37,8 +38,13 @@ namespace sky {
       void Bind() const;
       void Unbind() const;
 
+      void BindTexture() const;
+      void UnbindTexture() const;
+
+
    private:
-      std::unique_ptr<PBuffer> pBuffer_;
+      std::unique_ptr<tfgl::FrameBuffer> buffer_;
+//      std::unique_ptr<PBuffer> pBuffer_;
       float exposure_;
 
       std::unique_ptr<tfgl::Program> exposureProg_;

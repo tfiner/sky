@@ -54,11 +54,14 @@ public:
    ~SkySimulation();
 
    void RenderFrame(GLFWwindow* win, unsigned milliseconds, int width, int height);
+
+   void RenderScene();
+
    void SetContext();
    void InitShaders();
    void RenderHDR(int width, int height);
    void RenderSky(CVector &vCamera);
-   void RenderGound(CVector &vCamera);
+   void RenderGround(CVector &vCamera);
  
    void Pause()	{}
 	void Restore()	{}

@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SkySimulation.h"
 #include "GLUtil.h"
 
+#include <tfgl/Exception.h>
 #include <tfgl/ScopedBinder.h>
 #include <tfgl/Shader.h>
 #include <tfgl/Program.h>
@@ -108,25 +109,40 @@ void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int widt
 	HandleInput(win, milliseconds * 0.001f);
 
    SetContext();
+   ::glViewport(0, 0, width, height);
 
+   // Bind the Sky Framebuffer, render to it.
+   {
+      auto fboBind = std::unique_ptr<tfgl::ScopedBinder<sky::HdrSky>>();
+      if(m_bUseHDR)
+         fboBind.reset(new tfgl::ScopedBinder<sky::HdrSky>(sky_));
+
+      RenderScene();
+   }
+
+   // Render the HDR texture to the screen.
+   RenderHDR(width, height);
+}
+
+
+// Assumes everything is set up (context, textures, etc.).
+void SkySimulation::RenderScene() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glPushMatrix();
-	glLoadMatrixf(m_3DCamera.GetViewMatrix().Data());
+   glPushMatrix();
+   glLoadMatrixf(m_3DCamera.GetViewMatrix().Data());
 
-	C3DObject obj;
-	glMultMatrixf(obj.GetModelMatrix(&m_3DCamera).Data());
+   C3DObject obj;
+   glMultMatrixf(obj.GetModelMatrix(&m_3DCamera).Data());
 
-	CVector vCamera = m_3DCamera.GetPosition();
-	CVector vUnitCamera = vCamera / vCamera.Magnitude();
+   CVector vCamera = m_3DCamera.GetPosition();
+   CVector vUnitCamera = vCamera / vCamera.Magnitude();
 
-   RenderGound(vCamera);
+   RenderGround(vCamera);
    RenderSky(vCamera);
 
-	glPopMatrix();
-	glFlush();
-
-   RenderHDR(width, height);
+   glPopMatrix();
+   glFlush();
 }
 
 
@@ -135,6 +151,8 @@ void SkySimulation::SetContext() {
       sky_.SetContext();
    else
       GLUtil()->MakeCurrent();
+
+   THROW_ON_GL_ERROR()
 }
 
 
@@ -165,14 +183,16 @@ void SkySimulation::RenderHDR(int width, int height) {
 
 
    {
-      tfgl::ScopedBinder<sky::HdrSky> hdrBind(sky_);
+      sky_.BindTexture();
 
       glBegin(GL_QUADS);
-      glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
-      glTexCoord2f(1, 0); glVertex2f(1, 0);
-      glTexCoord2f(1, 1); glVertex2f(1, 1);
-      glTexCoord2f(0, 1); glVertex2f(0, 1);
+         glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
+         glTexCoord2f(1, 0); glVertex2f(1, 0);
+         glTexCoord2f(1, 1); glVertex2f(1, 1);
+         glTexCoord2f(0, 1); glVertex2f(0, 1);
       glEnd();
+
+      sky_.UnbindTexture();
    }
 
    glPopMatrix();
@@ -217,7 +237,7 @@ void SkySimulation::RenderSky(CVector &vCamera) {
 }
 
 
-void SkySimulation::RenderGound(CVector &vCamera) {
+void SkySimulation::RenderGround(CVector &vCamera) {
    auto pGroundShader = m_shGroundFromAtmosphere.get();
 
    pGroundShader->Bind();
