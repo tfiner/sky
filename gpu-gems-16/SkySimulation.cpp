@@ -32,12 +32,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "OpenGLApp.h"
 #include "SkySimulation.h"
 #include "GLUtil.h"
+#include "perlin.h"
 
+#include <tfgl/Exception.h>
 #include <tfgl/ScopedBinder.h>
+#include <tfgl/ScopedEnable.h>
 #include <tfgl/Shader.h>
 #include <tfgl/Program.h>
 
 #include <GLFW/glfw3.h>
+
 #include <algorithm>
 
 
@@ -52,11 +56,132 @@ namespace {
    const auto Resistance = 0.1f;
 
    const auto PI = 3.1415927f;
+
+
+   GLuint CreatePointVbo(float x, float y, float z)
+   {
+      float p[] = {x, y, z};
+      GLuint vbo;
+      glGenBuffers(1, &vbo);
+      THROW_ON_GL_ERROR();
+
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      THROW_ON_GL_ERROR();
+
+      glBufferData(GL_ARRAY_BUFFER, sizeof(p), &p[0], GL_STATIC_DRAW);
+      THROW_ON_GL_ERROR();
+
+      return vbo;
+   }
+
+
+   static GLuint CreatePyroclasticVolume(int n, float r) {
+      GLuint handle;
+      glGenTextures(1, &handle);
+      THROW_ON_GL_ERROR();
+
+      glBindTexture(GL_TEXTURE_3D, handle);
+      THROW_ON_GL_ERROR();
+
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      THROW_ON_GL_ERROR();
+
+      unsigned char *data = new unsigned char[n*n*n];
+      unsigned char *ptr = data;
+
+      float frequency = 3.0f / n;
+      float center = n / 2.0f + 0.5f;
+
+      for(int x = 0; x < n; ++x) {
+         for(int y = 0; y < n; ++y) {
+            for(int z = 0; z < n; ++z) {
+               float dx = center - x;
+               float dy = center - y;
+               float dz = center - z;
+
+               float off = fabsf((float)PerlinNoise3D(
+                  x*frequency,
+                  y*frequency,
+                  z*frequency,
+                  5,
+                  6, 3));
+
+               float d = sqrtf(dx*dx + dy*dy + dz*dz) / (n);
+               bool isFilled = (d - off) < r;
+               *ptr++ = isFilled ? 255 : 0;
+            }
+         }
+      }
+
+      glTexImage3D(GL_TEXTURE_3D, 0,
+         GL_LUMINANCE,
+         n, n, n, 0,
+         GL_LUMINANCE,
+         GL_UNSIGNED_BYTE,
+         data);
+
+      THROW_ON_GL_ERROR();
+
+      delete[] data;
+      return handle;
+   }
+
+
+   std::unique_ptr<SkySimulation::Surface> CreateSurface(GLsizei width, GLsizei height){
+      GLuint fboHandle;
+      glGenFramebuffers(1, &fboHandle);
+      THROW_ON_GL_ERROR();
+
+      glBindFramebuffer(GL_FRAMEBUFFER, fboHandle);
+      THROW_ON_GL_ERROR();
+
+      GLuint textureHandle;
+      glGenTextures(1, &textureHandle);
+      THROW_ON_GL_ERROR();
+
+      glBindTexture(GL_TEXTURE_2D, textureHandle);
+      THROW_ON_GL_ERROR();
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_HALF_FLOAT, 0);
+      THROW_ON_GL_ERROR()
+
+      GLuint colorbuffer;
+      glGenRenderbuffers(1, &colorbuffer);
+      glBindRenderbuffer(GL_RENDERBUFFER, colorbuffer);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureHandle, 0);
+      THROW_ON_GL_ERROR()
+
+      glClearColor(0, 0, 0, 0);
+      glClear(GL_COLOR_BUFFER_BIT);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      THROW_ON_GL_ERROR();
+
+      return std::make_unique<SkySimulation::Surface>(fboHandle, textureHandle);
+   }
+
 }
 
 
-SkySimulation::SkySimulation() {
-	m_bUseHDR = false;
+struct SkySimulation::Surface {
+   Surface() : fbo_(0), colorTexture_(0) {}
+   Surface(GLuint fbo, GLuint colorTex) : fbo_(fbo), colorTexture_(colorTex) {}
+
+   GLuint fbo_;
+   GLuint colorTexture_;
+};
+
+
+SkySimulation::SkySimulation(){
+	m_bUseHDR = true;
 	GLUtil()->Init();
 
 	m_nPolygonMode = GL_FILL;
@@ -95,6 +220,8 @@ SkySimulation::SkySimulation() {
 	m_fRayleighScaleDepth = 0.25f;
 	m_fMieScaleDepth = 0.1f;
 	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+
+   cubeCenterVbo_ = cloudTexture_ = 0u;
 }
 
 
@@ -111,19 +238,25 @@ void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int widt
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glPushMatrix();
-	glLoadMatrixf(m_3DCamera.GetViewMatrix().Data());
 
-	C3DObject obj;
-	glMultMatrixf(obj.GetModelMatrix(&m_3DCamera).Data());
+   glPushMatrix();
+   glLoadMatrixf(m_3DCamera.GetViewMatrix().Data());
 
-	CVector vCamera = m_3DCamera.GetPosition();
-	CVector vUnitCamera = vCamera / vCamera.Magnitude();
+   C3DObject obj;
+   glMultMatrixf(obj.GetModelMatrix(&m_3DCamera).Data());
 
-   RenderGound(vCamera);
+   CVector vCamera = m_3DCamera.GetPosition();
+   CVector vUnitCamera = vCamera / vCamera.Magnitude();
+
+   RenderGround(vCamera);
    RenderSky(vCamera);
 
-	glPopMatrix();
+
+   if (renderClouds_)
+      RenderClouds(width, height);
+
+   glPopMatrix();
+
 	glFlush();
 
    RenderHDR(width, height);
@@ -138,14 +271,28 @@ void SkySimulation::SetContext() {
 }
 
 
-// Lazily initialize shaders.
+// Lazily initialize shaders, because they can't be loaded until an OpenGL context
+// has been created.
 void SkySimulation::InitShaders() {
-   if(!m_shSkyFromAtmosphere) {
-      m_shSkyFromAtmosphere      = tfgl::MakeProgram("SkyFromAtmosphere");
-      m_shGroundFromAtmosphere   = tfgl::MakeProgram("GroundFromAtmosphere");
-      m_shSpaceFromAtmosphere    = tfgl::MakeProgram("SpaceFromAtmosphere");
+   if(!skyFromAtmosphere_)
+      skyFromAtmosphere_ = tfgl::MakeProgram("SkyFromAtmosphere");
+
+   if (!groundFromAtmosphere_)
+      groundFromAtmosphere_ = tfgl::MakeProgram("GroundFromAtmosphere");
+
+   if(!raycast_)   {
+      auto bindAttr = [this](GLuint program) {
+         ::glBindAttribLocation(program, CloudAttr::SlotPosition, "Position");
+         THROW_ON_GL_ERROR();
+
+         ::glBindAttribLocation(program, CloudAttr::SlotTexCoord, "TexCoord");
+         THROW_ON_GL_ERROR();
+      };
+
+      raycast_ = tfgl::MakeProgram("test.vert", "test.frag", "test.geom", bindAttr);
    }
 }
+
 
 void SkySimulation::RenderHDR(int width, int height) {
    if(!m_bUseHDR)
@@ -162,7 +309,6 @@ void SkySimulation::RenderHDR(int width, int height) {
    glPushMatrix();
    glLoadIdentity();
    glOrtho(0, 1, 0, 1, -1, 1);
-
 
    {
       tfgl::ScopedBinder<sky::HdrSky> hdrBind(sky_);
@@ -182,70 +328,132 @@ void SkySimulation::RenderHDR(int width, int height) {
 
 
 void SkySimulation::RenderSky(CVector &vCamera) {
-   auto pSkyShader = m_shSkyFromAtmosphere.get();
+   auto skyShader = skyFromAtmosphere_.get();
 
-   pSkyShader->Bind();
-   pSkyShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   pSkyShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
-   pSkyShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
-   pSkyShader->SetUniform("fCameraHeight", vCamera.Magnitude());
-   pSkyShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
-   pSkyShader->SetUniform("fInnerRadius", m_fInnerRadius);
-   pSkyShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
-   pSkyShader->SetUniform("fOuterRadius", m_fOuterRadius);
-   pSkyShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
-   pSkyShader->SetUniform("fKrESun", m_Kr*m_ESun);
-   pSkyShader->SetUniform("fKmESun", m_Km*m_ESun);
-   pSkyShader->SetUniform("fKr4PI", m_Kr4PI);
-   pSkyShader->SetUniform("fKm4PI", m_Km4PI);
-   pSkyShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-   pSkyShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
-   pSkyShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-   pSkyShader->SetUniform("g", m_g);
-   pSkyShader->SetUniform("g2", m_g*m_g);
-   pSkyShader->SetUniform("nSamples", m_nSamples);
+   tfgl::ScopedBinder<tfgl::Program> shaderBind(*skyShader);
+   skyShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
+   skyShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
+   skyShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
+   skyShader->SetUniform("fCameraHeight", vCamera.Magnitude());
+   skyShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
+   skyShader->SetUniform("fInnerRadius", m_fInnerRadius);
+   skyShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
+   skyShader->SetUniform("fOuterRadius", m_fOuterRadius);
+   skyShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
+   skyShader->SetUniform("fKrESun", m_Kr*m_ESun);
+   skyShader->SetUniform("fKmESun", m_Km*m_ESun);
+   skyShader->SetUniform("fKr4PI", m_Kr4PI);
+   skyShader->SetUniform("fKm4PI", m_Km4PI);
+   skyShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
+   skyShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
+   skyShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
+   skyShader->SetUniform("g", m_g);
+   skyShader->SetUniform("g2", m_g*m_g);
+   skyShader->SetUniform("nSamples", m_nSamples);
 
-   glFrontFace(GL_CW);
-   glBlendFunc(GL_ONE, GL_ONE);
+   // Render the inside of the sky sphere.
+   ::glFrontFace(GL_CW);
 
-   auto pSphere = gluNewQuadric();
-   gluSphere(pSphere, m_fOuterRadius, 100, 100);
-   gluDeleteQuadric(pSphere);
+   auto pSphere = ::gluNewQuadric();
+   ::gluSphere(pSphere, m_fOuterRadius, 100, 100);
+   ::gluDeleteQuadric(pSphere);
 
-   glFrontFace(GL_CCW);
-   pSkyShader->Unbind();
+   ::glFrontFace(GL_CCW);
 }
 
 
-void SkySimulation::RenderGound(CVector &vCamera) {
-   auto pGroundShader = m_shGroundFromAtmosphere.get();
+void SkySimulation::RenderGround(CVector &vCamera) {
+   auto groundShader = groundFromAtmosphere_.get();
 
-   pGroundShader->Bind();
-   pGroundShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   pGroundShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
-   pGroundShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
-   pGroundShader->SetUniform("fCameraHeight", vCamera.Magnitude());
-   pGroundShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
-   pGroundShader->SetUniform("fInnerRadius", m_fInnerRadius);
-   pGroundShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
-   pGroundShader->SetUniform("fOuterRadius", m_fOuterRadius);
-   pGroundShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
-   pGroundShader->SetUniform("fKrESun", m_Kr*m_ESun);
-   pGroundShader->SetUniform("fKmESun", m_Km*m_ESun);
-   pGroundShader->SetUniform("fKr4PI", m_Kr4PI);
-   pGroundShader->SetUniform("fKm4PI", m_Km4PI);
-   pGroundShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-   pGroundShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
-   pGroundShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-   pGroundShader->SetUniform("g", m_g);
-   pGroundShader->SetUniform("g2", m_g*m_g);
-   pGroundShader->SetUniform("s2Test", 0);
+   tfgl::ScopedBinder<tfgl::Program> shaderBind(*groundShader);
+   groundShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
+   groundShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
+   groundShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
+   groundShader->SetUniform("fCameraHeight", vCamera.Magnitude());
+   groundShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
+   groundShader->SetUniform("fInnerRadius", m_fInnerRadius);
+   groundShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
+   groundShader->SetUniform("fOuterRadius", m_fOuterRadius);
+   groundShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
+   groundShader->SetUniform("fKrESun", m_Kr*m_ESun);
+   groundShader->SetUniform("fKmESun", m_Km*m_ESun);
+   groundShader->SetUniform("fKr4PI", m_Kr4PI);
+   groundShader->SetUniform("fKm4PI", m_Km4PI);
+   groundShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
+   groundShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
+   groundShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
+   groundShader->SetUniform("g", m_g);
+   groundShader->SetUniform("g2", m_g*m_g);
+   groundShader->SetUniform("s2Test", 0);
 
    GLUquadricObj *pSphere = gluNewQuadric();
-   gluSphere(pSphere, m_fInnerRadius, 100, 50);
+   gluSphere(pSphere, m_fInnerRadius, 100, 100);
    gluDeleteQuadric(pSphere);
-   pGroundShader->Unbind();
 }
+
+
+void SkySimulation::InitClouds() {
+   if(!initClouds) {
+      cubeCenterVbo_ = CreatePointVbo(0, 0, 0);
+      cloudTexture_ = CreatePyroclasticVolume(128, 0.025f);
+      intervals_[0] = CreateSurface(800, 800);
+      intervals_[1] = CreateSurface(800, 800);
+      initClouds = true;
+   }
+}
+
+
+void SkySimulation::SetCloudUniforms(int width, int height) {
+   const auto viewMatrix = MatToGlm(m_3DCamera.GetViewMatrix());
+   const auto modelMatrix = MatToGlm(m_3DCamera.GetModelMatrix(&m_3DCamera));
+   const auto modelView = viewMatrix * modelMatrix;
+   raycast_->SetUniformMat4("Modelview", glm::value_ptr(modelView));
+
+   const auto projMatrix = glm::perspectiveFov(45.0f, static_cast<float>(width), static_cast<float>(height), 1.0f, 100.0f);
+   const auto modelViewProj = projMatrix * modelView;
+   raycast_->SetUniformMat4("ModelviewProjection", glm::value_ptr(modelViewProj));
+
+   const auto rayOrigin = glm::transpose(modelView) * glm::vec4(m_3DCamera.GetPositionGlm(), 0.0);
+   raycast_->SetUniformVec3("RayOrigin", glm::value_ptr(rayOrigin));
+
+   const auto focalLength = static_cast<float>(1.0 / std::tan(45.0 / 2.0));
+   raycast_->SetUniform("FocalLength", focalLength);
+   raycast_->SetUniform("WindowSize", static_cast<float>(width), static_cast<float>(height));
+}
+
+
+void SkySimulation::RenderClouds(int width, int height) {
+   InitClouds();
+
+   tfgl::ScopedDisable depth(GL_DEPTH_TEST);
+   tfgl::ScopedEnable blend(GL_BLEND);
+   tfgl::ScopedEnable cullFace(GL_CULL_FACE);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+   glBindBuffer(GL_ARRAY_BUFFER, cubeCenterVbo_);
+   THROW_ON_GL_ERROR();
+
+   glVertexAttribPointer(SlotPosition, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+   THROW_ON_GL_ERROR();
+
+   glEnableVertexAttribArray(SlotPosition);
+   THROW_ON_GL_ERROR();
+
+   glBindTexture(GL_TEXTURE_3D, cloudTexture_);
+   THROW_ON_GL_ERROR();
+
+   //glClearColor(0.2f, 0.2f, 0.2f, 0);
+   // glClear(GL_COLOR_BUFFER_BIT);
+
+   auto raycast = raycast_.get();
+   tfgl::ScopedBinder<tfgl::Program> shaderBind(*raycast);
+
+   SetCloudUniforms(width, height);
+
+   glDrawArrays(GL_POINTS, 0, 1);
+   THROW_ON_GL_ERROR();
+}
+
 
 
 void SkySimulation::OnChar(int upperC) {
@@ -256,15 +464,22 @@ void SkySimulation::OnChar(int upperC) {
 			m_nPolygonMode = (m_nPolygonMode == GL_FILL) ? GL_LINE : GL_FILL;
 			glPolygonMode(GL_FRONT, m_nPolygonMode);
 			break;
-		case 'h':
+		
+      case 'h':
 			m_bUseHDR = !m_bUseHDR;
 			break;
-		case '=':
+		
+      case '=':
 			m_nSamples++;
 			break;
-		case '-':
+
+      case '-':
 			m_nSamples--;
 			break;
+
+      case 'c':
+         renderClouds_ = !renderClouds_;
+         break;
 	}
 }
 

@@ -59,8 +59,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *pszCmdLin
 #endif
 
 
-// For pimp of tfgl::Program in SkySimluation
+// For pimpl of tfgl::Program in SkySimluation
 OpenGLApp::~OpenGLApp(){}
+
 
 void OpenGLApp::Run() {
 	InitMode(false, 800, 600);

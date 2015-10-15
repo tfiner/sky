@@ -737,6 +737,8 @@ public:
 	CDoubleVector GetPosition() { 
       return CDoubleVector(position_[0], position_[1], position_[2]);
    }
+
+   const glm::dvec3 & GetPositionGlm() const { return position_; }
 	
    C3DObject& SetVelocity(CVector &v) { 
       velocity_[0] = v[0];

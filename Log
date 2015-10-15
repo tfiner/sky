@@ -40,3 +40,10 @@ Overall goals:
 
 6. Use type safety, RAII and C++11/14 awesomeness.
 
+
+10/11/15
+OK, I've done a lot of porting but feel like OS X is hostile to OpenGL development.  I was trying to get away from the ARB PBuffer from GPU Gems and looked at pylegt last week.  I spent most of my weekend getting OS to render a sample into a FBO.  What a pain!  First, OS X is incredibly picky about the version of the GLSL (you have to put the verison in).  By default pyglet will not work with OSX, so it requires some patching to work correctly.  This took a few hours of tracking down and implementing (including tracking down some stack faults).  In short, I'm done with OS X for this project.
+
+Yesterday , I (re)found Philip Rideout's page on Single Pass Raycasting.  It is _excellent_, the code and article are clear, compiled and ran the first time on a windows development machine.
+
+I'm going to incorporate his raycasting into my sky simulation.

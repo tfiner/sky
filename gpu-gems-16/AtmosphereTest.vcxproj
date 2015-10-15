@@ -46,6 +46,8 @@
     <Import Project="Glew.props" />
     <Import Project="Glfw.props" />
     <Import Project="tfgl.props" />
+    <Import Project="glm.props" />
+    <Import Project="AtmosphereTest.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -206,6 +208,18 @@
       </PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="OpenGLApp.cpp" />
+    <ClCompile Include="perlin.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="SkySimulation.cpp" />
     <ClCompile Include="GLUtil.cpp" />
     <ClCompile Include="Master.cpp">
@@ -223,12 +237,14 @@
     <ClInclude Include="..\..\sky-dependencies\tfgl\FrameBuffer.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Program.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\ScopedBinder.h" />
+    <ClInclude Include="..\..\sky-dependencies\tfgl\ScopedEnable.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Shader.h" />
     <ClInclude Include="..\..\sky-dependencies\tfgl\Types.h" />
     <ClInclude Include="3DBuffer.h" />
     <ClInclude Include="DateTime.h" />
     <ClInclude Include="HdrSky.h" />
     <ClInclude Include="OpenGLApp.h" />
+    <ClInclude Include="perlin.h" />
     <ClInclude Include="SkySimulation.h" />
     <ClInclude Include="GLUtil.h" />
     <ClInclude Include="Log.h" />
@@ -250,11 +266,14 @@
     <CustomBuild Include="HDRSquare.frag" />
     <CustomBuild Include="SkyFromAtmosphere.frag" />
     <CustomBuild Include="SkyFromAtmosphere.vert" />
-    <CustomBuild Include="SpaceFromAtmosphere.frag" />
-    <CustomBuild Include="SpaceFromAtmosphere.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.frag" />
+    <None Include="test.geom" />
+    <None Include="test.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

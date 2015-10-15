@@ -17,3 +17,4 @@ gpu-gems-16/glm/cmake/GNUInstallDirs.cmake
 gpu-gems-16/AtmosphereTest.vcxproj.user
 AtmosTest/Debug/
 gpu-gems-16/build
+raycast/Build/

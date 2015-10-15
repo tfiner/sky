@@ -58,6 +58,9 @@
     <ClCompile Include="HdrSky.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="perlin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DateTime.h">
@@ -117,6 +120,12 @@
     <ClInclude Include="HdrSky.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="perlin.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sky-dependencies\tfgl\ScopedEnable.h">
+      <Filter>tfgl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico">
@@ -145,14 +154,19 @@
     <CustomBuild Include="SkyFromAtmosphere.vert">
       <Filter>GLSL Shader Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="SpaceFromAtmosphere.frag">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpaceFromAtmosphere.vert">
-      <Filter>GLSL Shader Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.frag">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="test.vert">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
+    <None Include="test.geom">
+      <Filter>GLSL Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

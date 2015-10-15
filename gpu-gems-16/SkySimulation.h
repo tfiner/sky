@@ -37,6 +37,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "PixelBuffer.h"
 #include "HdrSky.h"
 
+#include <tfgl/Types.h>
+
 #include <glm/glm.hpp>
 
 #include <memory>
@@ -47,6 +49,10 @@ namespace tfgl {
    class Program;
 }
 
+namespace gltext {
+   class Font;
+}
+
 class SkySimulation {
 public:
 	SkySimulation();
@@ -55,10 +61,13 @@ public:
 
    void RenderFrame(GLFWwindow* win, unsigned milliseconds, int width, int height);
    void SetContext();
+
+   // This must come after an OpenGL context has been created.
    void InitShaders();
+
    void RenderHDR(int width, int height);
    void RenderSky(CVector &vCamera);
-   void RenderGound(CVector &vCamera);
+   void RenderGround(CVector &vCamera);
  
    void Pause()	{}
 	void Restore()	{}
@@ -69,6 +78,8 @@ public:
    void InputRenderParams(GLFWwindow* win);
 
    void OnChar(int c);
+
+   struct Surface;
 
 private:
    float m_fFPS;
@@ -97,11 +108,25 @@ private:
    float m_fMieScaleDepth;
    PixelBuffer m_pbOpticalDepth;
 
-   std::unique_ptr<tfgl::Program> m_shSkyFromAtmosphere;
-   std::unique_ptr<tfgl::Program> m_shGroundFromAtmosphere;
-   std::unique_ptr<tfgl::Program> m_shSpaceFromAtmosphere;
+   std::unique_ptr<tfgl::Program> skyFromAtmosphere_;
+   std::unique_ptr<tfgl::Program> groundFromAtmosphere_;
 
    sky::HdrSky sky_;
+
+   bool renderClouds_ = false;
+   // Raycasting variables.
+   enum CloudAttr {
+      SlotPosition,
+      SlotTexCoord
+   };
+   void InitClouds();
+   void SetCloudUniforms(int width, int height);
+   void RenderClouds(int width, int height);
+   std::unique_ptr<tfgl::Program> raycast_;
+
+   bool initClouds = false;
+   tfgl::GLuint cubeCenterVbo_, cloudTexture_;  
+   std::unique_ptr<Surface> intervals_[2];
 };
 
 
