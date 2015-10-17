@@ -80,6 +80,25 @@ static void LoadUniforms()
 }
 
 
+void SkyRender() {
+   ::glUseProgram(Programs.SkySphere);
+   PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
+
+   LoadUniforms();
+   // SetUniform("ModelviewProjection", ModelviewProjection);
+
+   //    ::glDisable(GL_CULL_FACE);
+
+   ::glFrontFace(GL_CW);
+   ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+   auto pSphere = ::gluNewQuadric();
+   const auto outerRadius = 5.0f;
+   ::gluSphere(pSphere, outerRadius, 100, 100);
+   ::gluDeleteQuadric(pSphere);
+}
+
+
 void PezRender()
 {  
     glBindBuffer(GL_ARRAY_BUFFER, CubeCenterVbo);
@@ -87,15 +106,19 @@ void PezRender()
     glEnableVertexAttribArray(SlotPosition);
 
     glBindTexture(GL_TEXTURE_3D, CloudTexture);
-    ::glFrontFace(GL_CCW);
-    ::glPolygonMode(GL_FRONT, GL_FILL);
-    ::glEnable(GL_CULL_FACE);
-    ::glCullFace(GL_BACK);
 
     if (SinglePass)
     {
         glClearColor(0.2f, 0.2f, 0.2f, 0);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        SkyRender();
+
+        ::glFrontFace(GL_CCW);
+        ::glPolygonMode(GL_FRONT, GL_FILL);
+        ::glEnable(GL_CULL_FACE);
+        ::glCullFace(GL_BACK);
+
         glUseProgram(Programs.SinglePass);
         LoadUniforms();
         glDrawArrays(GL_POINTS, 0, 1);
@@ -135,27 +158,6 @@ void PezRender()
 
     ::glBindBuffer(GL_ARRAY_BUFFER, 0);
     ::glBindTexture(GL_TEXTURE_3D, 0);
-
-    //::glUseProgram(0);
-    ::glUseProgram(Programs.SkySphere);
-    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
-
-    SetUniform("ModelviewProjection", ModelviewProjection);
-
-//    ::glDisable(GL_CULL_FACE);
-
-    ::glFrontFace(GL_CW);
-    ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    //glPushMatrix();
-    //glLoadIdentity();
-    //glMultMatrixf(reinterpret_cast<float*>(&ModelviewProjection));
-
-    auto pSphere = ::gluNewQuadric();
-    const auto outerRadius = 5.0f;
-    ::gluSphere(pSphere, outerRadius, 100, 100);
-    ::gluDeleteQuadric(pSphere);
-    //glPopMatrix();
 }
 
 void PezUpdate(unsigned int microseconds)
