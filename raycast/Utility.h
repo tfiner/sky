@@ -17,6 +17,8 @@ struct ITrackball {
     virtual vmath::Matrix3 GetRotation() const = 0;
     virtual float GetZoom() const = 0;
     virtual void Update(unsigned int microseconds) = 0;
+    virtual void MouseZoomIn() = 0;
+    virtual void MouseZoomOut() = 0;
 };
 
 struct TexturePod {

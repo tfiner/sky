@@ -46,4 +46,6 @@ enum MouseFlag {
     PEZ_LEFT  = 1 << 3,
     PEZ_RIGHT = 1 << 4,
     PEZ_DOUBLECLICK = 1 << 5,
+    PEZ_ZOOM_IN   = 1 << 6,
+    PEZ_ZOOM_OUT  = 1 << 7,
 };

@@ -156,6 +156,10 @@ void PezHandleMouse(int x, int y, int action)
         Trackball->MouseMove(x, y);
     else if (action & PEZ_DOUBLECLICK)
         Trackball->ReturnHome();
+    else if (action & PEZ_ZOOM_IN)
+       Trackball->MouseZoomIn();
+    else if(action & PEZ_ZOOM_OUT)
+       Trackball->MouseZoomOut();
 }
 
 void PezHandleKey(char c)

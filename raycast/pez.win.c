@@ -197,6 +197,13 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 PezHandleMouse(x, y, PEZ_MOVE | PEZ_RIGHT);
             break;
 
+        case WM_MOUSEWHEEL:
+        {
+           const auto keys    = GET_KEYSTATE_WPARAM(wParam);
+           const auto zDelta  = GET_WHEEL_DELTA_WPARAM(wParam);
+           PezHandleMouse(x, y, zDelta > 0 ? PEZ_ZOOM_IN : PEZ_ZOOM_OUT);
+        }
+
         case WM_KEYDOWN:
         {
             PezHandleKey((char) wParam);
