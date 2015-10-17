@@ -248,12 +248,12 @@ void SkySimulation::RenderFrame(GLFWwindow* win, unsigned milliseconds, int widt
    CVector vCamera = m_3DCamera.GetPosition();
    CVector vUnitCamera = vCamera / vCamera.Magnitude();
 
-   RenderGround(vCamera);
-   RenderSky(vCamera);
-
-
-   if (renderClouds_)
+   if(renderClouds_)
       RenderClouds(width, height);
+   else {
+      RenderGround(vCamera);
+      RenderSky(vCamera);
+   }
 
    glPopMatrix();
 
