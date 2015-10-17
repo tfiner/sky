@@ -151,7 +151,7 @@ void main()
             float ld = texture(Density, lpos).x;
             Tl *= 1.0-Absorption*stepSize*ld;
             if (Tl <= 0.01) 
-            lpos += lightDir;
+               lpos += lightDir;
         }
 
         vec3 Li = LightIntensity*Tl;

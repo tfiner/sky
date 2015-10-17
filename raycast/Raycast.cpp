@@ -77,12 +77,18 @@ static void LoadUniforms()
     SetUniform("WindowSize", float(cfg.Width), float(cfg.Height));
 }
 
+
 void PezRender()
-{
+{  
     glBindBuffer(GL_ARRAY_BUFFER, CubeCenterVbo);
     glVertexAttribPointer(SlotPosition, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
     glEnableVertexAttribArray(SlotPosition);
+
     glBindTexture(GL_TEXTURE_3D, CloudTexture);
+    ::glFrontFace(GL_CCW);
+    ::glPolygonMode(GL_FRONT, GL_FILL);
+    ::glEnable(GL_CULL_FACE);
+    ::glCullFace(GL_BACK);
 
     if (SinglePass)
     {
@@ -123,6 +129,25 @@ void PezRender()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    ::glUseProgram(0);
+    ::glBindBuffer(GL_ARRAY_BUFFER, 0);
+    ::glBindTexture(GL_TEXTURE_3D, 0);
+
+    ::glFrontFace(GL_CW);
+    ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //::glDisable(GL_CULL_FACE);
+
+    glPushMatrix();
+    glLoadIdentity();
+
+    glMultMatrixf(reinterpret_cast<float*>(&ModelviewProjection));
+
+    auto pSphere = ::gluNewQuadric();
+    const auto outerRadius = 5.0f;
+    ::gluSphere(pSphere, outerRadius, 100, 100);
+    ::gluDeleteQuadric(pSphere);
+    glPopMatrix();
 }
 
 void PezUpdate(unsigned int microseconds)
@@ -139,8 +164,8 @@ void PezUpdate(unsigned int microseconds)
     Matrix4 modelMatrix(transpose(Trackball->GetRotation()), Vector3(0));
     ModelviewMatrix = ViewMatrix * modelMatrix;
 
-    float n = 1.0f;
-    float f = 100.0f;
+    float n = .050f;
+    float f = 20.0f;
 
     ProjectionMatrix = Matrix4::perspective(FieldOfView, 1, n, f);
     ModelviewProjection = ProjectionMatrix * ModelviewMatrix;
