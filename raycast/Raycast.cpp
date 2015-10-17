@@ -11,6 +11,7 @@ struct ProgramHandles {
     GLuint SinglePass;
     GLuint TwoPassRaycast;
     GLuint TwoPassIntervals;
+    GLuint SkySphere;
 };
 
 static ProgramHandles Programs;
@@ -46,6 +47,7 @@ void PezInitialize()
     Programs.SinglePass = LoadProgram("SinglePass.VS", "SinglePass.GS", "SinglePass.FS");
     Programs.TwoPassIntervals = LoadProgram("TwoPass.VS", "TwoPass.Cube", "TwoPass.Intervals");
     Programs.TwoPassRaycast = LoadProgram("TwoPass.VS", "TwoPass.Fullscreen", "TwoPass.Raycast");
+    Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr, "SkySphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = CreatePyroclasticVolume(128, 0.025f);
     IntervalsFbo[0] = CreateSurface(cfg.Width, cfg.Height);
@@ -130,24 +132,30 @@ void PezRender()
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    ::glUseProgram(0);
+
     ::glBindBuffer(GL_ARRAY_BUFFER, 0);
     ::glBindTexture(GL_TEXTURE_3D, 0);
 
+    //::glUseProgram(0);
+    ::glUseProgram(Programs.SkySphere);
+    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
+
+    SetUniform("ModelviewProjection", ModelviewProjection);
+
+//    ::glDisable(GL_CULL_FACE);
+
     ::glFrontFace(GL_CW);
     ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //::glDisable(GL_CULL_FACE);
 
-    glPushMatrix();
-    glLoadIdentity();
-
-    glMultMatrixf(reinterpret_cast<float*>(&ModelviewProjection));
+    //glPushMatrix();
+    //glLoadIdentity();
+    //glMultMatrixf(reinterpret_cast<float*>(&ModelviewProjection));
 
     auto pSphere = ::gluNewQuadric();
     const auto outerRadius = 5.0f;
     ::gluSphere(pSphere, outerRadius, 100, 100);
     ::gluDeleteQuadric(pSphere);
-    glPopMatrix();
+    //glPopMatrix();
 }
 
 void PezUpdate(unsigned int microseconds)
