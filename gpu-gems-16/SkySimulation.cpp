@@ -208,7 +208,6 @@ SkySimulation::SkySimulation(){
 
 	m_fInnerRadius = 10.0f;
 	m_fOuterRadius = 10.25f;
-	m_fScale = 1 / (m_fOuterRadius - m_fInnerRadius);
 
 	m_fWavelength[0] = 0.650f;		// 650 nm for red
 	m_fWavelength[1] = 0.570f;		// 570 nm for green
@@ -219,7 +218,7 @@ SkySimulation::SkySimulation(){
 
 	m_fRayleighScaleDepth = 0.25f;
 	m_fMieScaleDepth = 0.1f;
-	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+	// m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
 
    cubeCenterVbo_ = cloudTexture_ = 0u;
 }

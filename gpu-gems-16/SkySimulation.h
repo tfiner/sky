@@ -101,7 +101,7 @@ private:
 
    float m_fInnerRadius;
    float m_fOuterRadius;
-   float m_fScale;
+
    float m_fWavelength[3];
    float m_fWavelength4[3];
    float m_fRayleighScaleDepth;
