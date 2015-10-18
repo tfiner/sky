@@ -1,7 +1,11 @@
 #include "Utility.h"
+#include "Exception.h"
+
 #include <glsw.h>
+
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 using namespace vmath;
 
@@ -114,11 +118,16 @@ GLuint LoadProgram(const char* vsKey, const char* gsKey, const char* fsKey)
 
     GLuint vsHandle = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vsHandle, 1, &vsSource, 0);
+    THROW_ON_GL_ERROR();
+
     glCompileShader(vsHandle);
+    THROW_ON_GL_ERROR();
+
     glGetShaderiv(vsHandle, GL_COMPILE_STATUS, &compileSuccess);
     glGetShaderInfoLog(vsHandle, sizeof(compilerSpew), 0, compilerSpew);
     PezCheckCondition(compileSuccess, "Can't compile %s:\n%s", vsKey, compilerSpew);
     glAttachShader(programHandle, vsHandle);
+    THROW_ON_GL_ERROR();
 
     GLuint gsHandle;
     if (gsKey) {
@@ -409,6 +418,15 @@ void SetUniform(const char* name, float value)
     glUniform1f(location, value);
 }
 
+void SetUniform(const char* name, double value)
+{
+   GLuint program;
+   glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&program);
+   GLint location = glGetUniformLocation(program, name);
+   if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+   glUniform1d(location, value);
+}
+
 void SetUniform(const char* name, Matrix4 value)
 {
     GLuint program;
@@ -465,4 +483,25 @@ void SetUniform(const char* name, Point3 value)
     GLint location = glGetUniformLocation(program, name);
     if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform3f(location, value.getX(), value.getY(), value.getZ());
+}
+
+
+void DumpUniforms() {
+   GLint program;
+   glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+
+   GLint numUniforms = 0;
+   ::glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &numUniforms);
+
+   GLint bufSize = 0;
+   ::glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &bufSize);
+
+   auto buf = std::vector<char>(bufSize + 1, '\0');
+
+   for(auto i = 0; i < numUniforms; ++i) {
+      GLint size=0;
+      GLenum type;
+      glGetActiveUniform(program, i, bufSize, nullptr, &size, &type, buf.data());
+      PezDebugString("'%s'\n", buf.data());
+   }
 }

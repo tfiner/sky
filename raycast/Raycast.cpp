@@ -4,6 +4,10 @@ extern "C" {
 #include "perlin.h"
 }
 
+#define _USE_MATH_DEFINES // for C++
+#include <math.h>
+
+
 using namespace vmath;
 using std::string;
 
@@ -47,6 +51,7 @@ void PezInitialize()
     Programs.SinglePass = LoadProgram("SinglePass.VS", "SinglePass.GS", "SinglePass.FS");
     Programs.TwoPassIntervals = LoadProgram("TwoPass.VS", "TwoPass.Cube", "TwoPass.Intervals");
     Programs.TwoPassRaycast = LoadProgram("TwoPass.VS", "TwoPass.Fullscreen", "TwoPass.Raycast");
+
     Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr, "SkySphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = CreatePyroclasticVolume(128, 0.025f);
@@ -80,12 +85,80 @@ static void LoadUniforms()
 }
 
 
+// Sky simulation parameters:
+auto LightDir        = normalize(Vector3(0.0f, -400.0f, 1000.0f));
+auto NumSamples      = 3;		                  // Number of sample rays to use in integral equation
+
+// Planetary constants
+const auto EarthRadius        = 4.0f;
+const auto AtmosphereRadius   = EarthRadius * 1.025f;
+const auto AtmosphereScale    = 1.0f / (AtmosphereRadius - EarthRadius);
+
+// Rayleigh / Mie Scattering constants.
+const auto RayleighKr         = 0.0025f;		            // Rayleigh scattering constant
+const auto RayleighKr4PI      = RayleighKr * 4.0f * M_PI;
+const auto RayleighScaleDepth = 0.25f;
+
+const auto MieKm           = 0.0010f;		            // Mie scattering constant
+const auto MieKm4PI        = MieKm * 4.0f * M_PI;
+const auto MieG            = -0.990f;		            // The Mie phase asymmetry factor
+const auto MieScaleDepth   = 0.1f;
+
+const auto SunBrightness   = 20.0f;
+
+// Color wavelength scales
+// User defined literal nanometers.
+float operator "" _nm(long double);
+
+auto constexpr Red_nm   = 650.0f;
+auto constexpr Green_nm = 570.0f;
+auto constexpr Blue_nm  = 475.0f;
+
+auto WaveLength = Vector3(
+   Red_nm / 1000.0f,
+   Green_nm / 1000.0f,
+   Blue_nm / 1000.0f
+);
+
+auto WaveLength4 = Vector3(
+   powf(WaveLength[0], 4.0f),
+   powf(WaveLength[1], 4.0f),
+   powf(WaveLength[2], 4.0f)
+);
+
+
+// Take the camera position from the other code, and 
+// put it in the same relative position.
+auto CameraHeight = EarthRadius + 0.01f;
+auto CameraPos = normalize(Vector3(6.946963f, 6.913678f, 2.205330f)) * CameraHeight;
+
+
 void SkyRender() {
    ::glUseProgram(Programs.SkySphere);
    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
 
-   LoadUniforms();
-   // SetUniform("ModelviewProjection", ModelviewProjection);
+   DumpUniforms();
+
+   SetUniform("ModelviewProjection", ModelviewProjection);
+
+   SetUniform("v3CameraPos",     CameraPos);
+   SetUniform("fCameraHeight",   CameraHeight);
+
+   SetUniform("v3LightDir",   LightDir);
+   SetUniform("NumSamples",   NumSamples);
+   SetUniform("fInnerRadius", EarthRadius);
+   
+   SetUniform("fKrESun",               RayleighKr * SunBrightness);
+   SetUniform("fKr4PI",                RayleighKr4PI);
+   SetUniform("fScaleDepth",           RayleighScaleDepth);
+   SetUniform("fScaleOverScaleDepth",  AtmosphereScale / RayleighScaleDepth);
+
+   SetUniform("fKmESun",   MieKm * SunBrightness);
+   SetUniform("fKm4PI",    MieKm4PI);
+   SetUniform("g",         MieG);
+   SetUniform("g2",        MieG * MieG);
+
+   SetUniform("v3InvWavelength", WaveLength4); 
 
    //    ::glDisable(GL_CULL_FACE);
 
@@ -93,8 +166,7 @@ void SkyRender() {
    ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
    auto pSphere = ::gluNewQuadric();
-   const auto outerRadius = 5.0f;
-   ::gluSphere(pSphere, outerRadius, 100, 100);
+   ::gluSphere(pSphere, AtmosphereRadius, 100, 100);
    ::gluDeleteQuadric(pSphere);
 }
 
@@ -167,8 +239,9 @@ void PezUpdate(unsigned int microseconds)
     Trackball->Update(microseconds);
 
     EyePosition = Point3(0, 0, 5 + Trackball->GetZoom());
-    
-    Vector3 up(0, 1, 0); Point3 target(0);
+    Vector3 up(0, 1, 0); 
+    Point3 target(0);
+
     ViewMatrix = Matrix4::lookAt(EyePosition, target, up);
 
     Matrix4 modelMatrix(transpose(Trackball->GetRotation()), Vector3(0));
