@@ -15,7 +15,7 @@
 #define at2(rx,ry) ( rx * q[0] + ry * q[1] )
 #define at3(rx,ry,rz) ( rx * q[0] + ry * q[1] + rz * q[2] )
 
-void init(void);
+void PerlinInit(void);
 double noise1(double);
 double noise2(double *);
 double noise3(double *);

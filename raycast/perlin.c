@@ -20,7 +20,7 @@ double noise1(double arg)
    vec[0] = arg;
    if (start) {
       start = 0;
-      init();
+      PerlinInit();
    }
 
    setup(0,bx0,bx1,rx0,rx1);
@@ -40,7 +40,7 @@ double noise2(double vec[2])
 
    if (start) {
       start = 0;
-      init();
+      PerlinInit();
    }
 
    setup(0, bx0,bx1, rx0,rx1);
@@ -76,7 +76,7 @@ double noise3(double vec[3])
 
    if (start) {
       start = 0;
-      init();
+      PerlinInit();
    }
 
    setup(0, bx0,bx1, rx0,rx1);
@@ -137,7 +137,7 @@ void normalize3(double v[3])
    v[2] = v[2] / s;
 }
 
-void init(void)
+void PerlinInit(void)
 {
    int i, j, k;
 
