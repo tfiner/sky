@@ -19,6 +19,11 @@ struct ITrackball {
     virtual void Update(unsigned int microseconds) = 0;
     virtual void MouseZoomIn() = 0;
     virtual void MouseZoomOut() = 0;
+
+    virtual void PanUp() {}
+    virtual void PanDown() {}
+    virtual void PanRight() {}
+    virtual void PanLeft() {}
 };
 
 struct TexturePod {

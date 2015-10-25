@@ -90,7 +90,7 @@ static void LoadUniforms()
 
 // Sky simulation parameters:
 auto LightDir = -Vector3(0.0f, 0.0f, 1.0f);//normalize(Vector3(0.0f, -0.371390671f, 0.928476691f));
-auto NumSamples      = 5;		                  // Number of sample rays to use in integral equation
+auto NumSamples      = 20;		                  // Number of sample rays to use in integral equation
 const auto Scale     = 4.0f;
 
 // Planetary constants
@@ -171,7 +171,7 @@ void SkyRender() {
    // ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
    auto pSphere = ::gluNewQuadric();
-   ::gluSphere(pSphere, AtmosphereRadius*4, 100, 100);
+   ::gluSphere(pSphere, AtmosphereRadius*4, 150, 150);
    ::gluDeleteQuadric(pSphere);
    //glDrawArrays(GL_POINTS, 0, 1);
 }
@@ -197,9 +197,9 @@ void PezRender()
         ::glEnable(GL_CULL_FACE);
         ::glCullFace(GL_BACK);
 
-        //glUseProgram(Programs.SinglePass);
-        //LoadUniforms();
-        //glDrawArrays(GL_POINTS, 0, 1);
+        glUseProgram(Programs.SinglePass);
+        LoadUniforms();
+        glDrawArrays(GL_POINTS, 0, 1);
     }
     else
     {
@@ -246,7 +246,7 @@ void PezUpdate(unsigned int microseconds)
 
     EyePosition = Point3(0, 0, 5 + Trackball->GetZoom());
     Vector3 up(0, 1, 0); 
-    Point3 target(0);
+    Point3 target(0,0,0.0);
 
     ViewMatrix = Matrix4::lookAt(EyePosition, target, up);
 
@@ -260,8 +260,7 @@ void PezUpdate(unsigned int microseconds)
     ModelviewProjection = ProjectionMatrix * ModelviewMatrix;
 }
 
-void PezHandleMouse(int x, int y, int action)
-{
+void PezHandleMouse(int x, int y, int action) {
     if (action & PEZ_DOWN)
         Trackball->MouseDown(x, y);
     else if (action & PEZ_UP)
@@ -276,36 +275,74 @@ void PezHandleMouse(int x, int y, int action)
        Trackball->MouseZoomOut();
 }
 
-void PezHandleKey(char c, int flags)
-{
-    if (c == ' ') SinglePass = !SinglePass;
-    if (c == '1') FieldOfView += 0.05f;
-    if (c == '2') FieldOfView -= 0.05f;
+void PezHandleKey(char c, int flags) {
+   switch(c) {
+   case ' ':
+      SinglePass = !SinglePass;
+      break;
 
-    if(c == 'H') {
-       CameraHeight += (flags & PEZ_SHIFT) ? 0.005f : -0.005f;
-       PezDebugString("CameraHeight: %3.2f\n", CameraHeight);
-    }
+   case'1':
+      FieldOfView += 0.05f;
+      break;
 
-    if(c == 'S') {
-       SunBrightness += (flags & PEZ_SHIFT) ? 1.0f : -1.0f;
-       SunBrightness = (std::max)(SunBrightness, 0.0f);
-       PezDebugString("SunBrightness: %3.2f\n", SunBrightness);
-    }
+   case'2':
+      FieldOfView -= 0.05f;
+      break;
 
-    if(c == 'M') {
-       MieKm      += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
-       MieKm      = (std::max)(MieKm, 0.0f);
-       MieKm4PI   = static_cast<float>(MieKm * 4.0f * M_PI);
-       PezDebugString("MieKm: %0.4f\n", MieKm);
-    }
+   case 'H':
+      CameraHeight += (flags & PEZ_SHIFT) ? 0.005f : -0.005f;
+      PezDebugString("CameraHeight: %3.2f\n", CameraHeight);
+      break;
 
-    if(c == 'R') {
-       RayleighKr    += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
-       RayleighKr    = (std::max)(RayleighKr, 0.0f);
-       RayleighKr4PI = static_cast<float>(RayleighKr * 4.0f * M_PI);
-       PezDebugString("RayleighKr: %0.4f\n", RayleighKr);
-    }
+   case 'S':
+      SunBrightness += (flags & PEZ_SHIFT) ? 1.0f : -1.0f;
+      SunBrightness = (std::max)(SunBrightness, 0.0f);
+      PezDebugString("SunBrightness: %3.2f\n", SunBrightness);
+      break;
+
+   case 'N':
+      NumSamples += (flags & PEZ_SHIFT) ? 1 : -1;
+      NumSamples = (std::max)(NumSamples, 2);
+      PezDebugString("NumSamples: %d\n", NumSamples);
+      break;
+
+   case 'M':
+      MieKm += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+      MieKm = (std::max)(MieKm, 0.0f);
+      MieKm4PI = static_cast<float>(MieKm * 4.0f * M_PI);
+      PezDebugString("MieKm: %0.4f\n", MieKm);
+      break;
+
+   case 'R':
+      RayleighKr += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+      RayleighKr = (std::max)(RayleighKr, 0.0f);
+      RayleighKr4PI = static_cast<float>(RayleighKr * 4.0f * M_PI);
+      PezDebugString("RayleighKr: %0.4f\n", RayleighKr);
+      break;
+
+   case '&':
+      Trackball->PanUp();
+      PezDebugString("up\n");
+      break;
+
+   case '(':
+      Trackball->PanDown();
+      PezDebugString("down\n");
+      break;
+
+   case '%':
+      Trackball->PanLeft();
+      PezDebugString("left\n");
+      break;
+
+   case '\'':
+      Trackball->PanRight();
+      PezDebugString("right\n");
+      break;
+
+   default:
+      PezDebugString("Key: %c 0x%02x\n", c, flags);
+   }
 
     
 }

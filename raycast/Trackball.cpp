@@ -14,6 +14,10 @@ class Trackball : public ITrackball {
         vmath::Matrix3 GetRotation() const;
         void Update(unsigned int microseconds);
         float GetZoom() const;
+        void PanUp() override;
+        void PanDown() override;
+        void PanRight() override;
+        void PanLeft() override;
     private:
         vmath::Vector3 MapToSphere(int x, int y);
         vmath::Vector3 m_startPos;
@@ -210,7 +214,35 @@ float Trackball::GetZoom() const
     return m_zoom;
 }
 
+const auto RadsPerDeg = 0.0174533f;
+const auto RadsPerPan = 5.0f * RadsPerDeg;
+
+void Trackball::PanUp() {
+   auto q = Quat::rotation(RadsPerPan, Vector3(1.0f, 0.0f, 0.0f));
+   m_quat = rotate(q, m_quat);
+}
+
+void Trackball::PanDown() {
+   auto q = Quat::rotation(-RadsPerPan, Vector3(1.0f, 0.0f, 0.0f));
+   m_quat = rotate(q, m_quat);
+}
+
+
+void Trackball::PanRight() {
+   auto q = Quat::rotation(RadsPerPan, Vector3(0.0f, 1.0f, 0.0f));
+   m_quat = rotate(q, m_quat);
+}
+
+
+void Trackball::PanLeft() {
+   auto q = Quat::rotation(-RadsPerPan, Vector3(0.0f, 1.0f, 0.0f));
+   m_quat = rotate(q, m_quat);
+}
+
+
 ITrackball* CreateTrackball(float width, float height, float radius)
 {
     return new Trackball(width, height, radius);
 }
+
+
