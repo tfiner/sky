@@ -18,6 +18,8 @@ class Trackball : public ITrackball {
         void PanDown() override;
         void PanRight() override;
         void PanLeft() override;
+        void RollRight() override;
+        void RollLeft() override;
     private:
         vmath::Vector3 MapToSphere(int x, int y);
         vmath::Vector3 m_startPos;
@@ -239,6 +241,17 @@ void Trackball::PanLeft() {
    m_quat = rotate(q, m_quat);
 }
 
+
+void Trackball::RollRight() {
+   auto q = Quat::rotation(RadsPerPan, Vector3(0.0f, 0.0f, 1.0f));
+   m_quat = rotate(q, m_quat);
+}
+
+
+void Trackball::RollLeft() {
+   auto q = Quat::rotation(-RadsPerPan, Vector3(0.0f, 0.0f, 1.0f));
+   m_quat = rotate(q, m_quat);
+}
 
 ITrackball* CreateTrackball(float width, float height, float radius)
 {

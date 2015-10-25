@@ -13,27 +13,103 @@ extern "C" {
 using namespace vmath;
 using std::string;
 
-struct ProgramHandles {
-    GLuint SinglePass;
-    GLuint TwoPassRaycast;
-    GLuint TwoPassIntervals;
-    GLuint SkySphere;
-    GLuint TestProgram;
-};
+namespace {
 
-static ProgramHandles Programs;
-static GLuint CreatePyroclasticVolume(int n, float r);
-static ITrackball* Trackball;
-static GLuint CubeCenterVbo;
-static Matrix4 ProjectionMatrix;
-static Matrix4 ModelviewMatrix;
-static Matrix4 ViewMatrix;
-static Matrix4 ModelviewProjection;
-static Point3 EyePosition;
-static GLuint CloudTexture;
-static SurfacePod IntervalsFbo[2];
-static bool SinglePass = true;
-static float FieldOfView = 0.7f;
+   struct ProgramHandles {
+      GLuint SinglePass;
+      GLuint TwoPassRaycast;
+      GLuint TwoPassIntervals;
+      GLuint SkySphere;
+      GLuint TestProgram;
+   } Programs;
+
+   ITrackball* Trackball;
+   GLuint CubeCenterVbo;
+   Matrix4 ProjectionMatrix;
+   Matrix4 ModelviewMatrix;
+   Matrix4 ViewMatrix;
+   Matrix4 ModelviewProjection;
+   Point3 EyePosition;
+   GLuint CloudTexture;
+   SurfacePod IntervalsFbo[2];
+   bool SinglePass = true;
+   float FieldOfView = 0.7f;
+
+   auto Absorption = 1.0f;
+
+   void LoadUniforms() {
+      SetUniform("ModelviewProjection", ModelviewProjection);
+      SetUniform("Modelview", ModelviewMatrix);
+      SetUniform("ViewMatrix", ViewMatrix);
+      SetUniform("ProjectionMatrix", ProjectionMatrix);
+      SetUniform("RayStartPoints", 1);
+      SetUniform("RayStopPoints", 2);
+      SetUniform("EyePosition", EyePosition);
+
+      Vector4 rayOrigin(transpose(ModelviewMatrix) * EyePosition);
+      SetUniform("RayOrigin", rayOrigin.getXYZ());
+
+      float focalLength = 1.0f / std::tan(FieldOfView / 2);
+      SetUniform("FocalLength", focalLength);
+
+      PezConfig cfg = PezGetConfig();
+      SetUniform("WindowSize", float(cfg.Width), float(cfg.Height));
+      SetUniform("Absorption", Absorption);
+   }
+
+
+   GLuint CreatePyroclasticVolume(int n, float r) {
+      GLuint handle;
+      glGenTextures(1, &handle);
+      glBindTexture(GL_TEXTURE_3D, handle);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+      unsigned char *data = new unsigned char[n*n*n];
+      unsigned char *ptr = data;
+
+      float frequency = 3.0f / n;
+      float center = n / 2.0f + 0.5f;
+
+      for(int x = 0; x < n; ++x) {
+         for(int y = 0; y < n; ++y) {
+            for(int z = 0; z < n; ++z) {
+               float dx = center - x;
+               float dy = center - y;
+               float dz = center - z;
+
+               float off = fabsf((float)PerlinNoise3D(
+                  x*frequency,
+                  y*frequency,
+                  z*frequency,
+                  5,
+                  6, 3));
+
+               float d = sqrtf(dx*dx + dy*dy + dz*dz) / (n);
+               bool isFilled = (d - off) < r;
+               *ptr++ = isFilled ? 255 : 0;
+            }
+         }
+         // PezDebugString("Slice %d of %d\n", x, n);
+      }
+
+      glTexImage3D(GL_TEXTURE_3D, 0,
+         GL_LUMINANCE,
+         n, n, n, 0,
+         GL_LUMINANCE,
+         GL_UNSIGNED_BYTE,
+         data);
+
+      delete[] data;
+      return handle;
+   }
+
+
+}
 
 PezConfig PezGetConfig()
 {
@@ -65,26 +141,6 @@ void PezInitialize()
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-static void LoadUniforms()
-{
-    SetUniform("ModelviewProjection", ModelviewProjection);
-    SetUniform("Modelview", ModelviewMatrix);
-    SetUniform("ViewMatrix", ViewMatrix);
-    SetUniform("ProjectionMatrix", ProjectionMatrix);
-    SetUniform("RayStartPoints", 1);
-    SetUniform("RayStopPoints", 2);
-    SetUniform("EyePosition", EyePosition);
-
-    Vector4 rayOrigin(transpose(ModelviewMatrix) * EyePosition);
-    SetUniform("RayOrigin", rayOrigin.getXYZ());
-
-    float focalLength = 1.0f / std::tan(FieldOfView / 2);
-    SetUniform("FocalLength", focalLength);
-
-    PezConfig cfg = PezGetConfig();
-    SetUniform("WindowSize", float(cfg.Width), float(cfg.Height));
 }
 
 
@@ -290,54 +346,70 @@ void PezHandleKey(char c, int flags) {
       break;
 
    case 'H':
-      CameraHeight += (flags & PEZ_SHIFT) ? 0.005f : -0.005f;
+      CameraHeight += (flags & PEZ_SHIFT) ? -0.005f : 0.005f;
       PezDebugString("CameraHeight: %3.2f\n", CameraHeight);
       break;
 
    case 'S':
-      SunBrightness += (flags & PEZ_SHIFT) ? 1.0f : -1.0f;
+      SunBrightness += (flags & PEZ_SHIFT) ? -1.0f : 1.0f;
       SunBrightness = (std::max)(SunBrightness, 0.0f);
       PezDebugString("SunBrightness: %3.2f\n", SunBrightness);
       break;
 
    case 'N':
-      NumSamples += (flags & PEZ_SHIFT) ? 1 : -1;
+      NumSamples += (flags & PEZ_SHIFT) ? -1 : 1;
       NumSamples = (std::max)(NumSamples, 2);
       PezDebugString("NumSamples: %d\n", NumSamples);
       break;
 
    case 'M':
-      MieKm += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+      MieKm += (flags & PEZ_SHIFT) ? -0.0001f : 0.0001f;
       MieKm = (std::max)(MieKm, 0.0f);
       MieKm4PI = static_cast<float>(MieKm * 4.0f * M_PI);
       PezDebugString("MieKm: %0.4f\n", MieKm);
       break;
 
    case 'R':
-      RayleighKr += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+      RayleighKr += (flags & PEZ_SHIFT) ? -0.0001f : 0.0001f;
       RayleighKr = (std::max)(RayleighKr, 0.0f);
       RayleighKr4PI = static_cast<float>(RayleighKr * 4.0f * M_PI);
       PezDebugString("RayleighKr: %0.4f\n", RayleighKr);
       break;
 
+   case 'A':
+      Absorption += (flags & PEZ_SHIFT) ? -0.1f : 0.1f;
+      Absorption = (std::max)(Absorption, 0.0f);
+      PezDebugString("Absorption: %0.4f\n", Absorption);
+      break;
+
    case '&':
       Trackball->PanUp();
-      PezDebugString("up\n");
+      PezDebugString("pan up\n");
       break;
 
    case '(':
       Trackball->PanDown();
-      PezDebugString("down\n");
+      PezDebugString("pan down\n");
       break;
 
    case '%':
       Trackball->PanLeft();
-      PezDebugString("left\n");
+      PezDebugString("pan left\n");
       break;
 
    case '\'':
       Trackball->PanRight();
-      PezDebugString("right\n");
+      PezDebugString("pan right\n");
+      break;
+
+   case '-':
+      Trackball->RollLeft();
+      PezDebugString("roll left\n");
+      break;
+
+   case '!':
+      Trackball->RollRight();
+      PezDebugString("roll right\n");
       break;
 
    default:
@@ -347,53 +419,3 @@ void PezHandleKey(char c, int flags) {
     
 }
 
-static GLuint CreatePyroclasticVolume(int n, float r)
-{
-    GLuint handle;
-    glGenTextures(1, &handle);
-    glBindTexture(GL_TEXTURE_3D, handle);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    unsigned char *data = new unsigned char[n*n*n];
-    unsigned char *ptr = data;
-
-    float frequency = 3.0f / n;
-    float center = n / 2.0f + 0.5f;
-
-    for(int x=0; x < n; ++x) {
-        for (int y=0; y < n; ++y) {
-            for (int z=0; z < n; ++z) {
-                float dx = center-x;
-                float dy = center-y;
-                float dz = center-z;
-
-                float off = fabsf((float) PerlinNoise3D(
-                    x*frequency,
-                    y*frequency,
-                    z*frequency,
-                    5,
-                    6, 3));
-
-                float d = sqrtf(dx*dx+dy*dy+dz*dz)/(n);
-                bool isFilled = (d-off) < r;
-                *ptr++ = isFilled ? 255 : 0;
-            }
-        }
-        // PezDebugString("Slice %d of %d\n", x, n);
-    }
-
-    glTexImage3D(GL_TEXTURE_3D, 0,
-                 GL_LUMINANCE,
-                 n, n, n, 0,
-                 GL_LUMINANCE,
-                 GL_UNSIGNED_BYTE,
-                 data);
-
-    delete[] data;
-    return handle;
-}

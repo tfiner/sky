@@ -24,6 +24,8 @@ struct ITrackball {
     virtual void PanDown() {}
     virtual void PanRight() {}
     virtual void PanLeft() {}
+    virtual void RollRight() {}
+    virtual void RollLeft() {}
 };
 
 struct TexturePod {
