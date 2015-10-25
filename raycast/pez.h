@@ -19,7 +19,7 @@ void PezInitialize();
 void PezRender();
 void PezUpdate(unsigned int microseconds);
 void PezHandleMouse(int x, int y, int action);
-void PezHandleKey(char c);
+void PezHandleKey(char c, int flags);
 
 // Implemented by the platform layer:
 const char* PezResourcePath();
@@ -48,4 +48,9 @@ enum MouseFlag {
     PEZ_DOUBLECLICK = 1 << 5,
     PEZ_ZOOM_IN   = 1 << 6,
     PEZ_ZOOM_OUT  = 1 << 7,
+};
+
+enum KeyFlag {
+   PEZ_CTRL = 1 << 0,
+   PEZ_SHIFT = 1 << 1
 };

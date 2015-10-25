@@ -1,5 +1,4 @@
 #include "Utility.h"
-#include "Exception.h"
 
 #include <glsw.h>
 
@@ -118,16 +117,13 @@ GLuint LoadProgram(const char* vsKey, const char* gsKey, const char* fsKey)
 
     GLuint vsHandle = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vsHandle, 1, &vsSource, 0);
-    THROW_ON_GL_ERROR();
 
     glCompileShader(vsHandle);
-    THROW_ON_GL_ERROR();
 
     glGetShaderiv(vsHandle, GL_COMPILE_STATUS, &compileSuccess);
     glGetShaderInfoLog(vsHandle, sizeof(compilerSpew), 0, compilerSpew);
     PezCheckCondition(compileSuccess, "Can't compile %s:\n%s", vsKey, compilerSpew);
     glAttachShader(programHandle, vsHandle);
-    THROW_ON_GL_ERROR();
 
     GLuint gsHandle;
     if (gsKey) {
@@ -400,13 +396,19 @@ GLuint CreatePointVbo(float x, float y, float z)
     return vbo;
 }
 
+
+
 void SetUniform(const char* name, int value)
 {
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform1i(location, value);
+
+#ifdef TRACE_UNIFORMS
+    PezDebugString("%s: %20s   %3d\n", __FUNCTION__, name, value);
+#endif // TRACE_UNIFORMS
 }
 
 void SetUniform(const char* name, float value)
@@ -414,26 +416,41 @@ void SetUniform(const char* name, float value)
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform1f(location, value);
+
+#ifdef TRACE_UNIFORM
+    PezDebugString("%s: %20s   %3.8f\n", __FUNCTION__, name, value);
+#endif // TRACE_UNIFORM
 }
 
-void SetUniform(const char* name, double value)
-{
-   GLuint program;
-   glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&program);
-   GLint location = glGetUniformLocation(program, name);
-   if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
-   glUniform1d(location, value);
-}
+//void SetUniform(const char* name, double value)
+//{
+//   GLuint program;
+//   glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&program);
+//   GLint location = glGetUniformLocation(program, name);
+//   if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+//   glUniform1d(location, value);
+//}
 
 void SetUniform(const char* name, Matrix4 value)
 {
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniformMatrix4fv(location, 1, 0, (float*) &value);
+
+#ifdef TRACE_UNIFORM
+    PezDebugString("%s: %20s\n", __FUNCTION__, name);
+    for(auto r = 0; r < 4; ++r){
+       PezDebugString("   %3.8f  %3.8f  %3.8f  %3.8f\n",
+          value[0][r],
+          value[1][r],
+          value[2][r],
+          value[3][r]);
+    }
+#endif // TRACE_UNIFORM
 }
 
 void SetUniform(const char* name, Matrix3 nm)
@@ -441,7 +458,7 @@ void SetUniform(const char* name, Matrix3 nm)
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     float packed[9] = {
         nm.getRow(0).getX(), nm.getRow(1).getX(), nm.getRow(2).getX(),
         nm.getRow(0).getY(), nm.getRow(1).getY(), nm.getRow(2).getY(),
@@ -454,8 +471,16 @@ void SetUniform(const char* name, Vector3 value)
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform3f(location, value.getX(), value.getY(), value.getZ());
+
+#ifdef TRACE_UNIFORM
+    PezDebugString("%s: %20s\n", __FUNCTION__, name);
+    PezDebugString("   %3.8f  %3.8f  %3.8f\n",
+       value[0],
+       value[1],
+       value[2]);
+#endif // TRACE_UNIFORM
 }
 
 void SetUniform(const char* name, float x, float y)
@@ -463,7 +488,7 @@ void SetUniform(const char* name, float x, float y)
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform2f(location, x, y);
 }
 
@@ -472,7 +497,7 @@ void SetUniform(const char* name, Vector4 value)
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform4f(location, value.getX(), value.getY(), value.getZ(), value.getW());
 }
 
@@ -481,7 +506,7 @@ void SetUniform(const char* name, Point3 value)
     GLuint program;
     glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*) &program);
     GLint location = glGetUniformLocation(program, name);
-    if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
+    //if(location == -1) PezDebugString("UNIFORM: '%s' not found.\n", name);
     glUniform3f(location, value.getX(), value.getY(), value.getZ());
 }
 
@@ -498,10 +523,11 @@ void DumpUniforms() {
 
    auto buf = std::vector<char>(bufSize + 1, '\0');
 
+   PezDebugString("%20s  %5s   %3s\n", "Name", "Type", "Size");
    for(auto i = 0; i < numUniforms; ++i) {
       GLint size=0;
       GLenum type;
       glGetActiveUniform(program, i, bufSize, nullptr, &size, &type, buf.data());
-      PezDebugString("'%s'\n", buf.data());
+      PezDebugString("%20s  %5d    %3d\n", buf.data(), type, size);
    }
 }

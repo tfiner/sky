@@ -7,6 +7,8 @@ extern "C" {
 #define _USE_MATH_DEFINES // for C++
 #include <math.h>
 
+#include <algorithm>
+
 
 using namespace vmath;
 using std::string;
@@ -16,6 +18,7 @@ struct ProgramHandles {
     GLuint TwoPassRaycast;
     GLuint TwoPassIntervals;
     GLuint SkySphere;
+    GLuint TestProgram;
 };
 
 static ProgramHandles Programs;
@@ -52,7 +55,7 @@ void PezInitialize()
     Programs.TwoPassIntervals = LoadProgram("TwoPass.VS", "TwoPass.Cube", "TwoPass.Intervals");
     Programs.TwoPassRaycast = LoadProgram("TwoPass.VS", "TwoPass.Fullscreen", "TwoPass.Raycast");
 
-    Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr, "SkySphere.FS");
+    Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr/*"SkySphere.GS"*/, "SkySphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = CreatePyroclasticVolume(128, 0.025f);
     IntervalsFbo[0] = CreateSurface(cfg.Width, cfg.Height);
@@ -86,25 +89,26 @@ static void LoadUniforms()
 
 
 // Sky simulation parameters:
-auto LightDir        = normalize(Vector3(0.0f, -400.0f, 1000.0f));
-auto NumSamples      = 3;		                  // Number of sample rays to use in integral equation
+auto LightDir        = -normalize(Vector3(0.0f, -0.371390671f, 0.928476691f));
+auto NumSamples      = 5;		                  // Number of sample rays to use in integral equation
+const auto Scale     = 4.0f;
 
 // Planetary constants
-const auto EarthRadius        = 4.0f;
-const auto AtmosphereRadius   = EarthRadius * 1.025f;
+const auto EarthRadius        = 10.0f;
+const auto AtmosphereRadius   = EarthRadius * 2.0f/*1.025f*/;
 const auto AtmosphereScale    = 1.0f / (AtmosphereRadius - EarthRadius);
 
 // Rayleigh / Mie Scattering constants.
 const auto RayleighKr         = 0.0025f;		            // Rayleigh scattering constant
-const auto RayleighKr4PI      = RayleighKr * 4.0f * M_PI;
+const auto RayleighKr4PI      = static_cast<float>(RayleighKr * 4.0f * M_PI);
 const auto RayleighScaleDepth = 0.25f;
 
-const auto MieKm           = 0.0010f;		            // Mie scattering constant
-const auto MieKm4PI        = MieKm * 4.0f * M_PI;
+auto MieKm                 = 0.0010f;		            // Mie scattering constant
+auto MieKm4PI              = static_cast<float>(MieKm * 4.0f * M_PI);
 const auto MieG            = -0.990f;		            // The Mie phase asymmetry factor
 const auto MieScaleDepth   = 0.1f;
 
-const auto SunBrightness   = 20.0f;
+auto SunBrightness = 20.0f; // 500.0f; 
 
 // Color wavelength scales
 // User defined literal nanometers.
@@ -120,24 +124,21 @@ auto WaveLength = Vector3(
    Blue_nm / 1000.0f
 );
 
-auto WaveLength4 = Vector3(
-   powf(WaveLength[0], 4.0f),
-   powf(WaveLength[1], 4.0f),
-   powf(WaveLength[2], 4.0f)
+auto InvWaveLength4 = Vector3(
+   1.0f / powf(WaveLength[0], 4.0f),
+   1.0f / powf(WaveLength[1], 4.0f),
+   1.0f / powf(WaveLength[2], 4.0f)
 );
 
 
 // Take the camera position from the other code, and 
 // put it in the same relative position.
-auto CameraHeight = EarthRadius + 0.01f;
-auto CameraPos = normalize(Vector3(6.946963f, 6.913678f, 2.205330f)) * CameraHeight;
-
+auto CameraPos    = Vector3(6.94696283f, 6.91367817f, 2.20532990f);
+auto CameraHeight = 10.04603004f/*EarthRadius * 1.01f*/;
 
 void SkyRender() {
    ::glUseProgram(Programs.SkySphere);
    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
-
-   DumpUniforms();
 
    SetUniform("ModelviewProjection", ModelviewProjection);
 
@@ -147,6 +148,7 @@ void SkyRender() {
    SetUniform("v3LightDir",   LightDir);
    SetUniform("NumSamples",   NumSamples);
    SetUniform("fInnerRadius", EarthRadius);
+   SetUniform("fScale",       Scale);
    
    SetUniform("fKrESun",               RayleighKr * SunBrightness);
    SetUniform("fKr4PI",                RayleighKr4PI);
@@ -158,16 +160,19 @@ void SkyRender() {
    SetUniform("g",         MieG);
    SetUniform("g2",        MieG * MieG);
 
-   SetUniform("v3InvWavelength", WaveLength4); 
+   SetUniform("v3InvWavelength", InvWaveLength4 );
+
+//   DumpUniforms();
 
    //    ::glDisable(GL_CULL_FACE);
 
    ::glFrontFace(GL_CW);
-   ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   // ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
    auto pSphere = ::gluNewQuadric();
-   ::gluSphere(pSphere, AtmosphereRadius, 100, 100);
+   ::gluSphere(pSphere, AtmosphereRadius*4, 100, 100);
    ::gluDeleteQuadric(pSphere);
+   //glDrawArrays(GL_POINTS, 0, 1);
 }
 
 
@@ -191,9 +196,9 @@ void PezRender()
         ::glEnable(GL_CULL_FACE);
         ::glCullFace(GL_BACK);
 
-        glUseProgram(Programs.SinglePass);
-        LoadUniforms();
-        glDrawArrays(GL_POINTS, 0, 1);
+        //glUseProgram(Programs.SinglePass);
+        //LoadUniforms();
+        //glDrawArrays(GL_POINTS, 0, 1);
     }
     else
     {
@@ -248,7 +253,7 @@ void PezUpdate(unsigned int microseconds)
     ModelviewMatrix = ViewMatrix * modelMatrix;
 
     float n = .050f;
-    float f = 20.0f;
+    float f = AtmosphereRadius * 8.0f;
 
     ProjectionMatrix = Matrix4::perspective(FieldOfView, 1, n, f);
     ModelviewProjection = ProjectionMatrix * ModelviewMatrix;
@@ -270,11 +275,30 @@ void PezHandleMouse(int x, int y, int action)
        Trackball->MouseZoomOut();
 }
 
-void PezHandleKey(char c)
+void PezHandleKey(char c, int flags)
 {
     if (c == ' ') SinglePass = !SinglePass;
     if (c == '1') FieldOfView += 0.05f;
     if (c == '2') FieldOfView -= 0.05f;
+
+    if(c == 'H') {
+       CameraHeight += (flags & PEZ_SHIFT) ? 0.005f : -0.005f;
+       PezDebugString("CameraHeight: %3.2f\n", CameraHeight);
+    }
+
+    if(c == 'S') {
+       SunBrightness += (flags & PEZ_SHIFT) ? 1.0f : -1.0f;
+       SunBrightness = (std::max)(SunBrightness, 0.0f);
+       PezDebugString("SunBrightness: %3.2f\n", SunBrightness);
+    }
+
+    if(c == 'M') {
+       MieKm += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+       MieKm = (std::max)(MieKm, 0.0f);
+       MieKm4PI = static_cast<float>(MieKm * 4.0f * M_PI);
+       PezDebugString("MieKm: %0.4f\n", MieKm);
+    }
+    
 }
 
 static GLuint CreatePyroclasticVolume(int n, float r)
@@ -314,7 +338,7 @@ static GLuint CreatePyroclasticVolume(int n, float r)
                 *ptr++ = isFilled ? 255 : 0;
             }
         }
-        PezDebugString("Slice %d of %d\n", x, n);
+        // PezDebugString("Slice %d of %d\n", x, n);
     }
 
     glTexImage3D(GL_TEXTURE_3D, 0,

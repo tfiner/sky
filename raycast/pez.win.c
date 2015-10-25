@@ -167,6 +167,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     int x = LOWORD(lParam);
     int y = HIWORD(lParam);
+    short keyState = 0;
+    enum KeyFlag keys = 0;
+
     switch (msg)
     {
         case WM_LBUTTONDBLCLK: PezHandleMouse(x, y, PEZ_DOUBLECLICK | PEZ_LEFT); break;
@@ -206,16 +209,21 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         case WM_KEYDOWN:
         {
-            PezHandleKey((char) wParam);
-            switch (wParam)
-            {
-                case VK_ESCAPE:
-                    PostQuitMessage(0);
-                    break;
-                case VK_OEM_2: // Question Mark / Forward Slash for US Keyboards
-                    break;
-            }
-            break;
+           keyState = GetAsyncKeyState(VK_CONTROL);
+           keys |= ((keyState >> 15) & 0x0001) << 0;
+
+           keyState = GetAsyncKeyState(VK_SHIFT);
+           keys |= ((keyState >> 15) & 0x0001) << 1;
+           PezHandleKey((char)wParam, keys);
+           switch(wParam)
+           {
+           case VK_ESCAPE:
+              PostQuitMessage(0);
+              break;
+           case VK_OEM_2: // Question Mark / Forward Slash for US Keyboards
+              break;
+           }
+           break;
         }
     }
 
