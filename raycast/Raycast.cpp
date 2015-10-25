@@ -89,18 +89,18 @@ static void LoadUniforms()
 
 
 // Sky simulation parameters:
-auto LightDir        = -normalize(Vector3(0.0f, -0.371390671f, 0.928476691f));
+auto LightDir = -Vector3(0.0f, 0.0f, 1.0f);//normalize(Vector3(0.0f, -0.371390671f, 0.928476691f));
 auto NumSamples      = 5;		                  // Number of sample rays to use in integral equation
 const auto Scale     = 4.0f;
 
 // Planetary constants
 const auto EarthRadius        = 10.0f;
-const auto AtmosphereRadius   = EarthRadius * 2.0f/*1.025f*/;
+const auto AtmosphereRadius   = EarthRadius * 1.025f;
 const auto AtmosphereScale    = 1.0f / (AtmosphereRadius - EarthRadius);
 
 // Rayleigh / Mie Scattering constants.
-const auto RayleighKr         = 0.0025f;		            // Rayleigh scattering constant
-const auto RayleighKr4PI      = static_cast<float>(RayleighKr * 4.0f * M_PI);
+auto RayleighKr         = 0.0025f;		            // Rayleigh scattering constant
+auto RayleighKr4PI      = static_cast<float>(RayleighKr * 4.0f * M_PI);
 const auto RayleighScaleDepth = 0.25f;
 
 auto MieKm                 = 0.0010f;		            // Mie scattering constant
@@ -133,8 +133,9 @@ auto InvWaveLength4 = Vector3(
 
 // Take the camera position from the other code, and 
 // put it in the same relative position.
-auto CameraPos    = Vector3(6.94696283f, 6.91367817f, 2.20532990f);
-auto CameraHeight = 10.04603004f/*EarthRadius * 1.01f*/;
+auto CameraPos = normalize(Vector3(0.0f, 1.0f, 0.0f)) * 9.75;/*Vector3(6.94696283f, 6.91367817f, 2.20532990f)*/;
+//auto CameraPos = normalize(Vector3(0.0f, 1.0f, 0.0f)) * 9.9;/*Vector3(6.94696283f, 6.91367817f, 2.20532990f)*/;
+auto CameraHeight = EarthRadius * 1.01f;
 
 void SkyRender() {
    ::glUseProgram(Programs.SkySphere);
@@ -293,11 +294,19 @@ void PezHandleKey(char c, int flags)
     }
 
     if(c == 'M') {
-       MieKm += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
-       MieKm = (std::max)(MieKm, 0.0f);
-       MieKm4PI = static_cast<float>(MieKm * 4.0f * M_PI);
+       MieKm      += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+       MieKm      = (std::max)(MieKm, 0.0f);
+       MieKm4PI   = static_cast<float>(MieKm * 4.0f * M_PI);
        PezDebugString("MieKm: %0.4f\n", MieKm);
     }
+
+    if(c == 'R') {
+       RayleighKr    += (flags & PEZ_SHIFT) ? 0.0001f : -0.0001f;
+       RayleighKr    = (std::max)(RayleighKr, 0.0f);
+       RayleighKr4PI = static_cast<float>(RayleighKr * 4.0f * M_PI);
+       PezDebugString("RayleighKr: %0.4f\n", RayleighKr);
+    }
+
     
 }
 
