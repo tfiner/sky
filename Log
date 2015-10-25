@@ -47,3 +47,12 @@ OK, I've done a lot of porting but feel like OS X is hostile to OpenGL developme
 Yesterday , I (re)found Philip Rideout's page on Single Pass Raycasting.  It is _excellent_, the code and article are clear, compiled and ran the first time on a windows development machine.
 
 I'm going to incorporate his raycasting into my sky simulation.
+
+10/18/15
+OMG!  I've had nothing but trouble working with the GPU GEMS source.
+Yesterady I spent about 8 hours going the reverse direction and now I have a glu sphere inside of the cloud simulation.
+Holy shit!  This is taking forever.
+OK.  I spent 8 hours today trying to get the fucking sphere to render the sky colors, to no avail.  After _a lot_ of tweaking I have something showing up, but it's wrong, all wrong.  I know it'll be something fucking retarded like a vector pointing the wrong direction.
+
+10/25/15 OK.  I found another uniform I missed setting that was causing the sky simulation to fail.
+I've also disovered that the sky is incredibly fragile.  There's a very thin band of sky on my sphere that I want to change to work across the whole sphere.

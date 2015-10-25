@@ -25,6 +25,8 @@ uniform int nSamples;
 const float fSamples = 2.0;
 
 varying vec3 v3Direction;
+varying vec3 firstColor;
+varying vec3 secondColor;
 
 
 float scale(float fCos)
@@ -43,13 +45,12 @@ void main(void)
 
 	// Calculate the ray's starting position, then calculate its scattering offset
 	vec3 v3Start = v3CameraPos;
-	float fHeight = length(v3Start);
+	// float fHeight = length(v3Start);
 	float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
-	float fStartAngle = dot(v3Ray, v3Start) / fHeight;
+	float fStartAngle = dot(v3Ray, v3Start) / fCameraHeight; // fHeight;
 	float fStartOffset = fDepth*scale(fStartAngle);
 
 	// Initialize the scattering loop variables
-	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
 	float fSampleLength = fFar / fSamples;
 	float fScaledLength = fSampleLength * fScale;
 	vec3 v3SampleRay = v3Ray * fSampleLength;
@@ -65,6 +66,7 @@ void main(void)
 		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
 		float fScatter = (fStartOffset + fDepth*(scale(fLightAngle) - scale(fCameraAngle)));
 		vec3 v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
+      // vec3 v3Attenuate = vec3(1);
 		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
 		v3SamplePoint += v3SampleRay;
 	}
@@ -74,4 +76,7 @@ void main(void)
 	gl_FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun);
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 	v3Direction = v3CameraPos - v3Pos;
+
+	firstColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun);
+   secondColor.rgb = v3FrontColor * fKmESun;
 }

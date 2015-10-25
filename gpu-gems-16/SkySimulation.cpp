@@ -198,7 +198,7 @@ SkySimulation::SkySimulation(){
    light_ = glm::vec3(0.0f, -400.0f, 1000.0f);
    lightDir_ = glm::normalize(light_);
 
-	m_nSamples = 3;		// Number of sample rays to use in integral equation
+	m_nSamples = 5;		// Number of sample rays to use in integral equation
 	m_Kr = 0.0025f;		// Rayleigh scattering constant
 	m_Kr4PI = m_Kr*4.0f*PI;
 	m_Km = 0.0010f;		// Mie scattering constant
@@ -343,9 +343,10 @@ void SkySimulation::RenderSky(CVector &vCamera) {
    skyShader->SetUniform("fKmESun", m_Km*m_ESun);
    skyShader->SetUniform("fKr4PI", m_Kr4PI);
    skyShader->SetUniform("fKm4PI", m_Km4PI);
-   skyShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
+   const auto atmosphereScale = 1.0f / (m_fOuterRadius - m_fInnerRadius);
+   skyShader->SetUniform("fScale", atmosphereScale);
    skyShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
-   skyShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
+   skyShader->SetUniform("fScaleOverScaleDepth", atmosphereScale / m_fRayleighScaleDepth);
    skyShader->SetUniform("g", m_g);
    skyShader->SetUniform("g2", m_g*m_g);
    skyShader->SetUniform("nSamples", m_nSamples);
