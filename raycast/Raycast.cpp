@@ -6,8 +6,11 @@ extern "C" {
 
 #define _USE_MATH_DEFINES // for C++
 #include <math.h>
+#include <time.h>
 
 #include <algorithm>
+#include <array>
+#include <vector>
 
 
 using namespace vmath;
@@ -58,10 +61,21 @@ namespace {
    }
 
 
-   GLuint CreatePyroclasticVolume(int n, float r) {
+   GLuint NewTexture() {
       GLuint handle;
       glGenTextures(1, &handle);
+      return handle;
+   }
+
+
+   void CreatePyroclasticVolume(GLuint handle, int n, float r) {
+      const auto seed = static_cast<unsigned int>(time(nullptr));
+      PezDebugString("Starting seed: %u\n", seed);
+      srand(seed);
+      PerlinInit();
+
       glBindTexture(GL_TEXTURE_3D, handle);
+      PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to bind texture handle");
       glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -69,8 +83,8 @@ namespace {
       glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-      unsigned char *data = new unsigned char[n*n*n];
-      unsigned char *ptr = data;
+      auto v = std::vector<unsigned char>(n*n*n);
+      unsigned char *ptr = v.data();
 
       float frequency = 3.0f / n;
       float center = n / 2.0f + 0.5f;
@@ -97,16 +111,25 @@ namespace {
          // PezDebugString("Slice %d of %d\n", x, n);
       }
 
-      glTexImage3D(GL_TEXTURE_3D, 0,
+      glTexImage3D(
+         GL_TEXTURE_3D, 
+         0,
          GL_LUMINANCE,
          n, n, n, 0,
          GL_LUMINANCE,
          GL_UNSIGNED_BYTE,
-         data);
+         v.data());
 
-      delete[] data;
-      return handle;
+      PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to set texture bits");
    }
+
+   //void DestroyCloud(GLuint handle) {
+   //   glBindTexture(GL_TEXTURE_3D, 0);
+   //   PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to unbind cloud texture");
+
+   //   glDeleteTextures(1, &handle);
+   //   PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to delete cloud texture");
+   //}
 
 
 }
@@ -133,7 +156,8 @@ void PezInitialize()
 
     Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr/*"SkySphere.GS"*/, "SkySphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
-    CloudTexture = CreatePyroclasticVolume(128, 0.025f);
+    CloudTexture = NewTexture();
+    CreatePyroclasticVolume(CloudTexture, 128, 0.05f);
     IntervalsFbo[0] = CreateSurface(cfg.Width, cfg.Height);
     IntervalsFbo[1] = CreateSurface(cfg.Width, cfg.Height);
 
@@ -345,6 +369,10 @@ void PezHandleKey(char c, int flags) {
       FieldOfView -= 0.05f;
       break;
 
+   case 'C':
+      CreatePyroclasticVolume(CloudTexture, 128, 0.05f);
+      break;
+
    case 'H':
       CameraHeight += (flags & PEZ_SHIFT) ? -0.005f : 0.005f;
       PezDebugString("CameraHeight: %3.2f\n", CameraHeight);
@@ -413,7 +441,8 @@ void PezHandleKey(char c, int flags) {
       break;
 
    default:
-      PezDebugString("Key: %c 0x%02x\n", c, flags);
+      if (isprint(c))
+         PezDebugString("Key: %c 0x%02x\n", c, flags);
    }
 
     
