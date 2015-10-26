@@ -38,7 +38,12 @@ namespace {
    bool SinglePass = true;
    float FieldOfView = 0.7f;
 
+   // Cloud variables
    auto Absorption = 1.0f;
+
+   // Common to sky and cloud.
+   auto LightDir = -Vector3(0.0f, 0.0f, 1.0f);
+   auto SunBrightness = 20.0f;
 
    void LoadUniforms() {
       SetUniform("ModelviewProjection", ModelviewProjection);
@@ -48,6 +53,10 @@ namespace {
       SetUniform("RayStartPoints", 1);
       SetUniform("RayStopPoints", 2);
       SetUniform("EyePosition", EyePosition);
+      SetUniform("LightPosition", LightDir * 100);
+
+      SetUniform("LightIntensity", Vector3(SunBrightness * .75f));
+      
 
       Vector4 rayOrigin(transpose(ModelviewMatrix) * EyePosition);
       SetUniform("RayOrigin", rayOrigin.getXYZ());
@@ -123,14 +132,6 @@ namespace {
       PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to set texture bits");
    }
 
-   //void DestroyCloud(GLuint handle) {
-   //   glBindTexture(GL_TEXTURE_3D, 0);
-   //   PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to unbind cloud texture");
-
-   //   glDeleteTextures(1, &handle);
-   //   PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to delete cloud texture");
-   //}
-
 
 }
 
@@ -169,9 +170,8 @@ void PezInitialize()
 
 
 // Sky simulation parameters:
-auto LightDir = -Vector3(0.0f, 0.0f, 1.0f);//normalize(Vector3(0.0f, -0.371390671f, 0.928476691f));
-auto NumSamples      = 20;		                  // Number of sample rays to use in integral equation
-const auto Scale     = 4.0f;
+auto NumSamples   = 20;		                  // Number of sample rays to use in integral equation
+auto Scale        = 4.0f;
 
 // Planetary constants
 const auto EarthRadius        = 10.0f;
@@ -181,14 +181,12 @@ const auto AtmosphereScale    = 1.0f / (AtmosphereRadius - EarthRadius);
 // Rayleigh / Mie Scattering constants.
 auto RayleighKr         = 0.0025f;		            // Rayleigh scattering constant
 auto RayleighKr4PI      = static_cast<float>(RayleighKr * 4.0f * M_PI);
-const auto RayleighScaleDepth = 0.25f;
+auto RayleighScaleDepth = 0.40f;
 
 auto MieKm                 = 0.0010f;		            // Mie scattering constant
 auto MieKm4PI              = static_cast<float>(MieKm * 4.0f * M_PI);
 const auto MieG            = -0.990f;		            // The Mie phase asymmetry factor
 const auto MieScaleDepth   = 0.1f;
-
-auto SunBrightness = 20.0f; // 500.0f; 
 
 // Color wavelength scales
 // User defined literal nanometers.
@@ -248,7 +246,14 @@ void SkyRender() {
    //    ::glDisable(GL_CULL_FACE);
 
    ::glFrontFace(GL_CW);
-   // ::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   ::glPolygonMode(GL_FRONT, GL_FILL/*GL_LINE*/);
+   //::glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+   auto pSphere = ::gluNewQuadric();
+   ::gluSphere(pSphere, EarthRadius*Scale, 150, 150);
+   ::gluDeleteQuadric(pSphere);
+   //glDrawArrays(GL_POINTS, 0, 1);
+}
 
    auto pSphere = ::gluNewQuadric();
    ::gluSphere(pSphere, AtmosphereRadius*4, 150, 150);
@@ -334,7 +339,7 @@ void PezUpdate(unsigned int microseconds)
     ModelviewMatrix = ViewMatrix * modelMatrix;
 
     float n = .050f;
-    float f = AtmosphereRadius * 8.0f;
+    float f = AtmosphereRadius * Scale * 1.5f;
 
     ProjectionMatrix = Matrix4::perspective(FieldOfView, 1, n, f);
     ModelviewProjection = ProjectionMatrix * ModelviewMatrix;
@@ -355,22 +360,21 @@ void PezHandleMouse(int x, int y, int action) {
        Trackball->MouseZoomOut();
 }
 
+
 void PezHandleKey(char c, int flags) {
    switch(c) {
    case ' ':
       SinglePass = !SinglePass;
       break;
 
-   case'1':
-      FieldOfView += 0.05f;
-      break;
-
-   case'2':
-      FieldOfView -= 0.05f;
-      break;
-
    case 'C':
       CreatePyroclasticVolume(CloudTexture, 128, 0.05f);
+      break;
+
+   case 'D':
+      Scale += (flags & PEZ_SHIFT) ? -0.1f : 0.1f;
+      Scale = (std::max)(Scale, 0.0f);
+      PezDebugString("Scale: %3.2f\n", Scale);
       break;
 
    case 'H':
@@ -398,16 +402,32 @@ void PezHandleKey(char c, int flags) {
       break;
 
    case 'R':
-      RayleighKr += (flags & PEZ_SHIFT) ? -0.0001f : 0.0001f;
-      RayleighKr = (std::max)(RayleighKr, 0.0f);
-      RayleighKr4PI = static_cast<float>(RayleighKr * 4.0f * M_PI);
-      PezDebugString("RayleighKr: %0.4f\n", RayleighKr);
+      if(flags & PEZ_CTRL) {
+         RayleighScaleDepth += (flags & PEZ_SHIFT) ? -0.01f : 0.01f;
+         RayleighScaleDepth = (std::max)(RayleighScaleDepth, 0.0f);
+         PezDebugString("RayleighScaleDepth: %0.4f\n", RayleighScaleDepth);
+
+      } else {
+         RayleighKr += (flags & PEZ_SHIFT) ? -0.0001f : 0.0001f;
+         RayleighKr = (std::max)(RayleighKr, 0.0f);
+         RayleighKr4PI = static_cast<float>(RayleighKr * 4.0f * M_PI);
+         PezDebugString("RayleighKr: %0.4f\n", RayleighKr);
+      }
       break;
+
 
    case 'A':
       Absorption += (flags & PEZ_SHIFT) ? -0.1f : 0.1f;
       Absorption = (std::max)(Absorption, 0.0f);
       PezDebugString("Absorption: %0.4f\n", Absorption);
+      break;
+
+   case'1':
+      FieldOfView += 0.05f;
+      break;
+
+   case'2':
+      FieldOfView -= 0.05f;
       break;
 
    case '&':
