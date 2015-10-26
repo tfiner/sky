@@ -331,7 +331,7 @@ void SkySimulation::RenderSky(CVector &vCamera) {
 
    tfgl::ScopedBinder<tfgl::Program> shaderBind(*skyShader);
    skyShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   skyShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
+   skyShader->SetUniform("v3LightDir", lightDir_.x, lightDir_.y, lightDir_.z);
    skyShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
    skyShader->SetUniform("fCameraHeight", vCamera.Magnitude());
    skyShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
@@ -367,14 +367,10 @@ void SkySimulation::RenderGround(CVector &vCamera) {
 
    tfgl::ScopedBinder<tfgl::Program> shaderBind(*groundShader);
    groundShader->SetUniform("v3CameraPos", vCamera.x, vCamera.y, vCamera.z);
-   groundShader->SetUniform("v3LightPos", lightDir_.x, lightDir_.y, lightDir_.z);
+   groundShader->SetUniform("v3LightDir", lightDir_.x, lightDir_.y, lightDir_.z);
    groundShader->SetUniform("v3InvWavelength", 1 / m_fWavelength4[0], 1 / m_fWavelength4[1], 1 / m_fWavelength4[2]);
    groundShader->SetUniform("fCameraHeight", vCamera.Magnitude());
-   groundShader->SetUniform("fCameraHeight2", vCamera.MagnitudeSquared());
    groundShader->SetUniform("fInnerRadius", m_fInnerRadius);
-   groundShader->SetUniform("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
-   groundShader->SetUniform("fOuterRadius", m_fOuterRadius);
-   groundShader->SetUniform("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
    groundShader->SetUniform("fKrESun", m_Kr*m_ESun);
    groundShader->SetUniform("fKmESun", m_Km*m_ESun);
    groundShader->SetUniform("fKr4PI", m_Kr4PI);
@@ -382,9 +378,7 @@ void SkySimulation::RenderGround(CVector &vCamera) {
    groundShader->SetUniform("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
    groundShader->SetUniform("fScaleDepth", m_fRayleighScaleDepth);
    groundShader->SetUniform("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-   groundShader->SetUniform("g", m_g);
-   groundShader->SetUniform("g2", m_g*m_g);
-   groundShader->SetUniform("s2Test", 0);
+   groundShader->SetUniform("nSamples", m_nSamples);
 
    GLUquadricObj *pSphere = gluNewQuadric();
    gluSphere(pSphere, m_fInnerRadius, 100, 100);

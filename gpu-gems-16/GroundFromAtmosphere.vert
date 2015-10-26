@@ -7,25 +7,24 @@
 //
 
 uniform vec3 v3CameraPos;		// The camera's current position
-uniform vec3 v3LightPos;		// The direction vector to the light source
-uniform vec3 v3InvWavelength;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
 uniform float fCameraHeight;	// The camera's current height
-uniform float fCameraHeight2;	// fCameraHeight^2
-uniform float fOuterRadius;		// The outer (atmosphere) radius
-uniform float fOuterRadius2;	// fOuterRadius^2
-uniform float fInnerRadius;		// The inner (planetary) radius
-uniform float fInnerRadius2;	// fInnerRadius^2
+
+uniform vec3 v3LightDir;		// The direction vector to the light source
+
+uniform int nSamples;
+
 uniform float fKrESun;			// Kr * ESun
 uniform float fKmESun;			// Km * ESun
 uniform float fKr4PI;			// Kr * 4 * PI
 uniform float fKm4PI;			// Km * 4 * PI
+
+uniform vec3 v3InvWavelength;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
+
+uniform float fInnerRadius;		// The inner (planetary) radius
+
 uniform float fScale;			// 1 / (fOuterRadius - fInnerRadius)
 uniform float fScaleDepth;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 uniform float fScaleOverScaleDepth;	// fScale / fScaleDepth
-
-const int nSamples = 2;
-const float fSamples = 2.0;
-
 
 float scale(float fCos)
 {
@@ -44,14 +43,18 @@ void main(void)
 	// Calculate the ray's starting position, then calculate its scattering offset
 	vec3 v3Start = v3CameraPos;
 	float fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
+
 	float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
-	float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
 	float fCameraScale = scale(fCameraAngle);
+   float fCameraOffset = fDepth*fCameraScale;
+
+	float fLightAngle = dot(v3LightDir, v3Pos) / length(v3Pos);
 	float fLightScale = scale(fLightAngle);
-	float fCameraOffset = fDepth*fCameraScale;
+
 	float fTemp = (fLightScale + fCameraScale);
 
 	// Initialize the scattering loop variables
+   float fSamples = nSamples;
 	float fSampleLength = fFar / fSamples;
 	float fScaledLength = fSampleLength * fScale;
 	vec3 v3SampleRay = v3Ray * fSampleLength;
