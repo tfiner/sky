@@ -219,7 +219,7 @@ void SkyRender() {
    ::glUseProgram(Programs.SkySphere);
    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
 
-   const auto skyModelView = Matrix4::translation(Vector3(0, -EarthRadius, 0)) * ModelviewMatrix;
+   const auto skyModelView = /*Matrix4::translation(Vector3(0, -EarthRadius, 0)) * */ModelviewMatrix;
    const auto skyModelViewProj = ProjectionMatrix * skyModelView;
    SetUniform("ModelviewProjection", skyModelViewProj);
 
@@ -269,7 +269,7 @@ void GroundRender() {
    SetUniform("v3CameraPos", CameraPos);
    SetUniform("fCameraHeight", CameraHeight);
 
-   SetUniform("v3LightDir", -LightDir);
+   SetUniform("v3LightDir", LightDir);
 
    SetUniform("NumSamples", NumSamples);
 
@@ -287,79 +287,46 @@ void GroundRender() {
 
    //   DumpUniforms();
 
-   //::glDisable(GL_CULL_FACE);
+   // ::glDisable(GL_CULL_FACE);
 
    ::glFrontFace(GL_CCW);
-   ::glPolygonMode(GL_FRONT, GL_FILL/*GL_LINE*/);
+   ::glPolygonMode(GL_FRONT, /*GL_FILL*/GL_LINE);
    //::glPolygonMode(GL_FRONT_AND_BACK, /*GL_FILL*/GL_LINE);
   
    auto pSphere = ::gluNewQuadric();
    ::gluSphere(pSphere, EarthRadius, 50, 50);
    ::gluDeleteQuadric(pSphere);
-   //glDrawArrays(GL_POINTS, 0, 1);
+}
+
+void RenderCloud() {
+   glBindBuffer(GL_ARRAY_BUFFER, CubeCenterVbo);
+   glVertexAttribPointer(SlotPosition, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+   glEnableVertexAttribArray(SlotPosition);
+
+   glBindTexture(GL_TEXTURE_3D, CloudTexture);
+
+   ::glFrontFace(GL_CCW);
+   ::glPolygonMode(GL_FRONT, GL_FILL);
+   ::glEnable(GL_CULL_FACE);
+   ::glCullFace(GL_BACK);
+
+   glUseProgram(Programs.SinglePass);
+   LoadUniforms();
+   glDrawArrays(GL_POINTS, 0, 1);
+
+   ::glBindBuffer(GL_ARRAY_BUFFER, 0);
+   ::glBindTexture(GL_TEXTURE_3D, 0);
 }
 
 
 void PezRender()
 {  
-    glBindBuffer(GL_ARRAY_BUFFER, CubeCenterVbo);
-    glVertexAttribPointer(SlotPosition, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-    glEnableVertexAttribArray(SlotPosition);
+    glClearColor(0.2f, 0.2f, 0.2f, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindTexture(GL_TEXTURE_3D, CloudTexture);
-
-    if (SinglePass)
-    {
-        glClearColor(0.2f, 0.2f, 0.2f, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        SkyRender();
-        GroundRender();
-
-        ::glFrontFace(GL_CCW);
-        ::glPolygonMode(GL_FRONT, GL_FILL);
-        ::glEnable(GL_CULL_FACE);
-        ::glCullFace(GL_BACK);
-
-        glUseProgram(Programs.SinglePass);
-        LoadUniforms();
-        glDrawArrays(GL_POINTS, 0, 1);
-    }
-    else
-    {
-        glUseProgram(Programs.TwoPassIntervals);
-        LoadUniforms();
-        glClearColor(0, 0, 0, 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, IntervalsFbo[0].FboHandle);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glCullFace(GL_FRONT);
-        glDrawArrays(GL_POINTS, 0, 1);
-        glBindFramebuffer(GL_FRAMEBUFFER, IntervalsFbo[1].FboHandle);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glCullFace(GL_BACK);
-        glDrawArrays(GL_POINTS, 0, 1);
-
-        glUseProgram(Programs.TwoPassRaycast);
-        LoadUniforms();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, IntervalsFbo[0].ColorTexture);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, IntervalsFbo[1].ColorTexture);
-        glClearColor(0.2f, 0.2f, 0.2f, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_POINTS, 0, 1);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-
-    ::glBindBuffer(GL_ARRAY_BUFFER, 0);
-    ::glBindTexture(GL_TEXTURE_3D, 0);
+    SkyRender();
+    GroundRender();
+    RenderCloud();
 }
 
 void PezUpdate(unsigned int microseconds)
@@ -370,7 +337,8 @@ void PezUpdate(unsigned int microseconds)
 
     EyePosition = Point3(0, 0, 5 + Trackball->GetZoom());
     Vector3 up(0, 1, 0); 
-    Point3 target(0,0,0.0);
+    // Point3 target(0,0,0.0);
+    Point3 target = Point3(0,0,0.0) + LightDir * 1000;
 
     ViewMatrix = Matrix4::lookAt(EyePosition, target, up);
 
