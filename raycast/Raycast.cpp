@@ -23,7 +23,7 @@ namespace {
       GLuint TwoPassRaycast;
       GLuint TwoPassIntervals;
       GLuint SkySphere;
-      GLuint TestProgram;
+      GLuint GroundSphere;
    } Programs;
 
    ITrackball* Trackball;
@@ -154,8 +154,8 @@ void PezInitialize()
     Programs.SinglePass = LoadProgram("SinglePass.VS", "SinglePass.GS", "SinglePass.FS");
     Programs.TwoPassIntervals = LoadProgram("TwoPass.VS", "TwoPass.Cube", "TwoPass.Intervals");
     Programs.TwoPassRaycast = LoadProgram("TwoPass.VS", "TwoPass.Fullscreen", "TwoPass.Raycast");
-
     Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr/*"SkySphere.GS"*/, "SkySphere.FS");
+    Programs.GroundSphere = LoadProgram("GroundSphere.VS", nullptr/*"GroundSphere.GS"*/, "GroundSphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = NewTexture();
     CreatePyroclasticVolume(CloudTexture, 128, 0.05f);
@@ -219,7 +219,9 @@ void SkyRender() {
    ::glUseProgram(Programs.SkySphere);
    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use sky sphere");
 
-   SetUniform("ModelviewProjection", ModelviewProjection);
+   const auto skyModelView = Matrix4::translation(Vector3(0, -EarthRadius, 0)) * ModelviewMatrix;
+   const auto skyModelViewProj = ProjectionMatrix * skyModelView;
+   SetUniform("ModelviewProjection", skyModelViewProj);
 
    SetUniform("v3CameraPos",     CameraPos);
    SetUniform("fCameraHeight",   CameraHeight);
@@ -255,8 +257,44 @@ void SkyRender() {
    //glDrawArrays(GL_POINTS, 0, 1);
 }
 
+void GroundRender() {
+   ::glUseProgram(Programs.GroundSphere);
+   PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use ground sphere");
+
+   const auto groundModelView = Matrix4::translation(Vector3(0,-1.05*EarthRadius,0)) * ModelviewMatrix;
+   const auto groundModelViewProj = ProjectionMatrix * groundModelView;
+
+   SetUniform("ModelviewProjection", groundModelViewProj);
+
+   SetUniform("v3CameraPos", CameraPos);
+   SetUniform("fCameraHeight", CameraHeight);
+
+   SetUniform("v3LightDir", -LightDir);
+
+   SetUniform("NumSamples", NumSamples);
+
+   SetUniform("fKrESun", RayleighKr * SunBrightness);
+   SetUniform("fKr4PI", RayleighKr4PI);
+   SetUniform("fKmESun", MieKm * SunBrightness);
+   SetUniform("fKm4PI", MieKm4PI);
+
+   SetUniform("v3InvWavelength", InvWaveLength4);
+   SetUniform("fInnerRadius", EarthRadius);
+     
+   SetUniform("fScale", AtmosphereScale);
+   SetUniform("fScaleDepth", RayleighScaleDepth);
+   SetUniform("fScaleOverScaleDepth", AtmosphereScale / RayleighScaleDepth);
+
+   //   DumpUniforms();
+
+   //::glDisable(GL_CULL_FACE);
+
+   ::glFrontFace(GL_CCW);
+   ::glPolygonMode(GL_FRONT, GL_FILL/*GL_LINE*/);
+   //::glPolygonMode(GL_FRONT_AND_BACK, /*GL_FILL*/GL_LINE);
+  
    auto pSphere = ::gluNewQuadric();
-   ::gluSphere(pSphere, AtmosphereRadius*4, 150, 150);
+   ::gluSphere(pSphere, EarthRadius, 50, 50);
    ::gluDeleteQuadric(pSphere);
    //glDrawArrays(GL_POINTS, 0, 1);
 }
@@ -276,6 +314,7 @@ void PezRender()
         glClear(GL_COLOR_BUFFER_BIT);
 
         SkyRender();
+        GroundRender();
 
         ::glFrontFace(GL_CCW);
         ::glPolygonMode(GL_FRONT, GL_FILL);
@@ -344,6 +383,7 @@ void PezUpdate(unsigned int microseconds)
     ProjectionMatrix = Matrix4::perspective(FieldOfView, 1, n, f);
     ModelviewProjection = ProjectionMatrix * ModelviewMatrix;
 }
+
 
 void PezHandleMouse(int x, int y, int action) {
     if (action & PEZ_DOWN)
