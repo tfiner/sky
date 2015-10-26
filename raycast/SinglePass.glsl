@@ -70,7 +70,7 @@ out vec4 FragColor;
 
 uniform sampler3D Density;
 uniform vec3 LightPosition = vec3(0.25, 1.0, 3.0);
-uniform vec3 LightIntensity = vec3(15.0);
+uniform vec3 LightIntensity = vec3(1.0, 1.0, 1.0);
 uniform float Absorption = 1.0;
 uniform mat4 Modelview;
 uniform float FocalLength;
