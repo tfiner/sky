@@ -20,8 +20,6 @@ namespace {
 
    struct ProgramHandles {
       GLuint SinglePass;
-      GLuint TwoPassRaycast;
-      GLuint TwoPassIntervals;
       GLuint SkySphere;
       GLuint GroundSphere;
    } Programs;
@@ -34,8 +32,6 @@ namespace {
    Matrix4 ModelviewProjection;
    Point3 EyePosition;
    GLuint CloudTexture;
-   SurfacePod IntervalsFbo[2];
-   bool SinglePass = true;
    float FieldOfView = 0.7f;
 
    // Cloud variables
@@ -44,6 +40,8 @@ namespace {
    // Common to sky and cloud.
    auto LightDir = -Vector3(0.0f, 0.0f, 1.0f);
    auto SunBrightness = 20.0f;
+   auto CloudNumSamples = 128;
+   auto CloudLightSamples = 16;
 
    void LoadUniforms() {
       SetUniform("ModelviewProjection", ModelviewProjection);
@@ -55,7 +53,7 @@ namespace {
       SetUniform("EyePosition", EyePosition);
       SetUniform("LightPosition", LightDir * 100);
 
-      SetUniform("LightIntensity", Vector3(SunBrightness * .75f));
+      SetUniform("LightIntensity", Vector3(SunBrightness * .5f));
       
 
       Vector4 rayOrigin(transpose(ModelviewMatrix) * EyePosition);
@@ -67,6 +65,9 @@ namespace {
       PezConfig cfg = PezGetConfig();
       SetUniform("WindowSize", float(cfg.Width), float(cfg.Height));
       SetUniform("Absorption", Absorption);
+
+      SetUniform("numSamples", CloudNumSamples);
+      SetUniform("numLightSamples", CloudLightSamples);
    }
 
 
@@ -77,8 +78,9 @@ namespace {
    }
 
 
-   void CreatePyroclasticVolume(GLuint handle, int n, float r) {
-      const auto seed = static_cast<unsigned int>(time(nullptr));
+   void CreatePyroclasticVolume(GLuint handle, unsigned seed, int n, float r) {
+      const auto packing = 0.25f;
+
       PezDebugString("Starting seed: %u\n", seed);
       srand(seed);
       PerlinInit();
@@ -112,9 +114,10 @@ namespace {
                   5,
                   6, 3));
 
-               float d = sqrtf(dx*dx + dy*dy + dz*dz) / (n);
-               bool isFilled = (d - off) < r;
-               *ptr++ = isFilled ? 255 : 0;
+               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / (n);
+               *ptr++ = static_cast<unsigned char>((packing *(d - r)*off) * 255.0f);
+               //bool isFilled = (d - off) < r;
+               //*ptr++ = isFilled ? 255 : 0;
             }
          }
          // PezDebugString("Slice %d of %d\n", x, n);
@@ -146,21 +149,21 @@ PezConfig PezGetConfig()
     return config;
 }
 
+auto cloudDensity = 0.05f;
+auto seed = static_cast<unsigned int>(time(nullptr));
+
 void PezInitialize()
 {
     PezConfig cfg = PezGetConfig();
 
     Trackball = CreateTrackball(cfg.Width * 1.0f, cfg.Height * 1.0f, cfg.Width * 0.5f);
     Programs.SinglePass = LoadProgram("SinglePass.VS", "SinglePass.GS", "SinglePass.FS");
-    Programs.TwoPassIntervals = LoadProgram("TwoPass.VS", "TwoPass.Cube", "TwoPass.Intervals");
-    Programs.TwoPassRaycast = LoadProgram("TwoPass.VS", "TwoPass.Fullscreen", "TwoPass.Raycast");
     Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr/*"SkySphere.GS"*/, "SkySphere.FS");
     Programs.GroundSphere = LoadProgram("GroundSphere.VS", nullptr/*"GroundSphere.GS"*/, "GroundSphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = NewTexture();
-    CreatePyroclasticVolume(CloudTexture, 128, 0.05f);
-    IntervalsFbo[0] = CreateSurface(cfg.Width, cfg.Height);
-    IntervalsFbo[1] = CreateSurface(cfg.Width, cfg.Height);
+    seed = static_cast<unsigned int>(time(nullptr));
+    CreatePyroclasticVolume(CloudTexture, seed, 128, cloudDensity);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -212,7 +215,6 @@ auto InvWaveLength4 = Vector3(
 // Take the camera position from the other code, and 
 // put it in the same relative position.
 auto CameraPos = normalize(Vector3(0.0f, 1.0f, 0.0f)) * 9.75;/*Vector3(6.94696283f, 6.91367817f, 2.20532990f)*/;
-//auto CameraPos = normalize(Vector3(0.0f, 1.0f, 0.0f)) * 9.9;/*Vector3(6.94696283f, 6.91367817f, 2.20532990f)*/;
 auto CameraHeight = EarthRadius * 1.01f;
 
 void SkyRender() {
@@ -254,14 +256,14 @@ void SkyRender() {
    auto pSphere = ::gluNewQuadric();
    ::gluSphere(pSphere, EarthRadius*Scale, 150, 150);
    ::gluDeleteQuadric(pSphere);
-   //glDrawArrays(GL_POINTS, 0, 1);
 }
 
 void GroundRender() {
    ::glUseProgram(Programs.GroundSphere);
    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use ground sphere");
 
-   const auto groundModelView = Matrix4::translation(Vector3(0,-1.05*EarthRadius,0)) * ModelviewMatrix;
+   const auto earthScale = 5.0f;
+   const auto groundModelView = Matrix4::translation(Vector3(0,-earthScale*CameraHeight,0)) * ModelviewMatrix;
    const auto groundModelViewProj = ProjectionMatrix * groundModelView;
 
    SetUniform("ModelviewProjection", groundModelViewProj);
@@ -290,11 +292,10 @@ void GroundRender() {
    // ::glDisable(GL_CULL_FACE);
 
    ::glFrontFace(GL_CCW);
-   ::glPolygonMode(GL_FRONT, /*GL_FILL*/GL_LINE);
-   //::glPolygonMode(GL_FRONT_AND_BACK, /*GL_FILL*/GL_LINE);
+   ::glPolygonMode(GL_FRONT, GL_FILL/*GL_LINE*/);
   
    auto pSphere = ::gluNewQuadric();
-   ::gluSphere(pSphere, EarthRadius, 50, 50);
+   ::gluSphere(pSphere, EarthRadius*earthScale, 150, 150);
    ::gluDeleteQuadric(pSphere);
 }
 
@@ -371,13 +372,26 @@ void PezHandleMouse(int x, int y, int action) {
 
 void PezHandleKey(char c, int flags) {
    switch(c) {
-   case ' ':
-      SinglePass = !SinglePass;
+   case '3':
+      cloudDensity += (flags & PEZ_SHIFT) ? -0.01f : 0.01f;
+      PezDebugString("cloudDensity: %1.5f\n", cloudDensity);
+      CreatePyroclasticVolume(CloudTexture, seed, 128, cloudDensity);
       break;
 
+
    case 'C':
-      CreatePyroclasticVolume(CloudTexture, 128, 0.05f);
+      seed = static_cast<unsigned int>(time(nullptr));
+      CreatePyroclasticVolume(CloudTexture, seed, 128, cloudDensity);
       break;
+
+   case 'Q':  {
+      const auto factor = (flags & PEZ_SHIFT) ? 0.5f : 2.0f;
+      CloudNumSamples = static_cast<int>(CloudNumSamples * factor);
+      PezDebugString("CloudNumSamples: %d\n", CloudNumSamples);
+      CloudLightSamples = static_cast<int>(CloudLightSamples * factor);
+      PezDebugString("CloudLightSamples: %d\n", CloudLightSamples);
+      break;
+   }
 
    case 'D':
       Scale += (flags & PEZ_SHIFT) ? -0.1f : 0.1f;

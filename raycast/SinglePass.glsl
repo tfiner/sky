@@ -77,11 +77,10 @@ uniform float FocalLength;
 uniform vec2 WindowSize;
 uniform vec3 RayOrigin;
 
+uniform int numSamples = 128;
+uniform int numLightSamples = 16;
+
 const float maxDist = sqrt(2.0);
-const int numSamples = 128;
-const float stepSize = maxDist/float(numSamples);
-const int numLightSamples = 32;
-const float lscale = maxDist / float(numLightSamples);
 const float densityFactor = 5;
 
 struct Ray {
@@ -110,6 +109,9 @@ bool IntersectBox(Ray r, AABB aabb, out float t0, out float t1)
 
 void main()
 {
+    float stepSize = maxDist / float(numSamples);
+    float lscale = maxDist / float(numLightSamples);
+
     vec3 rayDirection;
     rayDirection.xy = 2.0 * gl_FragCoord.xy / WindowSize - 1.0;
     rayDirection.z = -FocalLength;
