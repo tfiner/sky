@@ -551,7 +551,6 @@ void PezHandleKey(char c, int flags) {
       }
       break;
 
-
    case 'A':
       Absorption += (flags & PEZ_SHIFT) ? -0.1f : 0.1f;
       Absorption = (std::max)(Absorption, 0.0f);

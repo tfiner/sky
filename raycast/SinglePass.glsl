@@ -77,10 +77,17 @@ uniform float FocalLength;
 uniform vec2 WindowSize;
 uniform vec3 RayOrigin;
 
-uniform vec3 AmbientLight = vec3(1.0, 0.757, 0.55);
-uniform float AmbientScale = 0.5;
-const int AmbientRays = 6;
-const int AmbientSteps = 12;
+// Dark orange
+uniform vec3 ShadowLight = vec3(1.0, 0.757, 0.55) * 0.5;
+
+// Orange
+// uniform vec3 AmbientLight = vec3(1.0, 0.757, 0.55);
+// Blue
+//uniform vec3 AmbientLight = vec3(.196, 0.557, 0.831);
+uniform vec3 AmbientLight = vec3(1.0, 0.0, 0.0);
+
+uniform int AmbientSamples = 4;
+uniform float AmbientScale = 1.0;
 
 uniform int numSamples = 128;
 uniform int numLightSamples = 16;
@@ -112,29 +119,49 @@ bool IntersectBox(Ray r, AABB aabb, out float t0, out float t1)
     return t0 <= t1;
 }
 
-// Originally by Stefan Gustavson, it has been upgraded and lives at:
-// https://github.com/ashima/webgl-noise
-float rand(vec2 co){
-   return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+
+float ambientSample(vec3 samplePos) {
+   return texture(Density, samplePos).x /** densityFactor*/;
+   // return .5;
 }
 
 
-vec3 ambientOcclusion(vec3 samplePos) {
+vec3 ambientOcclusion(vec3 samplePos, float stepSize) {
    // Ambient occlusion, brute force
    float ambientIntensity = 1.0;
-   float ambientScale = 1.0/(AmbientRays * AmbientSteps);
-   for(int ao = 0; ao < AmbientRays; ++ao) {
-      // Use the position as a seed to generate a random vector.
-      vec3 aoDir = normalize(vec3(rand(samplePos.xy), rand(samplePos.xz), rand(samplePos.yz)));
-      vec3 aoPos = samplePos + aoDir;
+   float sampleScale = 1.0/6.0 * AmbientSamples;
 
-      for(int s = 0; s < AmbientSteps; ++s) {
-         float cloudDensity = texture(Density, aoPos).x * densityFactor;
-         ambientIntensity -= Absorption*cloudDensity*ambientScale;
-         aoPos += aoDir;
-      }
+   float step = stepSize;
+   for(int ao = 0; ao < AmbientSamples; ++ao, step+=stepSize) {
+
+      // Look in the surrounding 6 directions for density.
+      ambientIntensity -= 
+         ambientSample(samplePos + vec3(1.0, 0.0, 0.0) * step) *
+         sampleScale;
+
+      ambientIntensity -= 
+         ambientSample(samplePos + vec3(-1.0, 0.0, 0.0) * step) *
+         sampleScale;
+
+      ambientIntensity -= 
+         ambientSample(samplePos + vec3(0.0, 1.0, 0.0) * step) *
+         sampleScale;
+
+      ambientIntensity -= 
+         ambientSample(samplePos + vec3(0.0, -1.0, 0.0) * step) *
+         sampleScale;
+
+      ambientIntensity -= 
+         ambientSample(samplePos + vec3(0.0, 0.0, 1.0) * step) *
+         sampleScale;
+
+      ambientIntensity -= 
+         ambientSample(samplePos + vec3(0.0, 0.0, -1.0) * step) *
+         sampleScale;
    }
-   return AmbientLight * AmbientScale * ambientIntensity;
+
+   // return AmbientLight * AmbientScale;
+   return AmbientLight * AmbientScale * min(1.0, max(0.25, ambientIntensity));
 }
 
 float shadowAttenuation(vec3 samplePos, vec3 lightDir, float stepSize){
@@ -149,7 +176,7 @@ float shadowAttenuation(vec3 samplePos, vec3 lightDir, float stepSize){
          shadowSamplePos += lightDir;
    }
 
-   return sampledLightIntensity;
+   return min(1.0, max(0.10, sampledLightIntensity));
 }
 
 
@@ -192,10 +219,11 @@ void main()
 
         vec3 lightDir = normalize(LightPosition - samplePos)*lightScale;
         float sampledLightIntensity = shadowAttenuation(samplePos, lightDir, stepSize);
+        //float sampledLightIntensity = 1.0;
 
-        vec3 Li = LightIntensity*(sampledLightIntensity + ambientOcclusion(samplePos));
-
+        vec3 Li = LightIntensity * sampledLightIntensity + ShadowLight * sampledLightIntensity;
         lightFrag += Li*scaledSampleValue*density*stepSize;
+        lightFrag += ambientOcclusion(samplePos, stepSize) * stepSize;
     }
 
     FragColor.rgb = lightFrag;
