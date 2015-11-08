@@ -1,8 +1,10 @@
 #include "Utility.h"
 
 extern "C" {
-#include "perlin.h"
+#  include "perlin.h"
 }
+
+#include "simplex\simplexnoise.h"
 
 #define _USE_MATH_DEFINES // for C++
 #include <math.h>
@@ -28,6 +30,7 @@ namespace {
    GLuint CubeCenterVbo;
    Matrix4 ProjectionMatrix;
    Matrix4 ModelviewMatrix;
+   Matrix4 ScaleMatrix = Matrix4::scale(Vector3(1.0, 1.0, 1.0));
    Matrix4 ViewMatrix;
    Matrix4 ModelviewProjection;
    Point3 EyePosition;
@@ -35,17 +38,17 @@ namespace {
    float FieldOfView = 0.7f;
 
    // Cloud variables
-   auto Absorption = 1.0f;
+   auto Absorption = 2.40f;
 
    // Common to sky and cloud.
-   auto LightDir = -Vector3(0.0f, 0.0f, 1.0f);
-   auto SunBrightness = 20.0f;
+   auto LightDir = normalize(-Vector3(0.0f, 0.0f, 1.0f));
+   auto SunBrightness = 4.50f;
    auto CloudNumSamples = 128;
    auto CloudLightSamples = 16;
 
    void LoadUniforms() {
       SetUniform("ModelviewProjection", ModelviewProjection);
-      SetUniform("Modelview", ModelviewMatrix);
+      SetUniform("Modelview", ModelviewMatrix * ScaleMatrix);
       SetUniform("ViewMatrix", ViewMatrix);
       SetUniform("ProjectionMatrix", ProjectionMatrix);
       SetUniform("RayStartPoints", 1);
@@ -53,7 +56,7 @@ namespace {
       SetUniform("EyePosition", EyePosition);
       SetUniform("LightPosition", LightDir * 100);
 
-      SetUniform("LightIntensity", Vector3(SunBrightness * .5f));
+      SetUniform("LightIntensity", Vector3(1.0f, 1.0f, 0.8f) * SunBrightness * .5f);
       
 
       Vector4 rayOrigin(transpose(ModelviewMatrix) * EyePosition);
@@ -78,13 +81,24 @@ namespace {
    }
 
 
-   void CreatePyroclasticVolume(GLuint handle, unsigned seed, int n, float r) {
-      const auto packing = 0.25f;
+   auto cloudDensity = 0.42f;
+   auto seed = static_cast<unsigned int>(time(nullptr));
+   auto packing = 0.5f;
 
-      PezDebugString("Starting seed: %u\n", seed);
-      srand(seed);
-      PerlinInit();
+   const auto Sqrt2 = sqrt(2.0f);
+   auto alpha = 5.0;
+   auto beta = 6.0;
+   auto octaves = 8;
+   
+   enum class NoiseMethod {
+      PyroClastic,
+      Simplex
+   };
 
+   auto NoiseType = NoiseMethod::PyroClastic;
+
+
+   void NoiseToGL(GLuint handle, const std::vector<unsigned char>& v, int n) {
       glBindTexture(GL_TEXTURE_3D, handle);
       PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to bind texture handle");
       glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -94,37 +108,8 @@ namespace {
       glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-      auto v = std::vector<unsigned char>(n*n*n);
-      unsigned char *ptr = v.data();
-
-      float frequency = 3.0f / n;
-      float center = n / 2.0f + 0.5f;
-
-      for(int x = 0; x < n; ++x) {
-         for(int y = 0; y < n; ++y) {
-            for(int z = 0; z < n; ++z) {
-               float dx = center - x;
-               float dy = center - y;
-               float dz = center - z;
-
-               float off = fabsf((float)PerlinNoise3D(
-                  x*frequency,
-                  y*frequency,
-                  z*frequency,
-                  5,
-                  6, 3));
-
-               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / (n);
-               *ptr++ = static_cast<unsigned char>((packing *(d - r)*off) * 255.0f);
-               //bool isFilled = (d - off) < r;
-               //*ptr++ = isFilled ? 255 : 0;
-            }
-         }
-         // PezDebugString("Slice %d of %d\n", x, n);
-      }
-
       glTexImage3D(
-         GL_TEXTURE_3D, 
+         GL_TEXTURE_3D,
          0,
          GL_LUMINANCE,
          n, n, n, 0,
@@ -135,6 +120,84 @@ namespace {
       PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to set texture bits");
    }
 
+   void CreatePyroclasticVolume(GLuint handle, int n, float r) {
+
+      PezDebugString("Starting seed: %u\n", seed);
+      srand(seed);
+      PerlinInit();
+
+      auto v = std::vector<unsigned char>(n*n*n);
+      unsigned char *ptr = v.data();
+
+      float frequency = 4.0f / n;
+      float center = n / 2.0f + 0.5f;
+
+      for(int x = 0; x < n; ++x) {
+         for(int y = 0; y < n; ++y) {
+            for(int z = 0; z < n; ++z) {
+
+               // const auto yf = y * 4;
+               const float dx = center - x;
+               const float dy = center - y;
+               const float dz = center - z;
+
+               const auto p3d = PerlinNoise3D(
+                  x*frequency,
+                  y*frequency,
+                  z*frequency,
+                  alpha,
+                  beta,
+                  octaves);
+
+               const auto off = fabsf(static_cast<float>(p3d));
+               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / (n*Sqrt2);
+               *ptr++ = static_cast<unsigned char>((packing * (d - r) * off) * 255.0f);
+            }
+         }
+         // PezDebugString("Slice %d of %d\n", x, n);
+      }
+
+      NoiseToGL(handle, v, n);
+   }
+
+   auto simplexPersistence = 1.0f;
+   auto simplexScale = 1.0f;
+
+   void CreateSimplexVolume(GLuint handle, int n, float r) {
+      auto v = std::vector<unsigned char>(n*n*n);
+      unsigned char *ptr = v.data();
+
+      float frequency = 4.0f / n;
+      float center = n / 2.0f;
+
+      for(int x = 0; x < n; ++x) {
+         for(int y = 0; y < n; ++y) {
+            for(int z = 0; z < n; ++z) {
+               const float dx = center - x;
+               const float dy = center - y;
+               const float dz = center - z;
+
+               const auto p3d = (octave_noise_3d(octaves, simplexPersistence, simplexScale, dx, dy, dz) + 1.0f) / 2.0f;
+               const auto d = (sqrtf(dx*dx + dy*dy + dz*dz) /* * Sqrt2*/) / (n/* *Sqrt2*/);
+               *ptr++ = static_cast<unsigned char>((d - r) * p3d * 255.0f);
+            }
+         }
+         // PezDebugString("Slice %d of %d\n", x, n);
+      }
+
+      NoiseToGL(handle, v, n);
+   }
+
+
+   void CreateNoiseCloud(GLuint CloudTexture) {
+      if(NoiseType == NoiseMethod::PyroClastic){
+         seed = static_cast<unsigned int>(time(nullptr));
+         CreatePyroclasticVolume(CloudTexture, 128, cloudDensity);
+
+      } else if(NoiseType == NoiseMethod::Simplex){
+         CreateSimplexVolume(CloudTexture, 128, cloudDensity);
+      }
+   }
 
 }
 
@@ -149,8 +212,6 @@ PezConfig PezGetConfig()
     return config;
 }
 
-auto cloudDensity = 0.05f;
-auto seed = static_cast<unsigned int>(time(nullptr));
 
 void PezInitialize()
 {
@@ -163,7 +224,7 @@ void PezInitialize()
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = NewTexture();
     seed = static_cast<unsigned int>(time(nullptr));
-    CreatePyroclasticVolume(CloudTexture, seed, 128, cloudDensity);
+    CreateNoiseCloud(CloudTexture);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -326,7 +387,7 @@ void PezRender()
     glClear(GL_COLOR_BUFFER_BIT);
 
     SkyRender();
-    GroundRender();
+    //GroundRender();
     RenderCloud();
 }
 
@@ -372,24 +433,77 @@ void PezHandleMouse(int x, int y, int action) {
 
 void PezHandleKey(char c, int flags) {
    switch(c) {
-   case '3':
-      cloudDensity += (flags & PEZ_SHIFT) ? -0.01f : 0.01f;
-      PezDebugString("cloudDensity: %1.5f\n", cloudDensity);
-      CreatePyroclasticVolume(CloudTexture, seed, 128, cloudDensity);
+   case 'T':
+      NoiseType = NoiseType == NoiseMethod::PyroClastic ? NoiseMethod::Simplex : NoiseMethod::PyroClastic;
+      PezDebugString("Toggle noise type to: %s\n", 
+         NoiseType == NoiseMethod::PyroClastic ? "Pyroclastic" : "Simplex");
+
+      CreateNoiseCloud(CloudTexture);
       break;
 
+   case '3':
+      seed = static_cast<unsigned int>(time(nullptr));
+      cloudDensity += (flags & PEZ_SHIFT) ? -0.01f : 0.01f;
+      PezDebugString("cloudDensity: %1.5f\n", cloudDensity);
+      CreateNoiseCloud(CloudTexture);
+      break;
+
+   case '4':
+      seed = static_cast<unsigned int>(time(nullptr));
+      alpha += (flags & PEZ_SHIFT) ? -0.5 : 0.5;
+      alpha = (std::max)(alpha, 1.0);
+      PezDebugString("alpha: %1.5f\n", alpha);
+      CreateNoiseCloud(CloudTexture);
+      break;
+
+   case '5':
+      seed = static_cast<unsigned int>(time(nullptr));
+      beta += (flags & PEZ_SHIFT) ? -0.5 : 0.5;
+      beta = (std::max)(beta, 1.0);
+      PezDebugString("beta: %1.5f\n", beta);
+      CreateNoiseCloud(CloudTexture);
+      break;
+
+   case '6':
+      seed = static_cast<unsigned int>(time(nullptr));
+      octaves += (flags & PEZ_SHIFT) ? -1 : 1;
+      octaves = (std::max)(octaves, 1);
+      PezDebugString("octaves: %d\n", octaves);
+      CreateNoiseCloud(CloudTexture);
+      break;
+
+   case '7':
+      simplexPersistence += (flags & PEZ_SHIFT) ? -0.5f : 0.5f;
+      simplexPersistence = (std::max)(simplexPersistence, 0.5f);
+      PezDebugString("persistence: %3.2f\n", simplexPersistence);
+      CreateNoiseCloud(CloudTexture);
+      break;
+
+   case '8':
+      simplexScale += (flags & PEZ_SHIFT) ? -0.5f : 0.5f;
+      simplexScale = (std::max)(simplexScale, 0.5f);
+      PezDebugString("scale: %3.2f\n", simplexScale);
+      CreateNoiseCloud(CloudTexture);
+      break;
+
+   case '9':
+      packing *= (flags & PEZ_SHIFT) ? 2.0f : 0.5f;
+      packing = (std::max)(packing, 0.0125f);
+      PezDebugString("packing: %3.2f\n", packing);
+      CreateNoiseCloud(CloudTexture);
+      break;
 
    case 'C':
       seed = static_cast<unsigned int>(time(nullptr));
-      CreatePyroclasticVolume(CloudTexture, seed, 128, cloudDensity);
+      CreateNoiseCloud(CloudTexture);
       break;
 
    case 'Q':  {
       const auto factor = (flags & PEZ_SHIFT) ? 0.5f : 2.0f;
       CloudNumSamples = static_cast<int>(CloudNumSamples * factor);
       PezDebugString("CloudNumSamples: %d\n", CloudNumSamples);
-      CloudLightSamples = static_cast<int>(CloudLightSamples * factor);
-      PezDebugString("CloudLightSamples: %d\n", CloudLightSamples);
+      //CloudLightSamples = static_cast<int>(CloudLightSamples * factor);
+      //PezDebugString("CloudLightSamples: %d\n", CloudLightSamples);
       break;
    }
 
@@ -405,7 +519,7 @@ void PezHandleKey(char c, int flags) {
       break;
 
    case 'S':
-      SunBrightness += (flags & PEZ_SHIFT) ? -1.0f : 1.0f;
+      SunBrightness += (flags & PEZ_SHIFT) ? -.25f : .25f;
       SunBrightness = (std::max)(SunBrightness, 0.0f);
       PezDebugString("SunBrightness: %3.2f\n", SunBrightness);
       break;
