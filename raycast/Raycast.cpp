@@ -86,6 +86,7 @@ namespace {
    auto packing = 0.5f;
 
    const auto Sqrt2 = sqrt(2.0f);
+   const auto Sqrt3 = sqrt(3.0f);
    auto alpha = 5.0;
    auto beta = 6.0;
    auto octaves = 8;
@@ -150,7 +151,7 @@ namespace {
                   octaves);
 
                const auto off = fabsf(static_cast<float>(p3d));
-               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / (n*Sqrt2);
+               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / n/*(n*Sqrt2)*/;
                *ptr++ = static_cast<unsigned char>((packing * (d - r) * off) * 255.0f);
             }
          }
@@ -386,7 +387,7 @@ void PezRender()
     glClearColor(0.2f, 0.2f, 0.2f, 0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    SkyRender();
+    //SkyRender();
     //GroundRender();
     RenderCloud();
 }
