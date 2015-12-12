@@ -1,0 +1,9 @@
+Absorption =  5.7000
+CameraHeight =  9.97
+cloudDensity =  0.41000
+CloudLightSamples =  64
+CloudNumSamples =  512
+MieKm =  0.0002
+RayleighKr =  0.0008
+Scale =  6.70
+Starting seed =  1449948730

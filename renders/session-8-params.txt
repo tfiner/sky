@@ -1,0 +1,8 @@
+Starting seed =  1449957986
+octaves =  1
+CloudNumSamples =  128
+OpenGL Version =  4.5.0 NVIDIA 354.13
+Scale =  5.40
+Absorption =  4.9000
+cloudDensity =  0.39000
+NumSamples =  59
