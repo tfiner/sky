@@ -250,7 +250,7 @@ vec3 SurfaceColor(vec3 samplePos, vec3 lightDir, float stepSize, vec3 viewDir) {
           BlinnPhongSpecular(lightDir, normal, viewDir);
 }
 
-const float ScreenGamma = 1.5;
+const float ScreenGamma = 1.8;
 vec3 GammaCorrect(vec3 colorLinear) {
    return pow(colorLinear, vec3(1.0 / ScreenGamma));
 }
@@ -299,11 +299,8 @@ void main()
         // Attenuate for shadows.
         vec3 lightDir = normalize(LightPosition - samplePos);
         float sampledLightIntensity = shadowAttenuation(samplePos, lightDir*lightScale, stepSize);
-        // sampledLightIntensity = 1 - nunumSamples;
-        // float sampledLightIntensity = 1.0;
-
         vec3 Li = LightIntensity * sampledLightIntensity + ShadowLight * sampledLightIntensity;
-        Li += SurfaceColor(samplePos, -lightDir, stepSize, viewDir) * 0.25;
+        Li += SurfaceColor(samplePos, -lightDir, stepSize, viewDir) * stepSize;
         lightFrag += Li*scaledSampleValue*density*stepSize;
     }
 
