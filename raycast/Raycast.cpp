@@ -23,7 +23,7 @@ namespace {
    struct ProgramHandles {
       GLuint SinglePass;
       GLuint SkySphere;
-      GLuint GroundSphere;
+      // GLuint GroundSphere;
    } Programs;
 
    ITrackball* Trackball;
@@ -41,7 +41,7 @@ namespace {
    auto Absorption = 2.40f;
 
    // Common to sky and cloud.
-   auto LightDir = normalize(-Vector3(0.0f, 0.0f, 1.0f));
+   auto LightDir = normalize(Vector3(0.0f, 1.0f, 0.0f));
    auto SunBrightness = 4.50f;
    auto CloudNumSamples = 128;
    auto CloudLightSamples = 16;
@@ -86,6 +86,7 @@ namespace {
    auto packing = 0.5f;
 
    const auto Sqrt2 = sqrt(2.0f);
+   const auto Sqrt3 = sqrt(3.0f);
    auto alpha = 5.0;
    auto beta = 6.0;
    auto octaves = 8;
@@ -150,7 +151,7 @@ namespace {
                   octaves);
 
                const auto off = fabsf(static_cast<float>(p3d));
-               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / (n*Sqrt2);
+               const auto d = sqrtf(dx*dx + dy*dy + dz*dz) / n/*(n*Sqrt2)*/;
                *ptr++ = static_cast<unsigned char>((packing * (d - r) * off) * 255.0f);
             }
          }
@@ -220,7 +221,7 @@ void PezInitialize()
     Trackball = CreateTrackball(cfg.Width * 1.0f, cfg.Height * 1.0f, cfg.Width * 0.5f);
     Programs.SinglePass = LoadProgram("SinglePass.VS", "SinglePass.GS", "SinglePass.FS");
     Programs.SkySphere  = LoadProgram("SkySphere.VS", nullptr/*"SkySphere.GS"*/, "SkySphere.FS");
-    Programs.GroundSphere = LoadProgram("GroundSphere.VS", nullptr/*"GroundSphere.GS"*/, "GroundSphere.FS");
+    // Programs.GroundSphere = LoadProgram("GroundSphere.VS", nullptr/*"GroundSphere.GS"*/, "GroundSphere.FS");
     CubeCenterVbo = CreatePointVbo(0, 0, 0);
     CloudTexture = NewTexture();
     seed = static_cast<unsigned int>(time(nullptr));
@@ -319,6 +320,7 @@ void SkyRender() {
    ::gluDeleteQuadric(pSphere);
 }
 
+#if 0
 void GroundRender() {
    ::glUseProgram(Programs.GroundSphere);
    PezCheckCondition(GL_NO_ERROR == glGetError(), "Unable to use ground sphere");
@@ -359,7 +361,7 @@ void GroundRender() {
    ::gluSphere(pSphere, EarthRadius*earthScale, 150, 150);
    ::gluDeleteQuadric(pSphere);
 }
-
+#endif
 void RenderCloud() {
    glBindBuffer(GL_ARRAY_BUFFER, CubeCenterVbo);
    glVertexAttribPointer(SlotPosition, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
@@ -387,7 +389,7 @@ void PezRender()
     glClear(GL_COLOR_BUFFER_BIT);
 
     SkyRender();
-    //GroundRender();
+//    GroundRender();
     RenderCloud();
 }
 
@@ -399,8 +401,8 @@ void PezUpdate(unsigned int microseconds)
 
     EyePosition = Point3(0, 0, 5 + Trackball->GetZoom());
     Vector3 up(0, 1, 0); 
-    // Point3 target(0,0,0.0);
-    Point3 target = Point3(0,0,0.0) + LightDir * 1000;
+    // Point3 target(0,0,0.0);    
+    Point3 target = Point3(0,0,0.0) + -Vector3(0.0f, 0.0f, 1.0f) * 1000;
 
     ViewMatrix = Matrix4::lookAt(EyePosition, target, up);
 

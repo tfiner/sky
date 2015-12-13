@@ -1,0 +1,9 @@
+Absorption =  9.6000
+Scale =  6.70
+OpenGL Version =  4.5.0 NVIDIA 354.13
+SunBrightness =  31.00
+Starting seed =  1449956618
+cloudDensity =  0.34000
+CloudNumSamples =  16
+NumSamples =  59
+CloudLightSamples =  2

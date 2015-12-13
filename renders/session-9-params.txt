@@ -1,0 +1,13 @@
+CloudNumSamples =  256
+Absorption =  4.8000
+MieKm =  0.0047
+NumSamples =  55
+Scale =  5.40
+OpenGL Version =  4.5.0 NVIDIA 354.13
+octaves =  9
+cloudDensity =  0.26000
+Starting seed =  1449958153
+RayleighKr =  0.0009
+SunBrightness =  11.00
+RayleighScaleDepth =  0.5900
+CameraHeight =  10.20
